@@ -11,7 +11,7 @@ from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
 
 from app.schemas.chat import ChatStreamRequest
-from app.services.groq_client import GroqClient
+from app.services.groq_client import GroqClient, GroqStreamError
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -33,11 +33,21 @@ async def stream_chat(
         Async generator that forwards streamed text chunks
         from the Groq client to the HTTP response.
         """
-        async for chunk in client.stream_chat_completion(
-            messages=[m.model_dump() for m in request.messages],
-            model=request.model,
-        ):
-            yield chunk.encode("utf-8")
+        try:
+            async for chunk in client.stream_chat_completion(
+                messages=[m.model_dump() for m in request.messages],
+                model=request.model,
+            ):
+                yield chunk.encode("utf-8")
+
+        except GroqStreamError as e:
+        
+            error_message = f"\n[ERROR] {str(e)}"
+            yield error_message.encode("utf-8")
+
+        except Exception:
+       
+            yield b"\n[ERROR] Internal server error"
 
     return StreamingResponse(
         generator(),

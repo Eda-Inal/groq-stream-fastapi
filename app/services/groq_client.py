@@ -14,6 +14,13 @@ import httpx
 from app.core.config import settings
 
 
+class GroqStreamError(Exception):
+    """
+    Raised when an error occurs while streaming from the Groq API.
+    """
+    pass
+
+
 class GroqClient:
     """
     Async client for interacting with the Groq LLM API.
@@ -54,27 +61,43 @@ class GroqClient:
             "stream": True,
         }
 
-        async with httpx.AsyncClient(base_url=self._base_url, timeout=None) as client:
-            async with client.stream(
-                method="POST",
-                url="/chat/completions",
-                headers=headers,
-                json=payload,
-            ) as response:
-                response.raise_for_status()
+        try:
+            async with httpx.AsyncClient(
+                base_url=self._base_url,
+                timeout=None,
+            ) as client:
+                async with client.stream(
+                    method="POST",
+                    url="/chat/completions",
+                    headers=headers,
+                    json=payload,
+                ) as response:
+                    response.raise_for_status()
 
-                async for line in response.aiter_lines():
-                    if not line:
-                        continue
+                    async for line in response.aiter_lines():
+                        if not line:
+                            continue
 
-                    if line.strip() == "data: [DONE]":
-                        break
+                        if line.strip() == "data: [DONE]":
+                            break
 
-                    if line.startswith("data: "):
-                        data = json.loads(line.removeprefix("data: "))
+                        if line.startswith("data: "):
+                            data = json.loads(line.removeprefix("data: "))
 
-                        delta = data["choices"][0]["delta"]
-                        content = delta.get("content")
+                            delta = data["choices"][0]["delta"]
+                            content = delta.get("content")
 
-                        if content:
-                            yield content
+                            if content:
+                                yield content
+
+        except httpx.HTTPError as e:
+          
+            raise GroqStreamError("Groq API request failed") from e
+
+        except json.JSONDecodeError as e:
+         
+            raise GroqStreamError("Failed to parse Groq streaming response") from e
+
+        except Exception as e:
+
+            raise GroqStreamError("Unexpected error during Groq streaming") from e
