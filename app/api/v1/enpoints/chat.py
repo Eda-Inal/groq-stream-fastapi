@@ -1,3 +1,12 @@
+"""
+Chat API endpoints.
+
+This module exposes HTTP endpoints for interacting with
+the Groq streaming chat service.
+"""
+
+from typing import AsyncIterator
+
 from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
 
@@ -11,9 +20,19 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def stream_chat(
     request: ChatStreamRequest = Body(...)
 ) -> StreamingResponse:
+    """
+    Stream a chat completion response from Groq to the client.
+
+    The response is sent incrementally as plain text chunks
+    using FastAPI's StreamingResponse.
+    """
     client = GroqClient()
 
-    async def generator():
+    async def generator() -> AsyncIterator[bytes]:
+        """
+        Async generator that forwards streamed text chunks
+        from the Groq client to the HTTP response.
+        """
         async for chunk in client.stream_chat_completion(
             messages=[m.model_dump() for m in request.messages],
             model=request.model,
