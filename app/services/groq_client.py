@@ -41,6 +41,13 @@ class GroqClient:
         self,
         messages: list[dict[str, str]],
         model: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        top_p: float | None = None,
+        frequency_penalty: float | None = None,
+        presence_penalty: float | None = None,
+        stop: str | list[str] | None = None,
+        seed: int | None = None,
     ) -> AsyncIterator[dict]:
         """
         Stream chat completion output from Groq.
@@ -65,8 +72,16 @@ class GroqClient:
             "model": model or settings.groq_default_model,
             "messages": messages,
             "stream": True,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "top_p": top_p,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty,
+            "stop": stop,
+            "seed": seed,
         }
-
+        payload = {k: v for k, v in payload.items() if v is not None}
+        
         try:
             timeout = httpx.Timeout(settings.groq_read_timeout)
             async with httpx.AsyncClient(

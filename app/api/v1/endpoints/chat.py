@@ -41,6 +41,13 @@ async def stream_chat(payload: ChatStreamRequest, request: Request) -> Streaming
         generator = client.stream_chat_completion(
             messages=[m.model_dump() for m in payload.messages],
             model=payload.model,
+            temperature=payload.temperature,
+            max_tokens=payload.max_tokens,
+            top_p=payload.top_p,
+            frequency_penalty=payload.frequency_penalty,
+            presence_penalty=payload.presence_penalty,
+            stop=payload.stop,
+            seed=payload.seed,
         )
     except GroqStreamError as e:
         log.error("chat_stream_initialization_failed", error=str(e))
