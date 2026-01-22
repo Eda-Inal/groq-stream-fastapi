@@ -10,7 +10,7 @@ import json
 import time
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 import structlog
 
@@ -22,7 +22,7 @@ logger = structlog.get_logger()
 
 
 @router.post("/stream")
-async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
+async def stream_chat(payload: ChatStreamRequest, request: Request) -> StreamingResponse:
     """
     Stream a chat completion response from Groq to the client.
 
@@ -30,8 +30,8 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
     chat.completion.chunk events using Server-Sent Events (SSE).
     """
     log = logger.bind(
-        message_count=len(request.messages),
-        model_override=request.model,
+        message_count=len(payload.messages),
+        model_override=payload.model,
     )
     log.info("chat_stream_request_received")
 
@@ -39,8 +39,8 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
 
     try:
         generator = client.stream_chat_completion(
-            messages=[m.model_dump() for m in request.messages],
-            model=request.model,
+            messages=[m.model_dump() for m in payload.messages],
+            model=payload.model,
         )
     except GroqStreamError as e:
         log.error("chat_stream_initialization_failed", error=str(e))
@@ -49,7 +49,7 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
 
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
     created = int(time.time())
-    model_name = request.model or "llama-3.3-70b-versatile"
+    model_name = payload.model or "llama-3.3-70b-versatile"
 
     async def stream_generator() -> AsyncIterator[bytes]:
         try:
@@ -70,6 +70,10 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
 
 
             async for event in generator:
+                if await request.is_disconnected():
+                    log.info("chat_stream_cancelled_by_client")
+                    break
+
                 if event.get("type") == "chunk":
                     content_chunk = {
                         "id": completion_id,
