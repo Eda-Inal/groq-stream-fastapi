@@ -7,6 +7,8 @@ the Groq streaming chat service.
 
 from typing import AsyncIterator
 import json
+import time
+import uuid
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -24,8 +26,8 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
     """
     Stream a chat completion response from Groq to the client.
 
-    The response is sent incrementally as JSON events
-    using Server-Sent Events (SSE).
+    The response is sent incrementally as OpenAI-compatible
+    chat.completion.chunk events using Server-Sent Events (SSE).
     """
     log = logger.bind(
         message_count=len(request.messages),
@@ -44,12 +46,64 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
         log.error("chat_stream_initialization_failed", error=str(e))
         raise HTTPException(status_code=502, detail=str(e))
 
+
+    completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
+    created = int(time.time())
+    model_name = request.model or "llama-3.3-70b-versatile"
+
     async def stream_generator() -> AsyncIterator[bytes]:
         try:
-            async for event in generator:
-                payload = json.dumps(event, ensure_ascii=False)
-                yield f"data: {payload}\n\n".encode("utf-8")
+            role_chunk = {
+                "id": completion_id,
+                "object": "chat.completion.chunk",
+                "created": created,
+                "model": model_name,
+                "choices": [
+                    {
+                        "index": 0,
+                        "delta": {"role": "assistant"},
+                        "finish_reason": None,
+                    }
+                ],
+            }
+            yield f"data: {json.dumps(role_chunk)}\n\n".encode("utf-8")
 
+
+            async for event in generator:
+                if event.get("type") == "chunk":
+                    content_chunk = {
+                        "id": completion_id,
+                        "object": "chat.completion.chunk",
+                        "created": created,
+                        "model": model_name,
+                        "choices": [
+                            {
+                                "index": 0,
+                                "delta": {"content": event["text"]},
+                                "finish_reason": None,
+                            }
+                        ],
+                    }
+                    yield f"data: {json.dumps(content_chunk)}\n\n".encode("utf-8")
+
+                elif event.get("type") == "done":
+                    final_chunk = {
+                        "id": completion_id,
+                        "object": "chat.completion.chunk",
+                        "created": created,
+                        "model": model_name,
+                        "choices": [
+                            {
+                                "index": 0,
+                                "delta": {},
+                                "finish_reason": event.get("finish_reason", "stop"),
+                            }
+                        ],
+                    }
+                    yield f"data: {json.dumps(final_chunk)}\n\n".encode("utf-8")
+                    break
+
+            yield b"data: [DONE]\n\n"
             log.info("chat_stream_completed_successfully")
 
         except Exception as e:
@@ -58,11 +112,12 @@ async def stream_chat(request: ChatStreamRequest) -> StreamingResponse:
                 error=str(e),
                 exc_info=True,
             )
-            error_event = {
-                "type": "error",
+            error_chunk = {
+                "id": completion_id,
+                "object": "error",
                 "message": "Stream interrupted",
             }
-            yield f"data: {json.dumps(error_event)}\n\n".encode("utf-8")
+            yield f"data: {json.dumps(error_chunk)}\n\n".encode("utf-8")
 
     return StreamingResponse(
         stream_generator(),
