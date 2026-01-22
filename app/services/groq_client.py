@@ -86,6 +86,11 @@ class GroqClient:
                             continue
 
                         if line.strip() == "data: [DONE]":
+                            
+                            yield {
+                                "type": "done",
+                                "finish_reason": "stop"
+                            }
                             break
 
                         if line.startswith("data: "):
@@ -95,7 +100,10 @@ class GroqClient:
                             content = delta.get("content")
 
                             if content:
-                                yield content
+                                yield {
+                                    "type": "chunk",
+                                    "text": content
+                                }
 
         except GroqStreamError:
             raise
