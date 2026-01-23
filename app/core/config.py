@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     groq_base_url: str
     groq_default_model: str
 
+    # --- Database ---
+    database_url: str
+    
     # --- Networking / safety settings ---
     groq_verify_ssl: bool = True
     groq_connect_timeout: float = 10.0

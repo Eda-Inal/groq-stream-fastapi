@@ -3,3 +3,5 @@ uvicorn==0.40.0             # ASGI server used to run the FastAPI app
 httpx==0.28.1               # Async HTTP client for Groq streaming API calls
 pydantic-settings==2.12.0   # Environment-based configuration management
 structlog==25.5.0           # Structured logging
+sqlalchemy>=2.0
+asyncpg>=0.29
