@@ -12,7 +12,8 @@ class ChatService:
 
     - Streams chunks to the caller
     - Accumulates final response
-    - Persists prompt/response after stream completion
+    - Persists OpenAI-compatible input + output
+      even if the stream is interrupted
     """
 
     def __init__(self) -> None:
@@ -34,41 +35,49 @@ class ChatService:
     ) -> AsyncIterator[dict]:
         full_response: list[str] = []
 
-        async for event in self._client.stream_chat_completion(
-            messages=messages,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p,
-            frequency_penalty=frequency_penalty,
-            presence_penalty=presence_penalty,
-            stop=stop,
-            seed=seed,
-        ):
-            if event["type"] == "chunk":
-                full_response.append(event["text"])
+        try:
+            async for event in self._client.stream_chat_completion(
+                messages=messages,
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                top_p=top_p,
+                frequency_penalty=frequency_penalty,
+                presence_penalty=presence_penalty,
+                stop=stop,
+                seed=seed,
+            ):
+                if event.get("type") == "chunk":
+                    full_response.append(event["text"])
 
-            if event["type"] == "done":
-                final_response = "".join(full_response)
+                yield event
 
-                # Persist once, after streaming is finished
+        finally:
+            # Persist ONCE, even if the stream was interrupted
+            if full_response:
                 await create_chat_log(
                     session=session,
-                    prompt=self._extract_prompt(messages),
-                    response=final_response,
+                    prompt=self._extract_user_prompt(messages),
+                    messages=messages,
+                    response="".join(full_response),
                     model_name=model or "default",
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    top_p=top_p,
+                    frequency_penalty=frequency_penalty,
+                    presence_penalty=presence_penalty,
+                    seed=seed,
                 )
 
-            yield event
-
     @staticmethod
-    def _extract_prompt(messages: list[dict[str, str]]) -> str:
+    def _extract_user_prompt(messages: list[dict[str, str]]) -> str:
         """
-        Simple prompt extraction strategy.
-        Can be improved later (system/user separation, etc.).
+        Extract the first user message as a short prompt summary.
+
+        This is for quick inspection / filtering.
+        The full source of truth is `messages`.
         """
-        return "\n".join(
-            f'{m["role"]}: {m["content"]}'
-            for m in messages
-            if "role" in m and "content" in m
-        )
+        for message in messages:
+            if message.get("role") == "user":
+                return message.get("content", "")
+        return ""
