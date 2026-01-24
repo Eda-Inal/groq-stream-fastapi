@@ -10,22 +10,40 @@ import json
 import time
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 import structlog
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.chat import ChatStreamRequest
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
-
 from app.db.session import get_db
 from app.services.chat_service import ChatService
-
+from app.core.config import AVAILABLE_MODELS, settings
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 logger = structlog.get_logger()
 
 chat_service = ChatService()
+
+
+@router.get("/models")
+async def list_models():
+    """
+    OpenAI-compatible models endpoint.
+
+    Returns the list of available LLM models that the client can select.
+    """
+    return {
+        "object": "list",
+        "data": [
+            {
+                "id": model_id,
+                "object": "model",
+            }
+            for model_id in AVAILABLE_MODELS.keys()
+        ],
+    }
+
 
 @router.post("/stream")
 async def stream_chat(
@@ -33,8 +51,6 @@ async def stream_chat(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ) -> StreamingResponse:
-
-
     """
     Stream a chat completion response from Groq to the client.
 
@@ -47,10 +63,19 @@ async def stream_chat(
     )
     log.info("chat_stream_request_received")
 
+    # --- Model resolution & validation (OpenAI-style) ---
+    model = payload.model or settings.groq_default_model
+
+    if model not in AVAILABLE_MODELS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported model: {model}",
+        )
+
     generator = chat_service.stream_chat(
         session=db,
         messages=[m.model_dump() for m in payload.messages],
-        model=payload.model,
+        model=model,
         temperature=payload.temperature,
         max_tokens=payload.max_tokens,
         top_p=payload.top_p,
@@ -58,12 +83,11 @@ async def stream_chat(
         presence_penalty=payload.presence_penalty,
         stop=payload.stop,
         seed=payload.seed,
-)
-
+    )
 
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
     created = int(time.time())
-    model_name = payload.model or "llama-3.3-70b-versatile"
+    model_name = model
 
     async def stream_generator() -> AsyncIterator[bytes]:
         try:
@@ -81,7 +105,6 @@ async def stream_chat(
                 ],
             }
             yield f"data: {json.dumps(role_chunk)}\n\n".encode("utf-8")
-
 
             async for event in generator:
                 if await request.is_disconnected():

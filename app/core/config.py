@@ -35,5 +35,19 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
+# OpenAI-compatible allowed models (server-side whitelist)
+AVAILABLE_MODELS = {
+    "llama-3.3-70b-versatile": {
+        "provider": "groq",
+        "tier": "balanced",
+        "stream": True,
+    },
+    "llama-3.1-8b-instant": {
+        "provider": "groq",
+        "tier": "fast",
+        "stream": True,
+    },
+}
+
 
 settings = Settings()
