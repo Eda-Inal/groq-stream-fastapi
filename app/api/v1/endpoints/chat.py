@@ -10,19 +10,31 @@ import json
 import time
 import uuid
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 import structlog
 
 from app.schemas.chat import ChatStreamRequest
-from app.services.groq_client import GroqClient, GroqStreamError
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+
+from app.db.session import get_db
+from app.services.chat_service import ChatService
+
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 logger = structlog.get_logger()
 
+chat_service = ChatService()
 
 @router.post("/stream")
-async def stream_chat(payload: ChatStreamRequest, request: Request) -> StreamingResponse:
+async def stream_chat(
+    payload: ChatStreamRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> StreamingResponse:
+
+
     """
     Stream a chat completion response from Groq to the client.
 
@@ -35,23 +47,18 @@ async def stream_chat(payload: ChatStreamRequest, request: Request) -> Streaming
     )
     log.info("chat_stream_request_received")
 
-    client = GroqClient()
-
-    try:
-        generator = client.stream_chat_completion(
-            messages=[m.model_dump() for m in payload.messages],
-            model=payload.model,
-            temperature=payload.temperature,
-            max_tokens=payload.max_tokens,
-            top_p=payload.top_p,
-            frequency_penalty=payload.frequency_penalty,
-            presence_penalty=payload.presence_penalty,
-            stop=payload.stop,
-            seed=payload.seed,
-        )
-    except GroqStreamError as e:
-        log.error("chat_stream_initialization_failed", error=str(e))
-        raise HTTPException(status_code=502, detail=str(e))
+    generator = chat_service.stream_chat(
+        session=db,
+        messages=[m.model_dump() for m in payload.messages],
+        model=payload.model,
+        temperature=payload.temperature,
+        max_tokens=payload.max_tokens,
+        top_p=payload.top_p,
+        frequency_penalty=payload.frequency_penalty,
+        presence_penalty=payload.presence_penalty,
+        stop=payload.stop,
+        seed=payload.seed,
+)
 
 
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
