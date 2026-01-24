@@ -5,3 +5,5 @@ pydantic-settings==2.12.0   # Environment-based configuration management
 structlog==25.5.0           # Structured logging
 sqlalchemy>=2.0
 asyncpg>=0.29
+alembic>=1.13
+
