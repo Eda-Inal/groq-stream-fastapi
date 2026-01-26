@@ -47,14 +47,20 @@ def stream_chat(user_input, messages):
             if delta:
                 assistant_text += delta
 
-                # Stream partial assistant message
-                yield messages + [
-                    {"role": "assistant", "content": assistant_text}
-                ], messages
+                yield (
+                    messages + [{"role": "assistant", "content": assistant_text}],
+                    messages,
+                    ""  # clear input box while streaming
+                )
 
     # Finalize assistant message
     messages.append({"role": "assistant", "content": assistant_text})
-    yield messages, messages
+
+    yield messages, messages, ""
+
+
+def clear_chat():
+    return [], []
 
 
 with gr.Blocks() as demo:
@@ -63,14 +69,22 @@ with gr.Blocks() as demo:
     chatbot = gr.Chatbot()
     state = gr.State([])
 
-    user_input = gr.Textbox(
-        placeholder="Type your message and press Enter",
-        show_label=False,
-    )
+    with gr.Row():
+        user_input = gr.Textbox(
+            placeholder="Type your message and press Enter",
+            show_label=False,
+            scale=4,
+        )
+        clear_btn = gr.Button("Clear chat", scale=1)
 
     user_input.submit(
         stream_chat,
         inputs=[user_input, state],
+        outputs=[chatbot, state, user_input],
+    )
+
+    clear_btn.click(
+        clear_chat,
         outputs=[chatbot, state],
     )
 
