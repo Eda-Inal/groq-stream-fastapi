@@ -6,7 +6,6 @@ allowing configuration via a `.env` file.
 """
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
     """
     Application settings loaded from environment variables.
@@ -19,6 +18,8 @@ class Settings(BaseSettings):
         groq_connect_timeout: Timeout (seconds) for establishing a connection.
         groq_read_timeout: Timeout (seconds) for waiting for data during streaming.
     """
+    JUDGE_MODEL: str = "llama-3.3-70b-versatile"
+    JUDGE_TEMPERATURE: float = 0.0
 
     groq_api_key: str
     groq_base_url: str

@@ -144,3 +144,54 @@ class GroqClient:
         except Exception as e:
             log.error("groq_unexpected_error", error=str(e), exc_info=True)
             raise GroqStreamError("An unexpected error occurred") from e
+            
+    async def complete_chat(
+        self,
+        *,
+        messages: list[dict[str, str]],
+        model: str,
+        temperature: float,
+    ) -> str:
+        """
+        NON-STREAMING chat completion (LLM-as-a-Judge).
+        Returns ONLY assistant message content.
+        """
+
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "temperature": temperature,
+        }
+
+        timeout = httpx.Timeout(settings.groq_read_timeout)
+
+        async with httpx.AsyncClient(
+            base_url=self._base_url,
+            timeout=timeout,
+            verify=settings.groq_verify_ssl,
+        ) as client:
+            response = await client.post(
+                "/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+
+            if response.is_error:
+                raise GroqStreamError(
+                    f"Groq judge error {response.status_code}: {response.text}"
+                )
+
+            data = response.json()
+
+            try:
+                return data["choices"][0]["message"]["content"]
+            except Exception:
+                raise GroqStreamError(
+                    f"Unexpected Groq judge response:\n{data}"
+                )
