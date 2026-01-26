@@ -167,6 +167,33 @@ This project intentionally avoids shortcuts:
 *   **For development and debugging:** `llama-3.3-8b-instant`
 *   **For higher-quality responses:** `llama-3.3-70b-versatile`
 
+## Optional: Gradio Demo UI (Development Only)
+
+For local development and experimentation, this project can be used with a simple **Gradio-based UI** that connects to the streaming chat endpoint.
+
+The Gradio UI is **not part of the backend architecture** and is intentionally kept separate:
+
+* It runs as a local Python process (outside Docker)
+* It does not add any backend state or persistence
+* It sends the full chat history with each request (client-managed context)
+* The FastAPI backend remains fully stateless
+
+This UI exists purely to:
+* Visualize token-by-token streaming
+* Experiment with prompts interactively
+* Validate SSE behavior during development
+
+### How it works (conceptually)
+
+```text
+Gradio UI (local)
+  |
+  |  POST /api/v1/chat/stream
+  |  (full messages array)
+  v
+FastAPI Streaming Endpoint
+```
+
 ## Who this project is for
 
 *   Developers learning **async Python**
