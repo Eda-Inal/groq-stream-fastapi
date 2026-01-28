@@ -36,7 +36,7 @@ class ChatPairwiseEvaluation(Base):
 
     # Judge config + result
     judge_model_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    winner: Mapped[str] = mapped_column(String(10), nullable=False)  # "A" / "B" / "Tie"
+    winner: Mapped[str] = mapped_column(String(20), nullable=False) # "A" / "B" / "Tie"
     notes: Mapped[str] = mapped_column(Text, nullable=False)
 
     created_at: Mapped[str] = mapped_column(

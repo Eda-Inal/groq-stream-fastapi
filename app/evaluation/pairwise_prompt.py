@@ -31,6 +31,7 @@ Decision rules:
 - Choose "A" if Answer A is superior.
 - Choose "B" if Answer B is superior.
 - Choose "Tie" ONLY if answers are functionally equivalent.
+- If you detect internal contradiction or cannot determine a clear winner, output "Tie".
 - Hallucination or serious factual error usually decides the outcome.
 
 Required Output Format (JSON ONLY):
