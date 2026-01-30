@@ -1,27 +1,14 @@
 from collections.abc import AsyncIterator
-
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.db.repositories.chat_log import create_chat_log
 from app.services.groq_client import GroqClient
+from app.services.tools.registry import ToolRegistry
 import asyncio
-from asyncio import Semaphore
-from app.schemas.chat_bulk import BulkChatItem
-from app.core.config import settings
-
 
 class ChatService:
-    """
-    Orchestrates LLM streaming and persistence.
-
-    - Streams chunks to the caller
-    - Accumulates final response
-    - Persists OpenAI-compatible input + output
-      even if the stream is interrupted
-    """
-
     def __init__(self) -> None:
         self._client = GroqClient()
+        self._tools = ToolRegistry()
 
     async def stream_chat(
         self,
@@ -38,10 +25,14 @@ class ChatService:
         seed: int | None = None,
     ) -> AsyncIterator[dict]:
         full_response: list[str] = []
+        
+        # 1. Apply math tools / pre-processing
+        processed_messages = await self._tools.maybe_apply(messages)
 
         try:
+            # 2. Stream from Groq (Passing all parameters)
             async for event in self._client.stream_chat_completion(
-                messages=messages,
+                messages=processed_messages,
                 model=model,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -53,16 +44,14 @@ class ChatService:
             ):
                 if event.get("type") == "chunk":
                     full_response.append(event["text"])
-
                 yield event
 
-        finally:
-            # Persist ONCE, even if the stream was interrupted
+            # 3. DB write happens here after stream finishes successfully
             if full_response:
                 await create_chat_log(
                     session=session,
                     prompt=self._extract_user_prompt(messages),
-                    messages=messages,
+                    messages=processed_messages,
                     response="".join(full_response),
                     model_name=model or "default",
                     temperature=temperature,
@@ -72,33 +61,25 @@ class ChatService:
                     presence_penalty=presence_penalty,
                     seed=seed,
                 )
+                await session.commit()
+
+        except Exception as e:
+            await session.rollback()
+            
+            raise e
 
     @staticmethod
     def _extract_user_prompt(messages: list[dict[str, str]]) -> str:
-        """
-        Extract the first user message as a short prompt summary.
-
-        This is for quick inspection / filtering.
-        The full source of truth is `messages`.
-        """
         for message in messages:
             if message.get("role") == "user":
                 return message.get("content", "")
         return ""
 
-    async def bulk_complete(
-        self,
-        *,
-        session,
-        items,
-        concurrency: int = 5,
-    ):
-        import asyncio
+    async def bulk_complete(self, *, session, items, concurrency: int = 5):
         from asyncio import Semaphore
         from app.core.config import settings
 
         semaphore = Semaphore(concurrency)
-        results = []
 
         async def run_one(index, item):
             async with semaphore:
@@ -108,8 +89,6 @@ class ChatService:
                         model=item.model or settings.groq_default_model,
                         temperature=item.temperature or 0.7,
                     )
-
-                    # 🔴 DB write YOK burada
                     return {
                         "index": index,
                         "status": "ok",
@@ -118,20 +97,11 @@ class ChatService:
                         "model": item.model or settings.groq_default_model,
                         "temperature": item.temperature,
                     }
-
                 except Exception as e:
-                    return {
-                        "index": index,
-                        "status": "error",
-                        "error": str(e),
-                    }
+                    return {"index": index, "status": "error", "error": str(e)}
 
-        # 1️⃣ LLM çağrıları (paralel)
-        llm_results = await asyncio.gather(
-            *[run_one(i, item) for i, item in enumerate(items)]
-        )
+        llm_results = await asyncio.gather(*[run_one(i, item) for i, item in enumerate(items)])
 
-        # 2️⃣ DB write'lar (TEK TEK)
         for r in llm_results:
             if r["status"] == "ok":
                 await create_chat_log(
@@ -139,8 +109,9 @@ class ChatService:
                     prompt=self._extract_user_prompt(r["messages"]),
                     messages=r["messages"],
                     response=r["response"],
-                    model_name=r["model"],   # 🔥 NULL DEĞİL
+                    model_name=r["model"],
                     temperature=r["temperature"],
                 )
-
+        
+        await session.commit()
         return llm_results
