@@ -26,11 +26,11 @@ class ChatService:
     ) -> AsyncIterator[dict]:
         full_response: list[str] = []
         
-        # 1. Apply math tools / pre-processing
+        # 1. Routing & Tool Execution (Internal LLM Decision)
         processed_messages = await self._tools.maybe_apply(messages)
 
         try:
-            # 2. Stream from Groq (Passing all parameters)
+            # 2. Stream from Groq (Final Response)
             async for event in self._client.stream_chat_completion(
                 messages=processed_messages,
                 model=model,
@@ -65,7 +65,6 @@ class ChatService:
 
         except Exception as e:
             await session.rollback()
-            
             raise e
 
     @staticmethod
@@ -84,8 +83,11 @@ class ChatService:
         async def run_one(index, item):
             async with semaphore:
                 try:
+                    # Note: We can also apply tools here if desired
+                    processed = await self._tools.maybe_apply([m.model_dump() for m in item.messages])
+                    
                     response = await self._client.complete_chat(
-                        messages=item.messages,
+                        messages=processed,
                         model=item.model or settings.groq_default_model,
                         temperature=item.temperature or 0.7,
                     )
@@ -93,7 +95,7 @@ class ChatService:
                         "index": index,
                         "status": "ok",
                         "response": response,
-                        "messages": item.messages,
+                        "messages": processed,
                         "model": item.model or settings.groq_default_model,
                         "temperature": item.temperature,
                     }

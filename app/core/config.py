@@ -5,7 +5,35 @@ Environment-based settings using pydantic.
 """
 
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import Dict, Any
+
+
+# 1. Move AVAILABLE_MODELS OUTSIDE the class. 
+# 2. This makes it a constant that can be imported directly.
+AVAILABLE_MODELS: Dict[str, Any] = {
+    # ----------------------
+    # Judge (not selectable by users)
+    # ----------------------
+    "llama-3.3-70b-versatile": {
+        "provider": "groq",
+        "tier": "judge",
+        "stream": False,
+    },
+
+    # ----------------------
+    # Candidate models
+    # ----------------------
+    "llama-3.1-8b-instant": {
+        "provider": "groq",
+        "tier": "fast",
+        "stream": True,
+    },
+    "meta-llama/llama-4-maverick-17b-128e-instruct": {
+        "provider": "groq",
+        "tier": "balanced",
+        "stream": True,
+    },
+}
 
 
 class Settings(BaseSettings):
@@ -24,24 +52,14 @@ class Settings(BaseSettings):
     groq_connect_timeout: float = 10.0
     groq_read_timeout: float = 30.0
 
+    tavily_api_key: str | None = None
+
     # ------------------------------------------------------------------
     # LLM-as-a-Judge (PAIRWISE)
     # ------------------------------------------------------------------
-
-    # Fixed judge model (NEVER a candidate)
     JUDGE_MODEL: str = "llama-3.3-70b-versatile"
-
-    # Deterministic judging
     JUDGE_TEMPERATURE: float = 0.0
-
-    # How many times to run the judge per pair (majority vote ready)
-    JUDGE_RUNS: int = 1  # set to 3 later if needed
-
-    # ------------------------------------------------------------------
-    # Candidate generation (models being compared)
-    # ------------------------------------------------------------------
-
-    # Temperature for candidate answers (slightly > 0 is fine)
+    JUDGE_RUNS: int = 1 
     EVAL_CANDIDATE_TEMPERATURE: float = 0.2
 
     # ------------------------------------------------------------------
@@ -52,36 +70,5 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
-
-# ----------------------------------------------------------------------
-# OpenAI-compatible model registry (server-side whitelist)
-# ----------------------------------------------------------------------
-
-AVAILABLE_MODELS = {
-    # ----------------------
-    # Judge (not selectable by users)
-    # ----------------------
-    "llama-3.3-70b-versatile": {
-        "provider": "groq",
-        "tier": "judge",
-        "stream": False,
-    },
-
-    # ----------------------
-    # Candidate models
-    # ----------------------
-    "llama-3.1-8b-instant": {
-        "provider": "groq",
-        "tier": "fast",
-        "stream": True,
-    },
-        "meta-llama/llama-4-maverick-17b-128e-instruct": {
-        "provider": "groq",
-        "tier": "balanced",
-        "stream": True,
-    },
-
-
-}
 
 settings = Settings()
