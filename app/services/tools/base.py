@@ -5,17 +5,22 @@ from typing import Any
 class Tool(ABC):
     """
     Abstract base class for all tools.
-    The description is crucial as it's used by the Router LLM 
-    to decide when to invoke this tool.
     """
 
     name: str
     description: str
+    parameters: dict
+
+    def openai_schema(self) -> dict:
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.parameters,
+            },
+        }
 
     @abstractmethod
-    async def run(self, messages: list[dict[str, str]]) -> str:
-        """
-        Execute the tool and return a textual result
-        to be injected back into the conversation.
-        """
+    async def run(self, args: dict[str, Any]) -> str:
         raise NotImplementedError

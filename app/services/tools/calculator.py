@@ -1,7 +1,9 @@
 import ast
 import operator as op
 import re
+
 from app.services.tools.base import Tool
+
 
 _ALLOWED_OPERATORS = {
     ast.Add: op.add,
@@ -12,49 +14,72 @@ _ALLOWED_OPERATORS = {
     ast.USub: op.neg,
 }
 
+
 class CalculatorTool(Tool):
     name = "calculator"
-    description = (
-        "Use ONLY for complex math, multi-step equations, or large numbers. "
-        "Do NOT use for simple counting, basic word problems, or conceptual questions."
-    )
+    description = "Perform safe mathematical calculations."
+    parameters = {
+        "type": "object",
+        "properties": {
+            "expression": {
+                "type": "string",
+                "description": "A valid mathematical expression to evaluate"
+            }
+        },
+        "required": ["expression"],
+    }
 
-    def safe_eval(self, expr: str) -> float:
-        def _eval(node):
-            if isinstance(node, ast.Constant):
-                return node.value
-            if isinstance(node, ast.BinOp):
-                return _ALLOWED_OPERATORS[type(node.op)](_eval(node.left), _eval(node.right))
-            if isinstance(node, ast.UnaryOp):
-                return _ALLOWED_OPERATORS[type(node.op)](_eval(node.operand))
-            raise ValueError("Unsupported expression")
+    def _eval(self, node):
+        if isinstance(node, ast.Constant):
+            return node.value
+        if isinstance(node, ast.BinOp):
+            if type(node.op) not in _ALLOWED_OPERATORS:
+                raise ValueError("Operator not allowed")
+            return _ALLOWED_OPERATORS[type(node.op)](
+                self._eval(node.left),
+                self._eval(node.right),
+            )
+        if isinstance(node, ast.UnaryOp):
+            if type(node.op) not in _ALLOWED_OPERATORS:
+                raise ValueError("Unary operator not allowed")
+            return _ALLOWED_OPERATORS[type(node.op)](
+                self._eval(node.operand)
+            )
+        raise ValueError("Unsupported expression")
 
-        # 1. Handle the power symbol ^ -> **
-        expr = expr.replace('^', '**')
-        # 2. Clean the expression: keep only math-safe characters
-        clean_expr = re.sub(r'[^0-9+\-*/.**() ]', '', expr)
-        
+    async def run(self, args: dict) -> str:
+        """
+        Executes the calculator tool.
+
+        IMPORTANT RULE:
+        - This method MUST NEVER raise an exception.
+        - On any error, it must return a string.
+        """
+
         try:
+            expr = args.get("expression", "")
+            if not isinstance(expr, str):
+                return "Calculator not used: invalid expression type."
+
+            # Normalize power operator
+            expr = expr.replace("^", "**").strip()
+
+            # Basic sanity check: must contain at least one digit
+            if not re.search(r"\d", expr):
+                return "Calculator not used: no numeric expression detected."
+
+            # Remove unsafe characters (extra safety)
+            clean_expr = re.sub(r"[^0-9+\-*/(). **]", "", expr)
+
+            if not clean_expr:
+                return "Calculator not used: expression is empty after sanitization."
+
             tree = ast.parse(clean_expr, mode="eval")
-            return _eval(tree.body)
-        except Exception as e:
-            raise ValueError(f"Invalid math syntax: {str(e)}")
+            result = self._eval(tree.body)
 
-    async def run(self, messages: list[dict[str, str]]) -> str:
-        content = messages[-1]["content"]
-        
-        # Extract potential math expression
-        math_matches = re.findall(r'[0-9+\-*/.^() \*\*]+', content)
-        if not math_matches:
-            return "Error: No mathematical expression detected in the prompt."
+            return f"{clean_expr} = {result}"
 
-        expr = max(math_matches, key=len).strip()
-        
-        if expr.isdigit():
-            return f"Note: '{expr}' is just a number, no calculation needed."
-
-        try:
-            result = self.safe_eval(expr)
-            return f"Calculator result: {expr} = {result}"
-        except Exception as e:
-            return f"Calculator error: {str(e)}"
+        except Exception:
+      
+            # Tool errors must NEVER break streaming
+            return "Calculator could not evaluate the given expression."

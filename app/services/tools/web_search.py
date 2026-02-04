@@ -1,69 +1,55 @@
 import httpx
-import structlog
 from app.services.tools.base import Tool
 from app.core.config import settings
 
-logger = structlog.get_logger()
 
 class WebSearchTool(Tool):
     name = "web_search"
-    description = (
-        "Useful for answering questions about current events, news, or specific facts "
-        "that require up-to-date information from the internet."
-    )
+    description = "Search the web for up-to-date information."
+    parameters = {
+        "type": "object",
+        "properties": {
+            "query": {"type": "string"}
+        },
+        "required": ["query"],
+    }
 
-    def __init__(self) -> None:
-        self.api_key = settings.tavily_api_key
-        self.base_url = "https://api.tavily.com/search"
-
-    async def run(self, messages: list[dict[str, str]]) -> str:
+    async def run(self, args: dict) -> str:
         """
-        Performs a real web search using the Tavily API.
+        IMPORTANT RULE:
+        - This method MUST NEVER raise an exception.
+        - On any error, it must return a string. (Calculator standard)
         """
-        query = messages[-1]["content"]
-        
-        if not self.api_key:
-            logger.error("web_search_failed", reason="TAVILY_API_KEY_MISSING")
-            return "Error: Web search is not configured (Missing API Key)."
-
-        logger.info("web_search_executing", query=query)
-
-        payload = {
-            "api_key": self.api_key,
-            "query": query,
-            "search_depth": "basic",
-            "max_results": 3,
-            "include_answer": False,
-            "include_raw_content": False
-        }
-
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.post(self.base_url, json=payload)
-                
-                if response.status_code != 200:
-                    logger.error("tavily_api_error", status=response.status_code, body=response.text)
-                    return f"Web search failed with status {response.status_code}."
+            query = args.get("query")
+            if not isinstance(query, str) or not query.strip():
+                return "Web search not used: missing or invalid query."
 
-                data = response.json()
-                results = data.get("results", [])
+            if not getattr(settings, "tavily_api_key", None):
+                return "Web search not available: missing Tavily API key."
 
-                if not results:
-                    return "Web search returned no results for this query."
+            payload = {
+                "api_key": settings.tavily_api_key,
+                "query": query,
+                "max_results": 3,
+            }
 
-                # Format the results into a clean string for the LLM
-                formatted_results = []
-                for res in results:
-                    formatted_results.append(
-                        f"Source: {res.get('url')}\nContent: {res.get('content')}"
-                    )
+            async with httpx.AsyncClient(timeout=10) as client:
+                r = await client.post("https://api.tavily.com/search", json=payload)
+                if r.status_code >= 400:
+                    return f"Web search failed: HTTP {r.status_code}"
+                data = r.json()
 
-                final_context = "\n\n---\n\n".join(formatted_results)
-                return f"Web Search Results for '{query}':\n\n{final_context}"
+            results = data.get("results", [])
+            if not isinstance(results, list) or not results:
+                return "Web search returned no results."
 
-        except httpx.HTTPError as e:
-            logger.error("web_search_network_error", error=str(e))
-            return f"Web search failed due to a network error: {str(e)}"
-        except Exception as e:
-            logger.error("web_search_unexpected_error", error=str(e))
-            return f"An unexpected error occurred during web search: {str(e)}"
+            return "\n".join(
+                f"{i.get('url', '')}: {i.get('content', '')}"
+                for i in results
+                if isinstance(i, dict)
+            ).strip() or "Web search returned results but could not format them."
+
+        except Exception:
+            # Fail-soft: tool errors must NEVER break streaming
+            return "Web search failed due to an unexpected error."
