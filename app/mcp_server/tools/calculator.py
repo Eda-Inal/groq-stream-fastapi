@@ -2,7 +2,7 @@ import ast
 import operator as op
 import re
 
-from app.services.tools.base import Tool
+from app.mcp_server.tools.base import Tool
 
 
 _ALLOWED_OPERATORS = {
@@ -61,14 +61,11 @@ class CalculatorTool(Tool):
             if not isinstance(expr, str):
                 return "Calculator not used: invalid expression type."
 
-            # Normalize power operator
             expr = expr.replace("^", "**").strip()
 
-            # Basic sanity check: must contain at least one digit
             if not re.search(r"\d", expr):
                 return "Calculator not used: no numeric expression detected."
 
-            # Remove unsafe characters (extra safety)
             clean_expr = re.sub(r"[^0-9+\-*/(). **]", "", expr)
 
             if not clean_expr:
@@ -80,6 +77,4 @@ class CalculatorTool(Tool):
             return f"{clean_expr} = {result}"
 
         except Exception:
-      
-            # Tool errors must NEVER break streaming
             return "Calculator could not evaluate the given expression."

@@ -55,6 +55,13 @@ class Settings(BaseSettings):
     tavily_api_key: str | None = None
 
     # ------------------------------------------------------------------
+    # MCP
+    # ------------------------------------------------------------------
+    mcp_enabled: bool = False
+    mcp_server_url: str | None = None
+    mcp_timeout: float = 10.0
+
+    # ------------------------------------------------------------------
     # LLM-as-a-Judge (PAIRWISE)
     # ------------------------------------------------------------------
     JUDGE_MODEL: str = "llama-3.3-70b-versatile"

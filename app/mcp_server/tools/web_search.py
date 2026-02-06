@@ -1,5 +1,5 @@
 import httpx
-from app.services.tools.base import Tool
+from app.mcp_server.tools.base import Tool
 from app.core.config import settings
 
 
@@ -18,7 +18,7 @@ class WebSearchTool(Tool):
         """
         IMPORTANT RULE:
         - This method MUST NEVER raise an exception.
-        - On any error, it must return a string. (Calculator standard)
+        - On any error, it must return a string.
         """
         try:
             query = args.get("query")
@@ -51,5 +51,4 @@ class WebSearchTool(Tool):
             ).strip() or "Web search returned results but could not format them."
 
         except Exception:
-            # Fail-soft: tool errors must NEVER break streaming
             return "Web search failed due to an unexpected error."

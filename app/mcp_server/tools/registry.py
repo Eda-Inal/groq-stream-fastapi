@@ -1,5 +1,5 @@
-from app.services.tools.calculator import CalculatorTool
-from app.services.tools.web_search import WebSearchTool
+from app.mcp_server.tools.calculator import CalculatorTool
+from app.mcp_server.tools.web_search import WebSearchTool
 
 
 class ToolRegistry:
@@ -13,5 +13,4 @@ class ToolRegistry:
         return [t.openai_schema() for t in self.tools.values()]
 
     def get(self, name: str):
-        # Fail-soft: unknown tool name must not crash
         return self.tools.get(name)

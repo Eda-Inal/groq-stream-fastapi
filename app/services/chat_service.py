@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log
 from app.services.groq_client import GroqClient
-from app.services.tools.registry import ToolRegistry
+from app.services.mcp.remote_client import RemoteMCPClient
+from app.core.config import settings
 
 logger = structlog.get_logger()
 
@@ -24,7 +25,16 @@ FINALIZATION_SYSTEM_MESSAGE = {
 class ChatService:
     def __init__(self) -> None:
         self.client = GroqClient()
-        self.tools = ToolRegistry()
+        self.mcp = RemoteMCPClient()
+
+        if not settings.mcp_server_url:
+            logger.error("mcp_server_url_missing")
+
+        logger.info(
+            "mcp_client_selected",
+            mode="remote",
+            url=settings.mcp_server_url,
+        )
 
     async def stream_chat(
         self,
@@ -44,7 +54,7 @@ class ChatService:
         log = logger.bind(model=model)
 
         effective_messages = list(messages)
-        tools_schema = self.tools.openai_tools()
+        tools_schema = await self.mcp.list_tools()
 
         full_response: list[str] = []
 
@@ -170,16 +180,7 @@ class ChatService:
                 except json.JSONDecodeError:
                     args = {}
 
-                tool = self.tools.get(name)
-                if tool is None:
-                    result = f"Tool '{name}' is not available."
-                else:
-                    try:
-                        result = await tool.run(args)
-                        if not isinstance(result, str):
-                            result = str(result)
-                    except Exception:
-                        result = f"Tool '{name}' failed."
+                result = await self.mcp.call_tool(name, args)
 
                 effective_messages.append(
                     {
