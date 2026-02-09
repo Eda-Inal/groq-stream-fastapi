@@ -45,7 +45,7 @@ async def create_chat_log(
     )
 
     session.add(chat_log)
-    await session.commit()
+    await session.flush()
     await session.refresh(chat_log)
 
     return chat_log
