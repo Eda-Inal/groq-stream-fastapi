@@ -30,6 +30,10 @@ class ChatLog(Base):
     presence_penalty: Mapped[float | None] = mapped_column(Float, nullable=True)
     seed: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
+    # Conversation metadata
+    conversation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    turn_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
     # Timestamps
     created_at: Mapped[str] = mapped_column(
         DateTime(timezone=True),

@@ -5,8 +5,8 @@ These schemas define the OpenAI-compatible chat message format
 used by the streaming chat endpoint.
 """
 
-from typing import Literal,List, Optional, Union
-from pydantic import BaseModel, Field 
+from typing import Literal, List, Optional, Union
+from pydantic import BaseModel, Field
 
 
 class ChatMessage(BaseModel):
@@ -23,11 +23,11 @@ class ChatMessage(BaseModel):
     content: str
 
 
-
 class ChatStreamRequest(BaseModel):
     messages: List[ChatMessage]
+    conversation_id: Optional[str] = None
     model: Optional[str] = None
-    temperature: Optional[float] = Field(default=0.7, ge=0.0, le=2.0)
+    temperature: Optional[float] = Field(default=0.3, ge=0.0, le=2.0)
     max_tokens: Optional[int] = Field(default=None, ge=1)
     top_p: Optional[float] = Field(default=1.0, ge=0.0, le=1.0)
     frequency_penalty: Optional[float] = Field(default=0.0, ge=-2.0, le=2.0)

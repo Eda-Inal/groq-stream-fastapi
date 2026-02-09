@@ -4,7 +4,7 @@ import json
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories.chat_log import create_chat_log
+from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
 from app.services.groq_client import GroqClient
 from app.services.mcp.remote_client import RemoteMCPClient
 from app.core.config import settings
@@ -49,11 +49,45 @@ class ChatService:
         presence_penalty: float | None = None,
         stop: str | list[str] | None = None,
         seed: int | None = None,
+        conversation_id: str | None = None,
     ) -> AsyncIterator[dict]:
 
         log = logger.bind(model=model)
 
         effective_messages = list(messages)
+
+        history_logs = []
+        turn_index = None
+
+        if conversation_id:
+            history_logs = await list_chat_logs_by_conversation(
+                session=session,
+                conversation_id=conversation_id,
+                limit=20,
+            )
+
+            history_messages: list[dict] = []
+            for log_item in history_logs:
+                msgs = log_item.messages
+                if not isinstance(msgs, list):
+                    continue
+
+                for m in msgs:
+                    if not isinstance(m, dict):
+                        continue
+                    role = m.get("role")
+                    content = m.get("content")
+                    if (
+                        role in ("user", "assistant")
+                        and isinstance(content, str)
+                        and "role" in m
+                        and "content" in m
+                    ):
+                        history_messages.append(m)
+
+            if history_messages:
+                effective_messages = history_messages + effective_messages
+
         tools_schema = await self.mcp.list_tools()
 
         full_response: list[str] = []
@@ -225,6 +259,15 @@ class ChatService:
                     yield {"type": "done", "finish_reason": "stop"}
                 break
 
+        if conversation_id:
+            max_turn = 0
+            for log_item in history_logs:
+                if log_item.turn_index and log_item.turn_index > max_turn:
+                    max_turn = log_item.turn_index
+            turn_index = max_turn + 1 if max_turn else 1
+        else:
+            turn_index = None
+
         await create_chat_log(
             session=session,
             prompt=messages[0]["content"] if messages else "",
@@ -237,5 +280,7 @@ class ChatService:
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
             seed=seed,
+            conversation_id=conversation_id,
+            turn_index=turn_index,
         )
         await session.commit()

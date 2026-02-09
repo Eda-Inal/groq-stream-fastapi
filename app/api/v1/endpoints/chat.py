@@ -72,6 +72,9 @@ async def stream_chat(
             detail=f"Unsupported model: {model}",
         )
 
+    # Resolve conversation_id (use client-provided or generate server-side)
+    conversation_id = payload.conversation_id or uuid.uuid4().hex
+
     generator = chat_service.stream_chat(
         session=db,
         messages=[m.model_dump() for m in payload.messages],
@@ -83,6 +86,7 @@ async def stream_chat(
         presence_penalty=payload.presence_penalty,
         stop=payload.stop,
         seed=payload.seed,
+        conversation_id=conversation_id,
     )
 
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
@@ -164,6 +168,7 @@ async def stream_chat(
         stream_generator(),
         media_type="text/event-stream",
     )
+
 
 @router.post("/bulk")
 async def bulk_chat(
