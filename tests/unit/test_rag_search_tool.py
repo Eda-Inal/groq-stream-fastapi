@@ -66,3 +66,30 @@ def test_rag_search_invalid_query(monkeypatch) -> None:
     tool = RagSearchTool()
     out = asyncio.run(tool.run({"query": ""}))
     assert out == "RAG search not used: missing or invalid query."
+
+
+def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
+    tool = RagSearchTool()
+
+    async def _fake_embed_text(text: str, model_name=None):
+        return EmbeddingResult(vector=[0.1] * 768, model_name="nomic-embed-text")
+
+    chunk = SimpleNamespace(
+        page_number=None,
+        section_heading=None,
+        text="Weakly related snippet.",
+    )
+    doc = SimpleNamespace(
+        filename="notes.txt",
+        created_at=datetime(2026, 4, 13, 10, 0, 0),
+    )
+
+    async def _fake_search(*args, **kwargs):
+        return [(chunk, doc, 0.45)]
+
+    monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
+    monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
+
+    out = asyncio.run(tool.run({"query": "policy", "similarity_threshold": 0.7}))
+    assert out == "No relevant information found in knowledge base."
