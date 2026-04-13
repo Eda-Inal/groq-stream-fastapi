@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.document import Document
@@ -103,7 +103,6 @@ async def search_document_chunks(
     *,
     query_vector: list[float],
     top_k: int,
-    similarity_threshold: float,
     metadata_filter: dict | None = None,
 ) -> list[tuple[DocumentChunk, Document, float]]:
     """
@@ -138,6 +137,15 @@ async def search_document_chunks(
     rows = []
     for chunk, doc, sim in result.all():
         similarity = float(sim) if sim is not None else 0.0
-        if similarity >= similarity_threshold:
-            rows.append((chunk, doc, similarity))
+        rows.append((chunk, doc, similarity))
     return rows
+
+
+async def count_documents(session: AsyncSession) -> int:
+    result = await session.execute(select(func.count()).select_from(Document))
+    return int(result.scalar_one() or 0)
+
+
+async def count_document_chunks(session: AsyncSession) -> int:
+    result = await session.execute(select(func.count()).select_from(DocumentChunk))
+    return int(result.scalar_one() or 0)

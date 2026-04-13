@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     database_url: str
 
     # ------------------------------------------------------------------
-    # Embeddings (TODO-2)
+    # Embeddings
     # ------------------------------------------------------------------
     embedding_model_name: str = "nomic-embed-text"
     embedding_dim: int = 768
@@ -88,14 +88,18 @@ class Settings(BaseSettings):
     embedding_cache_max_entries: int = 1000
 
     # ------------------------------------------------------------------
-    # RAG retrieval defaults (TODO-4)
+    # RAG retrieval defaults
     # ------------------------------------------------------------------
     rag_default_top_k: int = 5
     rag_similarity_threshold: float = 0.7
     rag_max_top_k: int = 20
+    rag_system_prompt_enabled: bool = True
+    max_context_tokens: int = 6000
+    response_reserve_tokens: int = 1000
+    rag_tool_max_context_tokens: int = 2500
 
     # ------------------------------------------------------------------
-    # RAG / document chunking (TODO-1.5; used by chunk_document when args omitted)
+    # RAG / document chunking (used by chunk_document when args omitted)
     # ------------------------------------------------------------------
     chunk_size_tokens: int = 500
     chunk_overlap_tokens: int = 100

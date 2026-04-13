@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import time
 from typing import Any
 
 import structlog
@@ -10,6 +11,7 @@ from app.db.repositories.document import search_document_chunks
 from app.db.session import AsyncSessionLocal
 from app.mcp_server.tools.base import Tool
 from app.services.embeddings import EmbeddingService
+from app.services.rag_metrics import rag_metrics
 
 logger = structlog.get_logger()
 
@@ -99,28 +101,47 @@ class RagSearchTool(Tool):
             if not isinstance(metadata_filter, dict):
                 metadata_filter = None
 
+            embed_started = time.perf_counter()
             emb = await self.embeddings.embed_text(query.strip())
+            embedding_latency_ms = int((time.perf_counter() - embed_started) * 1000)
             if emb is None:
+                rag_metrics.record_embedding_failure()
                 return "Retrieval unavailable: embedding error."
 
+            query_started = time.perf_counter()
             async with AsyncSessionLocal() as session:
                 rows = await search_document_chunks(
                     session,
                     query_vector=emb.vector,
                     top_k=top_k,
-                    similarity_threshold=threshold,
                     metadata_filter=metadata_filter,
                 )
+            pgvector_query_ms = int((time.perf_counter() - query_started) * 1000)
 
             if not rows:
+                rag_metrics.record_retrieval(
+                    top_similarity=0.0,
+                    embedding_latency_ms=embedding_latency_ms,
+                    pgvector_query_ms=pgvector_query_ms,
+                    returned_chunks=0,
+                )
                 return "No relevant information found in knowledge base."
+
+            filtered_rows = [(chunk, doc, sim) for chunk, doc, sim in rows if sim >= threshold]
+            below_threshold_count = len(rows) - len(filtered_rows)
 
             top_similarity = max(sim for _, _, sim in rows)
             if top_similarity < threshold:
+                rag_metrics.record_retrieval(
+                    top_similarity=top_similarity,
+                    embedding_latency_ms=embedding_latency_ms,
+                    pgvector_query_ms=pgvector_query_ms,
+                    returned_chunks=0,
+                )
                 return "No relevant information found in knowledge base."
 
             blocks: list[str] = []
-            for chunk, doc, similarity in rows:
+            for chunk, doc, similarity in filtered_rows:
                 source_line = self._format_source(
                     created_at=doc.created_at,
                     filename=doc.filename,
@@ -143,9 +164,18 @@ class RagSearchTool(Tool):
                 query=query[:200],
                 top_k=top_k,
                 threshold=threshold,
-                chunks_returned=len(rows),
+                chunks_returned=len(filtered_rows),
                 top_similarity=top_similarity,
+                below_threshold_count=below_threshold_count,
+                embedding_latency_ms=embedding_latency_ms,
+                pgvector_query_ms=pgvector_query_ms,
                 has_metadata_filter=bool(metadata_filter),
+            )
+            rag_metrics.record_retrieval(
+                top_similarity=top_similarity,
+                embedding_latency_ms=embedding_latency_ms,
+                pgvector_query_ms=pgvector_query_ms,
+                returned_chunks=len(filtered_rows),
             )
 
             return "\n---\n".join(blocks)

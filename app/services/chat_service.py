@@ -8,16 +8,35 @@ from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conv
 from app.services.groq_client import GroqClient
 from app.services.mcp.remote_client import RemoteMCPClient
 from app.core.config import settings
+from app.utils.token_counter import (
+    estimate_messages_tokens,
+    truncate_rag_chunks,
+    truncate_text_to_token_budget,
+    count_tokens,
+)
 
 logger = structlog.get_logger()
+
+
+RAG_TOOL_CALL_SYSTEM_MESSAGE = {
+    "role": "system",
+    "content": (
+        "You have access to a private knowledge base via the rag_search tool. "
+        "Before answering questions about uploaded documents, internal policies, company/project "
+        "facts, or specific factual claims that may depend on private context, ALWAYS call rag_search first. "
+        "You may skip rag_search only for general world knowledge, pure math, coding help, or casual chat. "
+        "If rag_search returns no relevant results, explicitly say no relevant information was found and do not hallucinate."
+    ),
+}
 
 
 FINALIZATION_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "You have access to the results of tools you previously chose to call. "
-        "Review those results carefully and incorporate your own reasoning, judgment, "
-        "and interpretation when forming your final response."
+        "You have access to tool results (including rag_search retrieval context). "
+        "When retrieved context is present, ground your answer in that context and cite sources "
+        "(filename and page/section when available). "
+        "If retrieval reported no relevant information, state that clearly and do not invent facts."
     ),
 }
 
@@ -35,6 +54,62 @@ class ChatService:
             mode="remote",
             url=settings.mcp_server_url,
         )
+
+    def _apply_context_budget(
+        self,
+        messages: list[dict],
+        *,
+        max_input_tokens: int,
+        rag_tool_budget: int,
+    ) -> list[dict]:
+        """
+        Trim message history/tool payloads to fit model input budget.
+        """
+        trimmed = [dict(m) if isinstance(m, dict) else m for m in messages]
+
+        # 1) Trim rag_search tool payload first, keeping top chunks.
+        for m in trimmed:
+            if not isinstance(m, dict):
+                continue
+            if m.get("role") != "tool" or m.get("name") != "rag_search":
+                continue
+            content = m.get("content")
+            if not isinstance(content, str):
+                continue
+            blocks = [b.strip() for b in content.split("\n---\n") if b.strip()]
+            if not blocks:
+                continue
+            kept = truncate_rag_chunks(blocks, rag_tool_budget)
+            m["content"] = "\n---\n".join(kept)
+
+        # 2) Remove oldest non-system messages until under budget.
+        def _over_budget() -> bool:
+            return estimate_messages_tokens(trimmed) > max_input_tokens
+
+        idx = 0
+        while _over_budget() and idx < len(trimmed):
+            m = trimmed[idx]
+            if isinstance(m, dict) and m.get("role") not in ("system",):
+                trimmed.pop(idx)
+                continue
+            idx += 1
+
+        # 3) Last resort: trim longest tool content.
+        if _over_budget():
+            tool_indices = []
+            for i, m in enumerate(trimmed):
+                if isinstance(m, dict) and m.get("role") == "tool" and isinstance(m.get("content"), str):
+                    tool_indices.append((i, count_tokens(m["content"])))
+            tool_indices.sort(key=lambda x: x[1], reverse=True)
+            for i, _ in tool_indices:
+                excess = estimate_messages_tokens(trimmed) - max_input_tokens
+                if excess <= 0:
+                    break
+                current = trimmed[i]["content"]
+                keep = max(0, count_tokens(current) - excess - 16)
+                trimmed[i]["content"] = truncate_text_to_token_budget(current, keep)
+
+        return trimmed
 
     async def stream_chat(
         self,
@@ -89,6 +164,23 @@ class ChatService:
                 effective_messages = history_messages + effective_messages
 
         tools_schema = await self.mcp.list_tools()
+        rag_available = any(
+            isinstance(t, dict)
+            and isinstance(t.get("function"), dict)
+            and t["function"].get("name") == "rag_search"
+            for t in tools_schema
+        )
+
+        if settings.rag_system_prompt_enabled and rag_available:
+            already_guided = any(
+                isinstance(m, dict)
+                and m.get("role") == "system"
+                and isinstance(m.get("content"), str)
+                and "private knowledge base via the rag_search tool" in m["content"]
+                for m in effective_messages
+            )
+            if not already_guided:
+                effective_messages = [RAG_TOOL_CALL_SYSTEM_MESSAGE] + effective_messages
 
         full_response: list[str] = []
 
@@ -219,6 +311,7 @@ class ChatService:
                 effective_messages.append(
                     {
                         "role": "tool",
+                        "name": name,
                         "tool_call_id": tool_call_id,
                         "content": result,
                     }
@@ -228,7 +321,16 @@ class ChatService:
                 total_tool_calls_executed += 1
 
             if any_tool_executed:
-                effective_messages.append(FINALIZATION_SYSTEM_MESSAGE)
+                if settings.rag_system_prompt_enabled:
+                    effective_messages.append(FINALIZATION_SYSTEM_MESSAGE)
+
+                reserve = max(0, max_tokens or settings.response_reserve_tokens)
+                max_input_tokens = max(500, settings.max_context_tokens - reserve)
+                effective_messages = self._apply_context_budget(
+                    effective_messages,
+                    max_input_tokens=max_input_tokens,
+                    rag_tool_budget=settings.rag_tool_max_context_tokens,
+                )
 
                 saw_final = False
                 async for event in self.client.stream_chat_completion(
