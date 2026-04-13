@@ -25,23 +25,14 @@ class RagSearchTool(Tool):
     parameters = {
         "type": "object",
         "properties": {
-            "query": {"type": "string"},
+            "query": {
+                "type": "string",
+                "description": "Natural-language search query to retrieve relevant document passages.",
+            },
             "top_k": {
                 "type": "integer",
-                "description": "Number of chunks to retrieve (default 5).",
+                "description": "Number of passages to retrieve (default 5, max 20).",
                 "default": 5,
-            },
-            "similarity_threshold": {
-                "type": "number",
-                "description": "Minimum similarity score to include (default 0.7).",
-                "default": 0.7,
-            },
-            "metadata_filter": {
-                "type": "object",
-                "description": (
-                    "Optional filter object. Supported keys: user_id (string), "
-                    "document_type (string), tags (array of strings)."
-                ),
             },
         },
         "required": ["query"],

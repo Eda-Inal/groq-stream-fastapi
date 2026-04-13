@@ -33,10 +33,11 @@ RAG_TOOL_CALL_SYSTEM_MESSAGE = {
 FINALIZATION_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "You have access to tool results (including rag_search retrieval context). "
-        "When retrieved context is present, ground your answer in that context and cite sources "
-        "(filename and page/section when available). "
-        "If retrieval reported no relevant information, state that clearly and do not invent facts."
+        "Tool results are available above. Carefully read every tool message whose Content field "
+        "contains retrieved passages. Extract the answer directly from those passages and cite the "
+        "source filename. If EVERY tool result explicitly says 'No relevant information found', "
+        "then—and only then—state that no information was found. Do not say 'not found' if any "
+        "tool result contains relevant text."
     ),
 }
 
@@ -193,12 +194,16 @@ class ChatService:
             for d in deltas:
                 if not isinstance(d, dict):
                     continue
-                key = d.get("id") or f"idx:{d.get('index')}"
+                # Use index as the stable key; id arrives only in the first delta.
+                key = str(d.get("index", 0))
                 if key not in state:
                     state[key] = {
-                        "id": d.get("id"),
+                        "id": None,
                         "function": {"name": None, "arguments": ""},
                     }
+                # Persist the call id from whichever delta carries it.
+                if d.get("id"):
+                    state[key]["id"] = d["id"]
                 fn = d.get("function") or {}
                 cur = state[key]["function"]
                 if fn.get("name"):
