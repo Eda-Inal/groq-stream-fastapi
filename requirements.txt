@@ -6,4 +6,7 @@ structlog==25.5.0           # Structured logging
 sqlalchemy>=2.0
 asyncpg>=0.29
 alembic>=1.13
+pgvector>=0.3.0
+tiktoken>=0.7.0
+pytest>=8.0
 

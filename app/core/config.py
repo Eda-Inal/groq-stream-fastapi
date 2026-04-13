@@ -74,6 +74,35 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     database_url: str
 
+    # ------------------------------------------------------------------
+    # Embeddings (TODO-2)
+    # ------------------------------------------------------------------
+    embedding_model_name: str = "nomic-embed-text"
+    embedding_dim: int = 768
+    embedding_base_url: str | None = None
+    embedding_api_key: str | None = None
+    embedding_timeout: float = 15.0
+    embedding_max_retries: int = 3
+    embedding_retry_backoff: float = 1.5
+    embedding_cache_enabled: bool = True
+    embedding_cache_max_entries: int = 1000
+
+    # ------------------------------------------------------------------
+    # RAG retrieval defaults (TODO-4)
+    # ------------------------------------------------------------------
+    rag_default_top_k: int = 5
+    rag_similarity_threshold: float = 0.7
+    rag_max_top_k: int = 20
+
+    # ------------------------------------------------------------------
+    # RAG / document chunking (TODO-1.5; used by chunk_document when args omitted)
+    # ------------------------------------------------------------------
+    chunk_size_tokens: int = 500
+    chunk_overlap_tokens: int = 100
+    max_document_tokens: int = 100_000
+    short_doc_single_chunk_max_tokens: int = 100
+    min_chunk_tokens: int = 20
+
     class Config:
         env_file = ".env"
 
