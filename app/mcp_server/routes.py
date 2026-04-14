@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import structlog
 
 from app.mcp_server.tools.registry import ToolRegistry
+from app.services.rag_metrics import rag_metrics
 
 logger = structlog.get_logger()
 
@@ -19,6 +20,12 @@ class ToolCallRequest(BaseModel):
 async def list_tools():
     tools = registry.openai_tools()
     return {"tools": tools}
+
+
+@router.get("/metrics")
+async def get_metrics() -> dict:
+    """Expose in-process RAG metrics so the API can proxy them."""
+    return rag_metrics.snapshot()
 
 
 @router.post("/tools/call")

@@ -79,6 +79,7 @@ async def stream_chat(
         session=db,
         messages=[m.model_dump() for m in payload.messages],
         model=model,
+        user_id=payload.user_id,
         temperature=payload.temperature,
         max_tokens=payload.max_tokens,
         top_p=payload.top_p,

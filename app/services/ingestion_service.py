@@ -9,6 +9,7 @@ from app.db.repositories.document import (
     create_document,
     create_document_chunk,
     delete_document_chunks,
+    get_document_by_filename,
     get_document_by_id,
     list_document_chunks,
 )
@@ -17,6 +18,10 @@ from app.services.chunking import DocumentTooLargeError, chunk_document
 from app.services.embeddings import EmbeddingService
 
 logger = structlog.get_logger()
+
+
+class DuplicateDocumentError(ValueError):
+    """Raised when a document with the same filename (and user_id) already exists."""
 
 
 class IngestionService:
@@ -29,6 +34,17 @@ class IngestionService:
         session: AsyncSession,
         payload: DocumentIngestRequest,
     ) -> DocumentIngestResponse:
+        existing = await get_document_by_filename(
+            session,
+            filename=payload.filename,
+            user_id=payload.user_id,
+        )
+        if existing is not None:
+            raise DuplicateDocumentError(
+                f"Document '{payload.filename}' already exists (id={existing.id}). "
+                "Delete or reprocess the existing document instead."
+            )
+
         started = time.perf_counter()
         chunks = chunk_document(
             payload.text,
@@ -174,6 +190,8 @@ class IngestionService:
 
     @staticmethod
     def validate_ingestion_error(exc: Exception) -> tuple[int, str]:
+        if isinstance(exc, DuplicateDocumentError):
+            return 409, str(exc)
         if isinstance(exc, DocumentTooLargeError):
             return 413, str(exc)
         if isinstance(exc, ValueError):

@@ -182,13 +182,24 @@ def _split_oversized_segment(segment: str, max_tokens: int, overlap: int) -> lis
 
 
 def _overlap_prefix_text(previous_chunk: str, overlap_tokens: int) -> str:
+    """Return the last complete sentence(s) from previous_chunk whose total
+    tokens fit within overlap_tokens.  Falls back to the full chunk when it is
+    already small enough, and never returns a raw mid-sentence token slice."""
     if overlap_tokens <= 0 or not previous_chunk:
         return ""
-    enc = _get_encoding()
-    ids = enc.encode(previous_chunk)
-    if len(ids) <= overlap_tokens:
+    if count_tokens(previous_chunk) <= overlap_tokens:
         return previous_chunk
-    return enc.decode(ids[-overlap_tokens:])
+    sentences = re.split(r"(?<=[.!?])\s+", previous_chunk.strip())
+    selected: list[str] = []
+    total = 0
+    for sent in reversed(sentences):
+        t = count_tokens(sent)
+        if total + t <= overlap_tokens:
+            selected.insert(0, sent)
+            total += t
+        else:
+            break
+    return " ".join(selected) if selected else ""
 
 
 def _merge_parts_under_limit(

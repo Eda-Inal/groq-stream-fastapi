@@ -31,3 +31,14 @@ class MCPClient(ABC):
         - Must return a string on any error.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    async def get_metrics(self) -> dict:
+        """
+        Returns RAG metrics from the tool execution process.
+
+        Fail-soft:
+        - Must return {} on any error.
+        - Must NOT raise exceptions.
+        """
+        raise NotImplementedError

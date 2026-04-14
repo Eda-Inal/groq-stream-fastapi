@@ -27,6 +27,7 @@ class ChatStreamRequest(BaseModel):
     messages: List[ChatMessage]
     conversation_id: Optional[str] = None
     model: Optional[str] = None
+    user_id: Optional[str] = None
     temperature: Optional[float] = Field(default=0.3, ge=0.0, le=2.0)
     max_tokens: Optional[int] = Field(default=None, ge=1)
     top_p: Optional[float] = Field(default=1.0, ge=0.0, le=1.0)

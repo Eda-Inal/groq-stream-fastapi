@@ -17,7 +17,8 @@ AVAILABLE_MODELS: Dict[str, Any] = {
     "llama-3.3-70b-versatile": {
         "provider": "groq",
         "tier": "judge",
-        "stream": False,
+        "stream": True,
+        "context_window": 131072,
     },
 
     # ----------------------
@@ -27,11 +28,13 @@ AVAILABLE_MODELS: Dict[str, Any] = {
         "provider": "groq",
         "tier": "fast",
         "stream": True,
+        "context_window": 131072,
     },
-    "meta-llama/llama-4-maverick-17b-128e-instruct": {
+    "meta-llama/llama-4-scout-17b-16e-instruct": {
         "provider": "groq",
         "tier": "balanced",
         "stream": True,
+        "context_window": 131072,
     },
 }
 
@@ -59,7 +62,8 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     mcp_enabled: bool = False
     mcp_server_url: str | None = None
-    mcp_timeout: float = 10.0
+    # Must exceed embedding_timeout * embedding_max_retries to avoid premature timeouts.
+    mcp_timeout: float = 120.0
 
     # ------------------------------------------------------------------
     # LLM-as-a-Judge (PAIRWISE)

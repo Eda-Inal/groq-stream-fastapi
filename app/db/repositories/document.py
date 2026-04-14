@@ -63,6 +63,18 @@ async def get_document_by_id(session: AsyncSession, document_id: int) -> Documen
     return result.scalar_one_or_none()
 
 
+async def get_document_by_filename(
+    session: AsyncSession,
+    filename: str,
+    user_id: str | None = None,
+) -> Document | None:
+    stmt = select(Document).where(Document.filename == filename)
+    if user_id is not None:
+        stmt = stmt.where(Document.user_id == user_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
 async def list_documents(
     session: AsyncSession,
     *,

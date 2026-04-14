@@ -95,3 +95,28 @@ class RemoteMCPClient(MCPClient):
         except Exception:
             logger.error("mcp_remote_call_exception", exc_info=True)
             return "MCP call failed due to unexpected error."
+
+    async def get_metrics(self) -> dict:
+        if not self.base_url:
+            return {}
+
+        try:
+            url = f"{self.base_url}/metrics"
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                r = await client.get(url)
+
+            if r.status_code != 200:
+                logger.warning("mcp_remote_get_metrics_http_error", status=r.status_code)
+                return {}
+
+            try:
+                data = r.json()
+            except Exception:
+                logger.error("mcp_remote_get_metrics_json_parse_error", exc_info=True)
+                return {}
+
+            return data if isinstance(data, dict) else {}
+
+        except Exception:
+            logger.error("mcp_remote_get_metrics_exception", exc_info=True)
+            return {}

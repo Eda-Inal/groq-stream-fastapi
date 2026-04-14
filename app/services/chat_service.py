@@ -22,10 +22,14 @@ RAG_TOOL_CALL_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
         "You have access to a private knowledge base via the rag_search tool. "
-        "Before answering questions about uploaded documents, internal policies, company/project "
-        "facts, or specific factual claims that may depend on private context, ALWAYS call rag_search first. "
-        "You may skip rag_search only for general world knowledge, pure math, coding help, or casual chat. "
-        "If rag_search returns no relevant results, explicitly say no relevant information was found and do not hallucinate."
+        "ALWAYS call rag_search FIRST — before web_search or any other tool — whenever the user's "
+        "question could plausibly be answered by an uploaded document, regardless of whether you "
+        "already know the answer from general knowledge. "
+        "Only skip rag_search for pure math, coding help, or casual small-talk with no factual claim. "
+        "If rag_search returns relevant passages, base your answer EXCLUSIVELY on those passages "
+        "and cite the source filename. Do NOT add or substitute values from your general knowledge. "
+        "If rag_search returns no relevant results, you may then use other tools or state that "
+        "no information was found."
     ),
 }
 
@@ -34,10 +38,13 @@ FINALIZATION_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
         "Tool results are available above. Carefully read every tool message whose Content field "
-        "contains retrieved passages. Extract the answer directly from those passages and cite the "
-        "source filename. If EVERY tool result explicitly says 'No relevant information found', "
-        "then—and only then—state that no information was found. Do not say 'not found' if any "
-        "tool result contains relevant text."
+        "contains retrieved passages. Extract the answer ONLY from those passages and cite the "
+        "source filename. "
+        "Do NOT supplement with general knowledge or add any information not explicitly present "
+        "in the retrieved passages — even if you believe it to be true. "
+        "If a value or fact appears in the retrieved text, use that exact value. "
+        "If EVERY tool result explicitly says 'No relevant information found', "
+        "then—and only then—state that no information was found."
     ),
 }
 
@@ -118,6 +125,7 @@ class ChatService:
         session: AsyncSession,
         messages: list[dict],
         model: str,
+        user_id: str | None = None,
         temperature: float | None = None,
         max_tokens: int | None = None,
         top_p: float | None = None,
@@ -248,6 +256,7 @@ class ChatService:
             tool_state: dict[str, dict] = {}
             buffered_chunks: list[dict] = []
             saw_tool_call = False
+            tool_call_generation_failed = False
 
             async for event in self.client.stream_chat_completion(
                 messages=effective_messages,
@@ -273,13 +282,84 @@ class ChatService:
                     merge_tool_call_delta(tool_state, event.get("tool_calls", []))
                     continue
 
-                if etype in ("error", "done"):
+                if etype == "error":
+                    msg = str(event.get("message", "")).lower()
+                    if "call a function" in msg or "failed_generation" in msg:
+                        # Groq could not serialise the tool call JSON.
+                        # Retry this round without tools so the model answers directly.
+                        tool_call_generation_failed = True
+                    break
+
+                if etype == "done":
                     break
 
             if not saw_tool_call:
+                if tool_call_generation_failed:
+                    # Groq failed to serialise the tool call JSON.
+                    # Manually fetch RAG context for the last user message, inject it,
+                    # then retry without tools so the model still answers from the document.
+                    log.warning("tool_call_generation_failed_retrying_without_tools")
+
+                    last_user_msg = next(
+                        (
+                            m for m in reversed(effective_messages)
+                            if isinstance(m, dict) and m.get("role") == "user"
+                            and isinstance(m.get("content"), str)
+                        ),
+                        None,
+                    )
+                    if last_user_msg and rag_available:
+                        rag_args: dict = {"query": last_user_msg["content"]}
+                        if user_id:
+                            rag_args["metadata_filter"] = {"user_id": user_id}
+                        rag_result = await self.mcp.call_tool("rag_search", rag_args)
+                        # Only inject if retrieval actually found something.
+                        if (
+                            isinstance(rag_result, str)
+                            and rag_result.strip()
+                            and "No relevant information" not in rag_result
+                            and "Retrieval" not in rag_result
+                        ):
+                            effective_messages = list(effective_messages) + [
+                                {
+                                    "role": "system",
+                                    "content": (
+                                        "Retrieved context from the knowledge base:\n"
+                                        f"{rag_result}\n\n"
+                                        "Answer ONLY using the retrieved context above. "
+                                        "Use the exact values from the text. "
+                                        "Cite the source filename."
+                                    ),
+                                }
+                            ]
+                            log.info("rag_context_injected_after_tool_call_failure")
+
+                    buffered_chunks = []
+                    retry_final_event: dict | None = None
+                    async for event in self.client.stream_chat_completion(
+                        messages=effective_messages,
+                        model=model,
+                        tools=None,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        top_p=top_p,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
+                        stop=stop,
+                        seed=seed,
+                    ):
+                        if event.get("type") == "chunk" and event.get("text"):
+                            buffered_chunks.append(event)
+                        elif event.get("type") in ("error", "done"):
+                            retry_final_event = event
+                            break
+
                 for ev in buffered_chunks:
                     full_response.append(ev.get("text", ""))
                     yield ev
+
+                if tool_call_generation_failed and retry_final_event:
+                    yield retry_final_event
                 break
 
             openai_tool_calls = build_openai_tool_calls(tool_state)
@@ -310,6 +390,15 @@ class ChatService:
                         args = {}
                 except json.JSONDecodeError:
                     args = {}
+
+                # Inject caller's user_id into rag_search so retrieval is
+                # scoped to that user's documents. The LLM never controls this.
+                if name == "rag_search" and user_id:
+                    metadata_filter = args.get("metadata_filter")
+                    if not isinstance(metadata_filter, dict):
+                        metadata_filter = {}
+                    metadata_filter["user_id"] = user_id
+                    args["metadata_filter"] = metadata_filter
 
                 result = await self.mcp.call_tool(name, args)
 

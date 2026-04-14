@@ -7,9 +7,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-
-# Must match EMBEDDING_DIM in config (nomic-embed-text = 768)
-EMBEDDING_DIMENSION = 768
+from app.core.config import settings
 
 
 class DocumentChunk(Base):
@@ -29,7 +27,7 @@ class DocumentChunk(Base):
 
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
+    embedding: Mapped[list[float]] = mapped_column(Vector(settings.embedding_dim), nullable=False)
 
     chunk_token_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     page_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
