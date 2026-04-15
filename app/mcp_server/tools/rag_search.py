@@ -99,11 +99,14 @@ class RagSearchTool(Tool):
                 rag_metrics.record_embedding_failure()
                 return "Retrieval unavailable: embedding error."
 
+            is_hybrid = settings.hybrid_search_enabled
+
             query_started = time.perf_counter()
             async with AsyncSessionLocal() as session:
                 rows = await search_document_chunks(
                     session,
                     query_vector=emb.vector,
+                    query_text=query.strip() if is_hybrid else None,
                     top_k=top_k,
                     metadata_filter=metadata_filter,
                 )
@@ -118,11 +121,15 @@ class RagSearchTool(Tool):
                 )
                 return "No relevant information found in knowledge base."
 
-            filtered_rows = [(chunk, doc, sim) for chunk, doc, sim in rows if sim >= threshold]
+            # In hybrid mode the score is an RRF value (different scale from
+            # cosine similarity), so the dense threshold is not meaningful.
+            # Use a near-zero floor to suppress empty/error rows only.
+            effective_threshold = 0.0 if is_hybrid else threshold
+            filtered_rows = [(chunk, doc, sim) for chunk, doc, sim in rows if sim > effective_threshold]
             below_threshold_count = len(rows) - len(filtered_rows)
 
             top_similarity = max(sim for _, _, sim in rows)
-            if top_similarity < threshold:
+            if not filtered_rows:
                 rag_metrics.record_retrieval(
                     top_similarity=top_similarity,
                     embedding_latency_ms=embedding_latency_ms,

@@ -37,14 +37,21 @@ RAG_TOOL_CALL_SYSTEM_MESSAGE = {
 FINALIZATION_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "Tool results are available above. Carefully read every tool message whose Content field "
-        "contains retrieved passages. Extract the answer ONLY from those passages and cite the "
-        "source filename. "
-        "Do NOT supplement with general knowledge or add any information not explicitly present "
+        "Tool results are available above. Carefully read EVERY tool message whose Content field "
+        "contains retrieved passages — there may be multiple passages and the answer may require "
+        "combining information from more than one of them. "
+        "Extract the answer ONLY from those passages and cite the source filename. "
+        "Do NOT supplement with general knowledge or add any information not present "
         "in the retrieved passages — even if you believe it to be true. "
         "If a value or fact appears in the retrieved text, use that exact value. "
-        "If EVERY tool result explicitly says 'No relevant information found', "
-        "then—and only then—state that no information was found."
+        "If the answer requires a calculation or derivation using numbers or facts that ARE present "
+        "across the retrieved passages, perform that calculation and provide the result — do not say "
+        "the information is 'not explicitly stated' or 'not given' when it can be derived from "
+        "the retrieved context. "
+        "If the retrieved passages do not contain the specific information needed to answer "
+        "the question — even if related passages were returned — state clearly that the "
+        "information was not found in the knowledge base. "
+        "Do NOT attempt further searches or write function calls in your response text."
     ),
 }
 

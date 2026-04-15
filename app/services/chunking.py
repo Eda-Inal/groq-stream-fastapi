@@ -50,6 +50,7 @@ class ChunkRecord:
 
 
 _FENCE_RE = re.compile(r"(```(?:[a-zA-Z0-9_-]*)?\n?)([\s\S]*?)(```)", re.MULTILINE)
+_LIST_ITEM_RE = re.compile(r"^[ \t]*(?:\d+[.)]\s+|[-*•]\s+)")
 
 
 def normalize_document_text(text: str) -> str:
@@ -105,6 +106,38 @@ def _split_table_runs(text: str) -> list[tuple[str, str]]:
             buf = [line]
     flush()
     return parts if parts else [("plain", text)]
+
+
+def _extract_list_segments(text: str) -> list[tuple[str, str]]:
+    """
+    Split a plain-text segment into ('prose', block) and ('list_item', line) parts.
+
+    Each line that matches a numbered (1. / 1) ) or bulleted (- / * / •) list
+    marker becomes its own ('list_item', ...) entry so it can be stored as an
+    independent chunk.  Non-list lines are grouped into ('prose', ...) blocks.
+    Existing table / code-fence handling is untouched — this runs only on plain
+    segments produced by _split_table_runs.
+    """
+    lines = text.split("\n")
+    parts: list[tuple[str, str]] = []
+    prose_buf: list[str] = []
+
+    def _flush_prose() -> None:
+        if prose_buf:
+            block = "\n".join(prose_buf).strip()
+            if block:
+                parts.append(("prose", block))
+            prose_buf.clear()
+
+    for line in lines:
+        if _LIST_ITEM_RE.match(line) and line.strip():
+            _flush_prose()
+            parts.append(("list_item", line.strip()))
+        else:
+            prose_buf.append(line)
+
+    _flush_prose()
+    return parts or [("prose", text)]
 
 
 def _split_by_code_fences(text: str) -> list[tuple[str, str]]:
@@ -277,7 +310,7 @@ def _chunk_plain_text(
     max_tokens: int,
     overlap: int,
 ) -> list[str]:
-    """Plain text: table runs + recursive split."""
+    """Plain text: table runs → list-item extraction → recursive split."""
     text = text.strip()
     if not text:
         return []
@@ -293,7 +326,16 @@ def _chunk_plain_text(
                 lines = seg.split("\n")
                 all_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
         else:
-            all_chunks.extend(_split_oversized_segment(seg, max_tokens, overlap))
+            # Extract list items as individual chunks; prose falls through to
+            # the existing recursive splitter unchanged.
+            for lkind, lseg in _extract_list_segments(seg):
+                if lkind == "list_item":
+                    if count_tokens(lseg) <= max_tokens:
+                        all_chunks.append(lseg)
+                    else:
+                        all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
+                else:
+                    all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
 
     return [c for c in all_chunks if c.strip()]
 

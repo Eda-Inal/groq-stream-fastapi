@@ -231,6 +231,15 @@ class Settings(BaseSettings):
     rag_tool_max_context_tokens: int = 2500
 
     # ------------------------------------------------------------------
+    # Hybrid search (dense + sparse BM25/FTS via PostgreSQL tsvector)
+    # ------------------------------------------------------------------
+    hybrid_search_enabled: bool = True
+    # RRF constant — higher = less weight on top-ranked results (standard: 60)
+    hybrid_rrf_k: int = 60
+    # Candidates fetched per leg before RRF merging (multiplied by top_k)
+    hybrid_fetch_multiplier: int = 3
+
+    # ------------------------------------------------------------------
     # RAG / document chunking (used by chunk_document when args omitted)
     # ------------------------------------------------------------------
     chunk_size_tokens: int = 500
