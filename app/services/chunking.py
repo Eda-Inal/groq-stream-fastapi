@@ -157,10 +157,16 @@ def _split_oversized_segment(segment: str, max_tokens: int, overlap: int) -> lis
     if count_tokens(segment) <= max_tokens:
         return [segment] if segment else []
 
-    # 1) Paragraphs
+    # 1) Paragraphs — use a tighter effective limit so that each paragraph
+    #    stays in its own topical chunk.  Merging two paragraphs is only
+    #    allowed when the combined result is well under max_tokens; this
+    #    prevents unrelated topics from sharing the same embedding vector.
+    #    Effective limit = max_tokens minus the overlap budget (the next
+    #    chunk will re-read that many tokens from us anyway).
+    para_merge_limit = max(max_tokens - overlap, (max_tokens * 2) // 3)
     paras = re.split(r"\n\s*\n", segment)
     if len(paras) > 1:
-        merged = _merge_parts_under_limit(paras, "\n\n", max_tokens, overlap)
+        merged = _merge_parts_under_limit(paras, "\n\n", para_merge_limit, overlap)
         if all(count_tokens(x) <= max_tokens for x in merged):
             return merged
 

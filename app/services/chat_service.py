@@ -5,7 +5,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
-from app.services.groq_client import GroqClient
+from app.services.groq_client import LLMClient
 from app.services.mcp.remote_client import RemoteMCPClient
 from app.core.config import settings
 from app.utils.token_counter import (
@@ -51,7 +51,7 @@ FINALIZATION_SYSTEM_MESSAGE = {
 
 class ChatService:
     def __init__(self) -> None:
-        self.client = GroqClient()
+        self.client = LLMClient()
         self.mcp = RemoteMCPClient()
 
         if not settings.mcp_server_url:
@@ -173,6 +173,22 @@ class ChatService:
                 effective_messages = history_messages + effective_messages
 
         tools_schema = await self.mcp.list_tools()
+        # Filter tools based on feature flags so individual tools can be
+        # disabled via .env without touching the MCP server registry.
+        _disabled = set()
+        if not settings.web_search_enabled:
+            _disabled.add("web_search")
+        if not settings.calculator_enabled:
+            _disabled.add("calculator")
+        if _disabled:
+            tools_schema = [
+                t for t in tools_schema
+                if not (
+                    isinstance(t, dict)
+                    and isinstance(t.get("function"), dict)
+                    and t["function"].get("name") in _disabled
+                )
+            ]
         rag_available = any(
             isinstance(t, dict)
             and isinstance(t.get("function"), dict)

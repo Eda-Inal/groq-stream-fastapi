@@ -8,22 +8,17 @@ from pydantic_settings import BaseSettings
 from typing import Dict, Any
 
 
-# 1. Move AVAILABLE_MODELS OUTSIDE the class. 
-# 2. This makes it a constant that can be imported directly.
 AVAILABLE_MODELS: Dict[str, Any] = {
-    # ----------------------
-    # Judge (not selectable by users)
-    # ----------------------
+    # ──────────────────────────────────────────────────────────────────
+    # Groq
+    # ──────────────────────────────────────────────────────────────────
+    # Judge — internal, not user-selectable
     "llama-3.3-70b-versatile": {
         "provider": "groq",
         "tier": "judge",
         "stream": True,
         "context_window": 131072,
     },
-
-    # ----------------------
-    # Candidate models
-    # ----------------------
     "llama-3.1-8b-instant": {
         "provider": "groq",
         "tier": "fast",
@@ -36,6 +31,120 @@ AVAILABLE_MODELS: Dict[str, Any] = {
         "stream": True,
         "context_window": 131072,
     },
+
+    # ──────────────────────────────────────────────────────────────────
+    # OpenRouter
+    # ──────────────────────────────────────────────────────────────────
+    "meta-llama/llama-3.3-70b-instruct:free": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 65536,
+    },
+    "google/gemma-4-31b-it:free": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 262144,
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 262144,
+    },
+    "openai/gpt-oss-120b:free": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 131072,
+    },
+
+    # ──────────────────────────────────────────────────────────────────
+    # OpenRouter — unfree
+    # ──────────────────────────────────────────────────────────────────
+    "google/gemini-2.5-flash": {
+        "provider": "openrouter",
+        "tier": "fast",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "google/gemini-2.5-pro": {
+        "provider": "openrouter",
+        "tier": "premium",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "google/gemini-3.1-pro-preview": {
+        "provider": "openrouter",
+        "tier": "premium",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "meta-llama/llama-4-maverick": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "anthropic/claude-3.5-haiku": {
+        "provider": "openrouter",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 200000,
+    },
+    "anthropic/claude-sonnet-4": {
+        "provider": "openrouter",
+        "tier": "premium",
+        "stream": True,
+        "context_window": 1000000,
+    },
+    "openai/gpt-4o-mini": {
+        "provider": "openrouter",
+        "tier": "fast",
+        "stream": True,
+        "context_window": 128000,
+    },
+
+    # ──────────────────────────────────────────────────────────────────
+    # Google Gemini — Direct API
+    # ──────────────────────────────────────────────────────────────────
+    "gemini-2.0-flash": {
+        "provider": "gemini",
+        "tier": "fast",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "gemini-2.0-flash-lite": {
+        "provider": "gemini",
+        "tier": "fast",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "gemini-2.5-flash": {
+        "provider": "gemini",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "gemini-2.5-pro": {
+        "provider": "gemini",
+        "tier": "premium",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "gemini-3-flash-preview": {
+        "provider": "gemini",
+        "tier": "fast",
+        "stream": True,
+        "context_window": 1048576,
+    },
+    "gemini-3.1-pro-preview": {
+        "provider": "gemini",
+        "tier": "premium",
+        "stream": True,
+        "context_window": 1048576,
+    },
 }
 
 
@@ -45,15 +154,27 @@ class Settings(BaseSettings):
     """
 
     # ------------------------------------------------------------------
-    # Groq API
+    # Groq API (optional when using other providers)
     # ------------------------------------------------------------------
-    groq_api_key: str
-    groq_base_url: str
-    groq_default_model: str
+    groq_api_key: str | None = None
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_default_model: str = "llama-3.3-70b-versatile"
 
     groq_verify_ssl: bool = True
     groq_connect_timeout: float = 10.0
     groq_read_timeout: float = 30.0
+
+    # ------------------------------------------------------------------
+    # OpenRouter API (optional)
+    # ------------------------------------------------------------------
+    openrouter_api_key: str | None = None
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+
+    # ------------------------------------------------------------------
+    # Google Gemini Direct API (optional)
+    # ------------------------------------------------------------------
+    gemini_api_key: str | None = None
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
 
     tavily_api_key: str | None = None
 
@@ -90,6 +211,13 @@ class Settings(BaseSettings):
     embedding_retry_backoff: float = 1.5
     embedding_cache_enabled: bool = True
     embedding_cache_max_entries: int = 1000
+
+    # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Tool availability flags
+    # ------------------------------------------------------------------
+    web_search_enabled: bool = True
+    calculator_enabled: bool = True
 
     # ------------------------------------------------------------------
     # RAG retrieval defaults
