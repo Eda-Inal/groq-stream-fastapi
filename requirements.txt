@@ -8,5 +8,7 @@ asyncpg>=0.29
 alembic>=1.13
 pgvector>=0.3.0
 tiktoken>=0.7.0
+pymupdf>=1.24.0
+python-multipart>=0.0.9
 pytest>=8.0
 

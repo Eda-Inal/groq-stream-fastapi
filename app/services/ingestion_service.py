@@ -188,12 +188,102 @@ class IngestionService:
             embedding_model=resolved_model_name or "unknown",
         )
 
+    async def ingest_pdf(
+        self,
+        *,
+        session: AsyncSession,
+        content: bytes,
+        filename: str,
+        user_id: str | None,
+        tags: list[str],
+    ) -> DocumentIngestResponse:
+        from app.services.pdf_extractor import PDFExtractionError, extract_pages
+
+        pages = extract_pages(content)
+
+        existing = await get_document_by_filename(session, filename=filename, user_id=user_id)
+        if existing is not None:
+            raise DuplicateDocumentError(
+                f"Document '{filename}' already exists (id={existing.id})."
+            )
+
+        doc = await create_document(
+            session,
+            filename=filename,
+            source=None,
+            document_type="pdf",
+            tags=tags,
+            user_id=user_id,
+            embedding_model_name=None,
+            chunk_count=0,
+        )
+
+        started = time.perf_counter()
+        chunk_index = 0
+        chunks_created = 0
+        chunks_skipped = 0
+        tokens_processed = 0
+        resolved_model_name: str | None = None
+
+        for page in pages:
+            page_chunks = chunk_document(page["text"])
+            for item in page_chunks:
+                emb = await self.embeddings.embed_text(item.text)
+                if emb is None:
+                    chunks_skipped += 1
+                    continue
+                await create_document_chunk(
+                    session,
+                    document_id=doc.id,
+                    chunk_index=chunk_index,
+                    text=item.text,
+                    embedding=emb.vector,
+                    chunk_token_count=item.token_count,
+                    page_number=page["page"],
+                    section_heading=item.section_heading,
+                )
+                chunk_index += 1
+                chunks_created += 1
+                tokens_processed += item.token_count
+                resolved_model_name = emb.model_name
+
+        if chunks_created == 0:
+            raise RuntimeError("Embedding failed for all chunks; nothing persisted.")
+
+        doc.chunk_count = chunks_created
+        doc.embedding_model_name = resolved_model_name
+        await session.commit()
+        await session.refresh(doc)
+
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        logger.info(
+            "pdf_ingested",
+            document_id=doc.id,
+            chunks_created=chunks_created,
+            chunks_skipped=chunks_skipped,
+            tokens_processed=tokens_processed,
+            elapsed_ms=elapsed_ms,
+        )
+
+        return DocumentIngestResponse(
+            document_id=doc.id,
+            chunks_created=chunks_created,
+            chunks_skipped=chunks_skipped,
+            tokens_processed=tokens_processed,
+            elapsed_ms=elapsed_ms,
+            embedding_model=resolved_model_name or "unknown",
+        )
+
     @staticmethod
     def validate_ingestion_error(exc: Exception) -> tuple[int, str]:
+        from app.services.pdf_extractor import PDFExtractionError
+
         if isinstance(exc, DuplicateDocumentError):
             return 409, str(exc)
         if isinstance(exc, DocumentTooLargeError):
             return 413, str(exc)
+        if isinstance(exc, PDFExtractionError):
+            return 422, str(exc)
         if isinstance(exc, ValueError):
             return 400, str(exc)
         return 500, "Document ingestion failed."

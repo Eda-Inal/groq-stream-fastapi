@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json as _json
 from datetime import datetime
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.document import delete_document_by_id, get_document_by_id, list_documents
@@ -42,6 +43,35 @@ def _to_document_read(item) -> DocumentRead:
         chunk_count=item.chunk_count,
         created_at=created_str,
     )
+
+
+@router.post("/upload", response_model=DocumentIngestResponse)
+async def upload_document(
+    file: UploadFile = File(...),
+    user_id: str | None = Form(default=None),
+    tags: str | None = Form(default=None),  # JSON string: '["tag1","tag2"]'
+    db: AsyncSession = Depends(get_db),
+) -> DocumentIngestResponse:
+    filename = file.filename or "upload"
+    parsed_tags: list[str] = _json.loads(tags) if tags else []
+    content = await file.read()
+
+    if not filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=415, detail="Only PDF files are supported on this endpoint.")
+
+    try:
+        return await ingestion_service.ingest_pdf(
+            session=db,
+            content=content,
+            filename=filename,
+            user_id=user_id,
+            tags=parsed_tags,
+        )
+    except Exception as exc:
+        await db.rollback()
+        status, detail = ingestion_service.validate_ingestion_error(exc)
+        logger.error("pdf_upload_failed", error=str(exc), status=status, exc_info=True)
+        raise HTTPException(status_code=status, detail=detail) from exc
 
 
 @router.post("", response_model=DocumentIngestResponse)
