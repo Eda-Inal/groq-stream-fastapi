@@ -109,6 +109,12 @@ class LLMClient:
         }
         payload = {k: v for k, v in payload.items() if v is not None}
 
+        # Gemini does not support these OpenAI-specific parameters.
+        provider = AVAILABLE_MODELS.get(model, {}).get("provider", "groq")
+        if provider == "gemini":
+            for key in ("frequency_penalty", "presence_penalty", "seed"):
+                payload.pop(key, None)
+
         provider = AVAILABLE_MODELS.get(model, {}).get("provider", "groq")
         log.info("llm_request", provider=provider, base_url=base_url)
 

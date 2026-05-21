@@ -5,7 +5,7 @@ from app.core.config import settings
 
 class WebSearchTool(Tool):
     name = "web_search"
-    description = "Search the web for up-to-date information."
+    description = "Search the web. Call only when rag_search returns no relevant results."
     parameters = {
         "type": "object",
         "properties": {

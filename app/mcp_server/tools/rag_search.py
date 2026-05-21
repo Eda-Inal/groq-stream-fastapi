@@ -20,8 +20,8 @@ logger = structlog.get_logger()
 class RagSearchTool(Tool):
     name = "rag_search"
     description = (
-        "Search the private knowledge base for relevant document passages. "
-        "Use this for uploaded documents, internal policies, and project-specific facts."
+        "MUST be called first for every question without exception. "
+        "Searches the user's private knowledge base of uploaded documents."
     )
     parameters = {
         "type": "object",
@@ -29,11 +29,6 @@ class RagSearchTool(Tool):
             "query": {
                 "type": "string",
                 "description": "Natural-language search query to retrieve relevant document passages.",
-            },
-            "top_k": {
-                "type": "integer",
-                "description": "Number of passages to retrieve (default 5, max 20).",
-                "default": 5,
             },
         },
         "required": ["query"],

@@ -22,15 +22,16 @@ logger = structlog.get_logger()
 RAG_TOOL_CALL_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "You have access to a private knowledge base via the rag_search tool. "
-        "ALWAYS call rag_search FIRST — before web_search or any other tool — whenever the user's "
-        "question could plausibly be answered by an uploaded document, regardless of whether you "
-        "already know the answer from general knowledge. "
-        "Only skip rag_search for pure math, coding help, or casual small-talk with no factual claim. "
-        "If rag_search returns relevant passages, base your answer EXCLUSIVELY on those passages "
-        "and cite the source filename. Do NOT add or substitute values from your general knowledge. "
-        "If rag_search returns no relevant results, you may then use other tools or state that "
-        "no information was found."
+        "Before calling any tool, classify the question. "
+        "Only call web_search directly — skipping rag_search — if the question asks for "
+        "data that changes by the minute or hour: live stock prices, currency exchange rates, "
+        "current weather, live sports scores, today's flight prices, breaking news headlines. "
+        "For everything else — including company facts, employee counts, founding dates, "
+        "product details, general knowledge, or any topic that could be in an uploaded document — "
+        "call rag_search first. "
+        "If rag_search returns no relevant results, respond with "
+        "'This information was not found in your documents.' "
+        "Do NOT call web_search as a fallback."
     ),
 }
 
@@ -38,21 +39,15 @@ RAG_TOOL_CALL_SYSTEM_MESSAGE = {
 FINALIZATION_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "Tool results are available above. Carefully read EVERY tool message whose Content field "
-        "contains retrieved passages — there may be multiple passages and the answer may require "
-        "combining information from more than one of them. "
-        "Extract the answer ONLY from those passages and cite the source filename. "
-        "Do NOT supplement with general knowledge or add any information not present "
-        "in the retrieved passages — even if you believe it to be true. "
-        "If a value or fact appears in the retrieved text, use that exact value. "
-        "If the answer requires a calculation or derivation using numbers or facts that ARE present "
-        "across the retrieved passages, perform that calculation and provide the result — do not say "
-        "the information is 'not explicitly stated' or 'not given' when it can be derived from "
-        "the retrieved context. "
-        "If the retrieved passages do not contain the specific information needed to answer "
-        "the question — even if related passages were returned — state clearly that the "
-        "information was not found in the knowledge base. "
-        "Do NOT attempt further searches or write function calls in your response text."
+        "Tool results are available above. Read every tool message carefully before answering. "
+        "If rag_search returned passages: base your answer exclusively on those passages. "
+        "Do not use your training knowledge to override or supplement the retrieved content. "
+        "If web_search returned results: summarise the relevant information. "
+        "If rag_search returned nothing: respond with "
+        "'This information was not found in your documents.' and do not search the web. "
+        "Always end your response with a source line: "
+        "use 'Source: [filename]' for document answers, 'Source: [URL]' for web answers. "
+        "Do not write function calls as text in your response."
     ),
 }
 
@@ -364,13 +359,13 @@ class ChatService:
                         if user_id:
                             rag_args["metadata_filter"] = {"user_id": user_id}
                         rag_result = await self.mcp.call_tool("rag_search", rag_args)
-                        # Only inject if retrieval actually found something.
-                        if (
+                        rag_found = (
                             isinstance(rag_result, str)
                             and rag_result.strip()
                             and "No relevant information" not in rag_result
                             and "Retrieval" not in rag_result
-                        ):
+                        )
+                        if rag_found:
                             effective_messages = list(effective_messages) + [
                                 {
                                     "role": "system",
@@ -378,12 +373,25 @@ class ChatService:
                                         "Retrieved context from the knowledge base:\n"
                                         f"{rag_result}\n\n"
                                         "Answer ONLY using the retrieved context above. "
+                                        "Do not use your training knowledge to override these values. "
                                         "Use the exact values from the text. "
-                                        "Cite the source filename."
+                                        "End your response with: Kaynak: [filename]"
                                     ),
                                 }
                             ]
                             log.info("rag_context_injected_after_tool_call_failure")
+                        else:
+                            effective_messages = list(effective_messages) + [
+                                {
+                                    "role": "system",
+                                    "content": (
+                                        "rag_search returned no relevant results. "
+                                        "Tell the user: 'I could not find this in your documents. "
+                                        "Would you like me to search the web?'"
+                                    ),
+                                }
+                            ]
+                            log.info("rag_empty_asking_user_for_web_search")
 
                     buffered_chunks = []
                     retry_final_event: dict | None = None
@@ -465,7 +473,33 @@ class ChatService:
                 any_tool_executed = True
                 total_tool_calls_executed += 1
 
+
             if any_tool_executed:
+                # If rag_search returned actual content, re-inject it as a
+                # dedicated system message so the model cannot overlook it.
+                rag_result_for_grounding = next(
+                    (
+                        m for m in reversed(effective_messages)
+                        if isinstance(m, dict)
+                        and m.get("role") == "tool"
+                        and m.get("name") == "rag_search"
+                        and isinstance(m.get("content"), str)
+                        and "No relevant information" not in m["content"]
+                        and "Retrieval unavailable" not in m["content"]
+                    ),
+                    None,
+                )
+                if rag_result_for_grounding:
+                    effective_messages.append({
+                        "role": "system",
+                        "content": (
+                            "The following is the EXACT text retrieved from the user's documents. "
+                            "You MUST answer using only the values and facts shown below. "
+                            "Do not use your training knowledge to change, update, or contradict these values:\n\n"
+                            + rag_result_for_grounding["content"]
+                        ),
+                    })
+
                 if settings.rag_system_prompt_enabled:
                     effective_messages.append(FINALIZATION_SYSTEM_MESSAGE)
 
