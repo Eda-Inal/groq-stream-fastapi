@@ -48,7 +48,7 @@ MODEL        = "meta-llama/llama-4-scout-17b-16e-instruct"
 # Leave empty to run all 18 questions.
 # Add substrings to run only matching questions (case-insensitive).
 # Example: FILTER = ["Capital of France", "World War II", "1250"]
-FILTER: list[str] = ["multiplied by 0.18", "500 + 300", "25% of 348", "9750 divided by 13"]
+FILTER: list[str] = []
 
 _results_log: list[dict] = []
 
@@ -128,7 +128,6 @@ def _detect_tool(response_text: str) -> str:
 def target(inputs: dict) -> dict:
     """Send a question to the API and return the response + detected tool."""
     question = inputs["question"]
-    print(f"\n  >> {question[:72]}")
     response_text = _call_api(question)
     tool_used = _detect_tool(response_text)
     return {
@@ -141,14 +140,15 @@ def target(inputs: dict) -> dict:
 def tool_selection_evaluator(outputs: dict, reference_outputs: dict) -> dict:
     """
     Compare the detected tool against the expected tool.
-    Returns score=1 (correct) or score=0 (incorrect).
+    Prints question + result in a single line to avoid interleaving with other threads.
     """
     expected = reference_outputs.get("expected_tool", "none")
     actual   = outputs.get("tool_used", "none")
     correct  = (expected == actual)
+    question = outputs.get("question", "")[:60]
 
-    icon = "OK" if correct else "FAIL"
-    print(f"     [{icon}]  expected={expected:<12}  got={actual}")
+    icon = "OK  " if correct else "FAIL"
+    print(f"  [{icon}]  {question:<62}  expected={expected:<12}  got={actual}")
 
     _results_log.append({"expected": expected, "actual": actual, "correct": correct})
 
@@ -160,8 +160,33 @@ def tool_selection_evaluator(outputs: dict, reference_outputs: dict) -> dict:
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
+def _warmup(retries: int = 3, delay: float = 3.0) -> None:
+    """
+    Send a throwaway request before eval starts.
+    Retries up to `retries` times with `delay` seconds between attempts.
+    Raises RuntimeError if all attempts fail so eval never starts on a broken API.
+    """
+    import time
+
+    for attempt in range(1, retries + 1):
+        try:
+            print(f"Warming up API (attempt {attempt}/{retries})...", end=" ", flush=True)
+            _call_api("hello")
+            print("done.")
+            return
+        except Exception as e:
+            print(f"failed: {e}")
+            if attempt < retries:
+                print(f"  Retrying in {delay}s...")
+                time.sleep(delay)
+
+    raise RuntimeError(f"API warm-up failed after {retries} attempts. Eval aborted.")
+
+
 if __name__ == "__main__":
     from langsmith import Client
+
+    _warmup()
 
     # Resolve the dataset (or a filtered subset of it).
     if FILTER:
