@@ -120,6 +120,41 @@ class LLMClient:
 
         log.info("llm_request", provider=provider, base_url=base_url)
 
+        # State for filtering <think>...</think> blocks (reasoning models e.g. Qwen3)
+        _in_think = False
+        _carry = ""  # partial tag carried over from previous chunk
+
+        def _filter_think(text: str) -> str:
+            nonlocal _in_think, _carry
+            text = _carry + text
+            _carry = ""
+            out: list[str] = []
+            while text:
+                if not _in_think:
+                    idx = text.find("<think>")
+                    if idx == -1:
+                        for i in range(min(7, len(text)), 0, -1):
+                            if "<think>".startswith(text[-i:]):
+                                _carry = text[-i:]
+                                text = text[:-i]
+                                break
+                        out.append(text)
+                        break
+                    out.append(text[:idx])
+                    _in_think = True
+                    text = text[idx + 7:]
+                else:
+                    idx = text.find("</think>")
+                    if idx == -1:
+                        for i in range(min(8, len(text)), 0, -1):
+                            if "</think>".startswith(text[-i:]):
+                                _carry = text[-i:]
+                                break
+                        break
+                    _in_think = False
+                    text = text[idx + 8:]
+            return "".join(out)
+
         try:
             client = self._get_client(base_url, api_key)
             async with client.stream(
@@ -131,11 +166,16 @@ class LLMClient:
                     body = await r.aread()
                     message = body.decode("utf-8", errors="replace") if body else ""
                     log.error("llm_http_error", status=r.status_code, body=message[:500])
-                    yield {
+                    err: dict = {
                         "type": "error",
                         "status": r.status_code,
                         "message": message or f"HTTP error {r.status_code} from {provider}",
                     }
+                    if r.status_code == 429:
+                        raw_ra = r.headers.get("retry-after") or r.headers.get("Retry-After")
+                        if raw_ra and raw_ra.isdigit():
+                            err["retry_after"] = int(raw_ra)
+                    yield err
                     yield {"type": "done", "finish_reason": "error"}
                     return
 
@@ -189,7 +229,10 @@ class LLMClient:
                         continue
 
                     if "content" in delta:
-                        yield {"type": "chunk", "text": delta.get("content")}
+                        raw = delta.get("content") or ""
+                        filtered = _filter_think(raw)
+                        if filtered:
+                            yield {"type": "chunk", "text": filtered}
                         continue
 
                     finish_reason = choice0.get("finish_reason")

@@ -31,15 +31,21 @@ AVAILABLE_MODELS: Dict[str, Any] = {
         "stream": True,
         "context_window": 131072,
     },
+    "qwen/qwen3-32b": {
+        "provider": "groq",
+        "tier": "balanced",
+        "stream": True,
+        "context_window": 131072,
+    },
 
     # ──────────────────────────────────────────────────────────────────
     # OpenRouter
     # ──────────────────────────────────────────────────────────────────
-    "meta-llama/llama-3.3-70b-instruct:free": {
+    "openai/gpt-oss-120b:free": {
         "provider": "openrouter",
         "tier": "balanced",
         "stream": True,
-        "context_window": 65536,
+        "context_window": 131072,
     },
     "google/gemma-4-31b-it:free": {
         "provider": "openrouter",
@@ -47,105 +53,31 @@ AVAILABLE_MODELS: Dict[str, Any] = {
         "stream": True,
         "context_window": 262144,
     },
-    "nvidia/nemotron-3-super-120b-a12b:free": {
+    "google/gemma-4-26b-a4b-it:free": {
         "provider": "openrouter",
-        "tier": "balanced",
+        "tier": "fast",
         "stream": True,
         "context_window": 262144,
     },
-    "openai/gpt-oss-120b:free": {
+    "meta-llama/llama-3.3-70b-instruct:free": {
         "provider": "openrouter",
         "tier": "balanced",
         "stream": True,
         "context_window": 131072,
     },
 
-    # ──────────────────────────────────────────────────────────────────
-    # OpenRouter — unfree
-    # ──────────────────────────────────────────────────────────────────
-    "google/gemini-2.5-flash": {
-        "provider": "openrouter",
-        "tier": "fast",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "google/gemini-2.5-pro": {
-        "provider": "openrouter",
-        "tier": "premium",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "google/gemini-3.1-pro-preview": {
-        "provider": "openrouter",
-        "tier": "premium",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "meta-llama/llama-4-maverick": {
-        "provider": "openrouter",
-        "tier": "balanced",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "anthropic/claude-3.5-haiku": {
-        "provider": "openrouter",
-        "tier": "balanced",
-        "stream": True,
-        "context_window": 200000,
-    },
-    "anthropic/claude-sonnet-4": {
-        "provider": "openrouter",
-        "tier": "premium",
-        "stream": True,
-        "context_window": 1000000,
-    },
-    "openai/gpt-4o-mini": {
-        "provider": "openrouter",
-        "tier": "fast",
-        "stream": True,
-        "context_window": 128000,
-    },
-
-    # ──────────────────────────────────────────────────────────────────
-    # Google Gemini — Direct API
-    # ──────────────────────────────────────────────────────────────────
-    "gemini-2.0-flash": {
-        "provider": "gemini",
-        "tier": "fast",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "gemini-2.0-flash-lite": {
-        "provider": "gemini",
-        "tier": "fast",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "gemini-2.5-flash": {
-        "provider": "gemini",
-        "tier": "balanced",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "gemini-2.5-pro": {
-        "provider": "gemini",
-        "tier": "premium",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "gemini-3-flash-preview": {
-        "provider": "gemini",
-        "tier": "fast",
-        "stream": True,
-        "context_window": 1048576,
-    },
-    "gemini-3.1-pro-preview": {
-        "provider": "gemini",
-        "tier": "premium",
-        "stream": True,
-        "context_window": 1048576,
-    },
 }
+
+
+FALLBACK_CHAIN: list[str] = [
+    "llama-3.3-70b-versatile",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "openai/gpt-oss-120b:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "qwen/qwen3-32b",
+    "llama-3.1-8b-instant",
+]
 
 
 class Settings(BaseSettings):

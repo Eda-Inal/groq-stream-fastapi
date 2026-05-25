@@ -51,7 +51,7 @@ Client
 2. `ChatService.stream_chat()`:
    - Loads conversation history from DB (last 20 turns, scoped to user_id + conversation_id)
    - Fetches tool schemas from MCP server via `RemoteMCPClient.list_tools()`
-   - Prepends `RAG_TOOL_CALL_SYSTEM_MESSAGE` (tool routing prompt)
+   - Prepends `ROUTING_SYSTEM_MESSAGE` (tool routing prompt)
    - **Round loop** (max 8 rounds, max 10 total tool calls):
      - **LLM call 1** (`_traced_llm_call`, name=`llm.{model}.tool_routing`): asks model to route
      - If model returns tool calls → execute each via `RemoteMCPClient.call_tool()`
@@ -60,7 +60,7 @@ Client
        - Appends `FINALIZATION_SYSTEM_MESSAGE`
        - Applies `_apply_context_budget()` to stay under token limit
        - **LLM call 3** (`_traced_llm_call`, name=`llm.{model}.finalization`): answer from tool results
-     - If no tool call → yield buffered text chunks directly
+     - If no tool call → **LLM call 2** (`direct_answer`): fresh call without tools, generates the final answer
      - If Groq `failed_generation` error → fallback path: manually call RAG, inject result, retry without tools (**LLM call 2**, name=`llm.{model}.fallback_no_tools`)
 3. Persists `ChatLog` to DB
 4. Root LangSmith span closed in `finally` block
@@ -133,8 +133,8 @@ Client
 
 | File | Purpose |
 |------|---------|
-| `app/services/chat_service.py` | Main orchestration: tool-calling loop, context budget, LangSmith spans, chat log persistence |
-| `app/services/groq_client.py` | `LLMClient` — async SSE streaming to Groq/OpenRouter/Gemini. Emits typed events: `chunk`, `tool_call`, `done`, `error`, `usage` |
+| `app/services/chat_service.py` | Main orchestration: tool-calling loop, context budget, LangSmith spans, chat log persistence, rate-limit fallback chain (`allow_fallback` param) |
+| `app/services/groq_client.py` | `LLMClient` — async SSE streaming to Groq/OpenRouter. Emits typed events: `chunk`, `tool_call`, `done`, `error`, `usage`. Filters `<think>...</think>` blocks from reasoning models (e.g. Qwen3). Includes `retry_after` in 429 error events. |
 | `app/services/tracing.py` | LangSmith integration. `create_run()` / `end_run()` — safe no-ops when disabled |
 | `app/services/embeddings.py` | `EmbeddingService` — retry/backoff, in-memory LRU cache, returns `EmbeddingResult(vector, model_name)` |
 | `app/services/ingestion_service.py` | `IngestionService` — chunk + embed + persist documents atomically |
@@ -164,7 +164,7 @@ Client
 | `app/db/session.py` | `AsyncSessionLocal`, `get_db` dependency |
 | `app/db/engine.py` | Engine creation |
 | `app/db/models/document.py` | `Document` — metadata (filename, user_id, tags, chunk_count, created_at) |
-| `app/db/models/document_chunk.py` | `DocumentChunk` — text + `pgvector(768)` embedding, page_number, section_heading |
+| `app/db/models/document_chunk.py` | `DocumentChunk` — text + `pgvector(1024)` embedding (mxbai-embed-large), page_number, section_heading |
 | `app/db/models/chat_log.py` | `ChatLog` — full messages payload (JSONB), response, model params, conversation_id, turn_index, user_id |
 | `app/db/repositories/document.py` | DB queries: `create_document`, `search_document_chunks` (hybrid search), `list_documents`, etc. |
 | `app/db/repositories/chat_log.py` | `create_chat_log`, `list_chat_logs_by_conversation` |
@@ -231,10 +231,10 @@ Located in `chat_service.py:ROUTING_SYSTEM_MESSAGE`. Strict rules — model must
 ### Dataset
 
 `eval/upload_dataset.py` — uploads 30 questions to LangSmith dataset `tool-routing-eval-v2`:
-- calculator (4): explicit arithmetic with natural-language phrasing
-- web_search (13): weather, exchange rates, current events, current president, current population, ambiguous/tricky cases
-- rag_search (3): "my documents", "my files" phrasing — expected tool name is `rag_search` (matches MCP tool name exactly)
-- none (9): Shakespeare, capital of France, H₂O, WWII, simple conversational, unknowable questions
+- calculator (5): explicit arithmetic with natural-language phrasing, including rate-given math
+- web_search (11): weather, exchange rates, current events, current president, current population, ambiguous/tricky cases
+- rag_search (4): "my documents", "my files" phrasing — expected tool name is `rag_search` (matches MCP tool name exactly)
+- none (10): Shakespeare, capital of France, H₂O, WWII, simple conversational, unknowable questions
 - edge cases: "Find population of Turkey in my documents" → expected `rag_search` (model obeys literal "in my documents"); "Can you find me a good book?" → expected `none` ("find" ≠ RAG)
 
 **Important:** `expected_tool` values must match the actual MCP tool names (`rag_search`, not `rag`).
@@ -257,7 +257,7 @@ Run once: `.venv\Scripts\python eval/upload_dataset.py`
 
 **Run all 30:** `.venv\Scripts\python eval/run_eval.py` (requires live Docker stack). Takes ~3.5 minutes.
 
-**Baseline accuracy:** 80% (24/30) with `llama-4-scout` and current routing prompt.
+**Baseline accuracy:** 83% (25/30) with `llama-4-scout`, `temperature=0` routing, and current dataset.
 
 **LangSmith project:** `groq-stream-fastapi` → view at https://smith.langchain.com
 
@@ -268,11 +268,39 @@ Run once: `.venv\Scripts\python eval/upload_dataset.py`
 `groq_client.py` resolves provider from `AVAILABLE_MODELS`:
 - `groq` → `GROQ_API_KEY` + `https://api.groq.com/openai/v1`
 - `openrouter` → `OPENROUTER_API_KEY` + `https://openrouter.ai/api/v1`
-- `gemini` → `GEMINI_API_KEY` + `https://generativelanguage.googleapis.com/v1beta/openai`
 
-All providers use the OpenAI-compatible `/chat/completions` endpoint. Gemini strips `frequency_penalty`, `presence_penalty`, `seed` before sending.
+All providers use the OpenAI-compatible `/chat/completions` endpoint.
+
+> **Note:** Gemini direct API (`gemini` provider) is defined in config but not usable without billing — free tier quota is 0 from Turkey. Use OpenRouter Gemini models instead (`google/gemini-2.5-flash` etc.).
 
 **Default model:** `llama-3.3-70b-versatile` (Groq). **Eval model:** `meta-llama/llama-4-scout-17b-16e-instruct`.
+
+### Active Model List
+
+| Model ID | Provider | Tier |
+|----------|----------|------|
+| `llama-3.3-70b-versatile` | Groq | balanced (default) |
+| `llama-3.1-8b-instant` | Groq | fast |
+| `meta-llama/llama-4-scout-17b-16e-instruct` | Groq | balanced (eval) |
+| `qwen/qwen3-32b` | Groq | balanced (reasoning) |
+| `openai/gpt-oss-120b:free` | OpenRouter | balanced |
+| `google/gemma-4-31b-it:free` | OpenRouter | balanced |
+| `google/gemma-4-26b-a4b-it:free` | OpenRouter | fast |
+| `meta-llama/llama-3.3-70b-instruct:free` | OpenRouter | balanced |
+
+### Rate Limit Fallback
+
+`FALLBACK_CHAIN` in `config.py` defines the automatic fallback order when a model hits its daily quota (RPD 429):
+
+```
+llama-3.3-70b-versatile → llama-3.3-70b-instruct:free → openai/gpt-oss-120b:free
+  → gemma-4-31b-it:free → gemma-4-26b-a4b-it:free → qwen/qwen3-32b → llama-3.1-8b-instant
+```
+
+**RPM vs RPD handling:**
+- `retry_after ≤ 60s` → per-minute limit → wait `retry_after + 1` seconds, retry same model
+- `retry_after > 60s` or missing → daily limit → switch to next model in chain
+- If client sent an explicit `model` field → fallback is disabled, error is returned directly
 
 ---
 
@@ -310,8 +338,11 @@ All providers use the OpenAI-compatible `/chat/completions` endpoint. Gemini str
 - **`_traced_llm_call` is an async generator:** Uses `try/finally` to always end the LangSmith span, even when the caller breaks out of the loop early.
 - **Usage events consumed internally:** `groq_client.py` emits `{"type": "usage", ...}` events. `_traced_llm_call` consumes them for LangSmith and does not forward them to callers.
 - **RAG result re-injection:** After tool execution, the last successful RAG result is added as a system message again before finalization. This prevents the model from ignoring retrieved content.
-- **Grounding enforcement:** `FINALIZATION_SYSTEM_MESSAGE` instructs the model to answer exclusively from tool results and end with a `Source:` line. The `Source:` line is what the eval runner uses for tool detection.
+- **Grounding enforcement:** `FINALIZATION_SYSTEM_MESSAGE` instructs the model to answer exclusively from tool results and end with a `Source:` line (`Source: [filename]`, `Source: [URL]`, or `Source: calculator`).
+- **Routing is deterministic:** The tool routing LLM call always uses `temperature=0, max_tokens=256`. User-supplied temperature/sampling params apply only to finalization and direct-answer calls.
 - **Fail-all-or-nothing embedding:** `embed_batch()` returns `None` if any embedding fails; no partial ingestion.
+- **`<think>` tag filtering:** `groq_client.py` strips `<think>...</think>` blocks from streaming output so reasoning model internals never reach the client.
+- **Rate-limit fallback:** RPM 429 (retry-after ≤ 60s) → wait and retry same model. RPD 429 → walk `FALLBACK_CHAIN`. Disabled when client sends an explicit model field.
 
 ---
 
@@ -373,4 +404,4 @@ LANGSMITH_TRACING_ENABLED=true
 
 ---
 
-*Last updated: 2026-05-25*
+*Last updated: 2026-05-25 — model list cleanup, fallback chain, think-tag filtering*

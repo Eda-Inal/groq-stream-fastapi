@@ -1,4 +1,5 @@
 from collections.abc import AsyncIterator
+import asyncio
 import json
 import re
 import time
@@ -12,7 +13,7 @@ from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
 from app.services.mcp.remote_client import RemoteMCPClient
 from app.services import tracing as ls
-from app.core.config import settings, AVAILABLE_MODELS
+from app.core.config import settings, AVAILABLE_MODELS, FALLBACK_CHAIN
 from app.utils.token_counter import (
     estimate_messages_tokens,
     truncate_rag_chunks,
@@ -91,6 +92,14 @@ class ChatService:
             mode="remote",
             url=settings.mcp_server_url,
         )
+
+    @staticmethod
+    def _next_fallback(current: str) -> str | None:
+        try:
+            idx = FALLBACK_CHAIN.index(current)
+            return FALLBACK_CHAIN[idx + 1] if idx + 1 < len(FALLBACK_CHAIN) else None
+        except ValueError:
+            return None
 
     @staticmethod
     def _is_protected(m: dict, tail_start: int, idx: int) -> bool:
@@ -269,6 +278,7 @@ class ChatService:
         stop: str | list[str] | None = None,
         seed: int | None = None,
         conversation_id: str | None = None,
+        allow_fallback: bool = True,
     ) -> AsyncIterator[dict]:
 
         log = logger.bind(model=model)
@@ -307,6 +317,7 @@ class ChatService:
         any_tool_executed = False
         last_rag_result: ToolResult | None = None
         round_no = 0
+        active_model = model
 
         try:
             if conversation_id:
@@ -431,19 +442,21 @@ class ChatService:
                 buffered_chunks: list[dict] = []
                 saw_tool_call = False
                 tool_call_generation_failed = False
+                hit_rate_limit = False
+                rate_limit_retry_after: int | None = None
                 detected_tool: str | None = None
 
                 # ── LLM call 1: tool routing pass ──────────────────────────────
                 async for event in self._traced_llm_call(
                     parent_run=root_run,
-                    name=f"llm.{model}.tool_routing",
+                    name=f"llm.{active_model}.tool_routing",
                     metadata={
                         "round": round_no,
                         "with_tools": True,
                         "tool_count": len(tools_schema),
                     },
                     messages=effective_messages,
-                    model=model,
+                    model=active_model,
                     tools=tools_schema,
                     temperature=0,
                     max_tokens=256,
@@ -461,6 +474,10 @@ class ChatService:
                         continue
 
                     if etype == "error":
+                        if event.get("status") == 429:
+                            hit_rate_limit = True
+                            rate_limit_retry_after = event.get("retry_after")
+                            break
                         msg = str(event.get("message", "")).lower()
                         if "call a function" in msg or "failed_generation" in msg:
                             tool_call_generation_failed = True
@@ -474,6 +491,25 @@ class ChatService:
 
                     if etype == "done":
                         break
+
+                if hit_rate_limit:
+                    # RPM (dakikalık limit): retry_after küçükse bekle, aynı modelde dene.
+                    if rate_limit_retry_after is not None and rate_limit_retry_after <= 60:
+                        log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=rate_limit_retry_after)
+                        await asyncio.sleep(rate_limit_retry_after + 1)
+                        round_no -= 1
+                        continue
+                    # RPD (günlük limit) veya bilinmiyor: fallback varsa geç, yoksa hata dön.
+                    if allow_fallback:
+                        next_m = self._next_fallback(active_model)
+                        if next_m:
+                            log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
+                            active_model = next_m
+                            round_no -= 1
+                            continue
+                    yield {"type": "error", "status": 429, "message": f"Rate limit reached on model '{active_model}'."}
+                    yield {"type": "done", "finish_reason": "error"}
+                    break
 
                 if not saw_tool_call:
                     # Detect Groq tool-call serialization failure via <|python_tag|> leaking
@@ -588,14 +624,14 @@ class ChatService:
                         # ── LLM call 2: fallback retry without tools ────────────
                         async for event in self._traced_llm_call(
                             parent_run=root_run,
-                            name=f"llm.{model}.fallback_no_tools",
+                            name=f"llm.{active_model}.fallback_no_tools",
                             metadata={
                                 "round": round_no,
                                 "with_tools": False,
                                 "reason": "tool_call_generation_failed",
                             },
                             messages=fallback_messages,
-                            model=model,
+                            model=active_model,
                             tools=None,
                             temperature=temperature,
                             max_tokens=max_tokens,
@@ -625,28 +661,49 @@ class ChatService:
                     # model focuses solely on answering, not on tool selection.
                     effective_messages.append(DIRECT_ANSWER_SYSTEM_MESSAGE)
 
-                    async for event in self._traced_llm_call(
-                        parent_run=root_run,
-                        name=f"llm.{model}.direct_answer",
-                        metadata={
-                            "round": round_no,
-                            "with_tools": False,
-                            "reason": "no_tool_needed",
-                        },
-                        messages=effective_messages,
-                        model=model,
-                        tools=None,
-                        temperature=temperature,
-                        max_tokens=max_tokens,
-                        top_p=top_p,
-                        frequency_penalty=frequency_penalty,
-                        presence_penalty=presence_penalty,
-                        stop=stop,
-                        seed=seed,
-                    ):
-                        if event.get("type") == "chunk" and event.get("text"):
-                            full_response.append(event["text"])
-                        yield event
+                    _da_done = False
+                    while not _da_done:
+                        _da_429 = False
+                        _da_event: dict | None = None
+                        async for event in self._traced_llm_call(
+                            parent_run=root_run,
+                            name=f"llm.{active_model}.direct_answer",
+                            metadata={
+                                "round": round_no,
+                                "with_tools": False,
+                                "reason": "no_tool_needed",
+                            },
+                            messages=effective_messages,
+                            model=active_model,
+                            tools=None,
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            top_p=top_p,
+                            frequency_penalty=frequency_penalty,
+                            presence_penalty=presence_penalty,
+                            stop=stop,
+                            seed=seed,
+                        ):
+                            if event.get("type") == "error" and event.get("status") == 429:
+                                _da_429 = True
+                                _da_event = event
+                                break
+                            if event.get("type") == "chunk" and event.get("text"):
+                                full_response.append(event["text"])
+                            yield event
+                        if _da_429:
+                            _da_ra = _da_event.get("retry_after") if _da_event else None
+                            if _da_ra is not None and _da_ra <= 60:
+                                log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=_da_ra)
+                                await asyncio.sleep(_da_ra + 1)
+                                continue
+                            if allow_fallback:
+                                next_m = self._next_fallback(active_model)
+                                if next_m:
+                                    log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
+                                    active_model = next_m
+                                    continue
+                        _da_done = True
                     break
 
                 openai_tool_calls = build_openai_tool_calls(tool_state)
@@ -769,32 +826,53 @@ class ChatService:
                     saw_final = False
 
                     # ── LLM call 3: finalization pass (no tools) ───────────────
-                    async for event in self._traced_llm_call(
-                        parent_run=root_run,
-                        name=f"llm.{model}.finalization",
-                        metadata={
-                            "round": round_no,
-                            "with_tools": False,
-                            "reason": "finalization_after_tools",
-                        },
-                        messages=effective_messages,
-                        model=model,
-                        tools=None,
-                        temperature=temperature,
-                        max_tokens=max_tokens,
-                        top_p=top_p,
-                        frequency_penalty=frequency_penalty,
-                        presence_penalty=presence_penalty,
-                        stop=stop,
-                        seed=seed,
-                    ):
-                        if event.get("type") == "chunk" and event.get("text"):
-                            saw_final = True
-                            full_response.append(event["text"])
-                        if event.get("type") == "tool_call":
-                            log.warning("tool_call_in_finalization_ignored")
-                            continue
-                        yield event
+                    _fin_done = False
+                    while not _fin_done:
+                        _fin_429 = False
+                        _fin_event: dict | None = None
+                        async for event in self._traced_llm_call(
+                            parent_run=root_run,
+                            name=f"llm.{active_model}.finalization",
+                            metadata={
+                                "round": round_no,
+                                "with_tools": False,
+                                "reason": "finalization_after_tools",
+                            },
+                            messages=effective_messages,
+                            model=active_model,
+                            tools=None,
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            top_p=top_p,
+                            frequency_penalty=frequency_penalty,
+                            presence_penalty=presence_penalty,
+                            stop=stop,
+                            seed=seed,
+                        ):
+                            if event.get("type") == "error" and event.get("status") == 429:
+                                _fin_429 = True
+                                _fin_event = event
+                                break
+                            if event.get("type") == "chunk" and event.get("text"):
+                                saw_final = True
+                                full_response.append(event["text"])
+                            if event.get("type") == "tool_call":
+                                log.warning("tool_call_in_finalization_ignored")
+                                continue
+                            yield event
+                        if _fin_429:
+                            _fin_ra = _fin_event.get("retry_after") if _fin_event else None
+                            if _fin_ra is not None and _fin_ra <= 60:
+                                log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=_fin_ra)
+                                await asyncio.sleep(_fin_ra + 1)
+                                continue
+                            if allow_fallback:
+                                next_m = self._next_fallback(active_model)
+                                if next_m:
+                                    log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
+                                    active_model = next_m
+                                    continue
+                        _fin_done = True
 
                     if not saw_final:
                         yield {
