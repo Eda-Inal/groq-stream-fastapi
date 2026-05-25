@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.api.v1.endpoints.chat import router as chat_router
 from app.api.v1.endpoints.documents import router as documents_router
+from app.api.v1.endpoints.eval import router as eval_router
 from app.api.v1.endpoints.rag_metrics import router as rag_metrics_router
 
 router = APIRouter(prefix="/api/v1")
@@ -8,4 +9,5 @@ router = APIRouter(prefix="/api/v1")
 router.include_router(chat_router)
 router.include_router(documents_router)
 router.include_router(rag_metrics_router)
+router.include_router(eval_router)
 

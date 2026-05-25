@@ -122,6 +122,7 @@ Client
 | `app/api/v1/endpoints/chat.py` | `GET /chat/models`, `POST /chat/stream` (SSE), `POST /chat/bulk` |
 | `app/api/v1/endpoints/documents.py` | CRUD for documents + PDF upload (`POST /documents/upload`) + `POST /documents/{id}/reprocess` |
 | `app/api/v1/endpoints/rag_metrics.py` | `GET /rag/metrics` — proxies metrics from MCP server + total doc/chunk counts from DB |
+| `app/api/v1/endpoints/eval.py` | `POST /eval/route` — lightweight routing-only endpoint for eval. Runs 1 LLM call (~800 tokens), returns `{tool, args}`. No tool execution, no answer generation. |
 
 **Chat stream endpoint** (`POST /api/v1/chat/stream`):
 - Accepts `ChatStreamRequest`: `messages`, `model`, `user_id`, `conversation_id`, `temperature`, `max_tokens`, `top_p`, `frequency_penalty`, `presence_penalty`, `stop`, `seed`
@@ -212,14 +213,16 @@ LANGSMITH_TRACING_ENABLED=true
 
 ## Tool Routing System Prompt
 
-Located in `chat_service.py:RAG_TOOL_CALL_SYSTEM_MESSAGE`. Three tools with explicit rules:
+Located in `chat_service.py:ROUTING_SYSTEM_MESSAGE`. Strict rules — model must call a tool or output nothing:
 
-1. **rag_search** — user's uploaded documents. Prefer rag over web when uncertain.
-2. **web_search** — live/current external information (weather, news, current events).
-3. **calculator** — ANY arithmetic the user asks to compute, even simple operations. Never calculate in the model's head.
-4. **None** — static general-knowledge (historical dates, geography, definitions, classical authors, formulas). Answer directly without any tool.
+1. **rag_search** — ONLY when the question explicitly references the user's own uploaded documents (phrases like "my documents", "my files", "in my contract"). Never use for general knowledge.
+2. **web_search** — when the answer depends on real-time or frequently changing data (prices, exchange rates, weather, news, current roles/positions, events after training cutoff). Do NOT use for stable general knowledge (history, geography, science, definitions).
+3. **calculator** — ANY arithmetic the user explicitly asks to compute, regardless of simplicity. Never compute in the model's head.
+4. **None** — static general-knowledge questions (historical dates, geography, science, classical authors, established formulas) and simple conversational messages. Output nothing; a separate step generates the answer.
 
-**Finalization prompt** (`FINALIZATION_SYSTEM_MESSAGE`): forces model to use retrieved content exclusively, ends response with `Source: [filename]` or `Source: [URL]`.
+**`<|python_tag|>` fallback:** Groq occasionally serializes tool calls as plain text starting with `<|python_tag|>` instead of proper JSON. `chat_service.py` detects this in the stream, parses the tool name via regex, and routes to the correct tool. The routing system message is stripped and replaced with `DIRECT_ANSWER_SYSTEM_MESSAGE` before the fallback LLM call.
+
+**Finalization prompt** (`FINALIZATION_SYSTEM_MESSAGE`): forces model to use retrieved content exclusively, ends response with `Source: [filename]`, `Source: [URL]`, or `Source: calculator`.
 
 ---
 
@@ -227,29 +230,34 @@ Located in `chat_service.py:RAG_TOOL_CALL_SYSTEM_MESSAGE`. Three tools with expl
 
 ### Dataset
 
-`eval/upload_dataset.py` — uploads 18 questions to LangSmith dataset `tool-routing-eval-v1`:
+`eval/upload_dataset.py` — uploads 30 questions to LangSmith dataset `tool-routing-eval-v2`:
 - calculator (4): explicit arithmetic with natural-language phrasing
-- web_search (6): weather, exchange rates, current events, current president, current population
-- rag (3): "my documents", "my files" phrasing
-- none (4): Shakespeare, capital of France, H₂O, WWII end year
-- edge case (1): "Find population of Turkey in my documents" → expected `rag` (model obeys literal instruction)
+- web_search (13): weather, exchange rates, current events, current president, current population, ambiguous/tricky cases
+- rag_search (3): "my documents", "my files" phrasing — expected tool name is `rag_search` (matches MCP tool name exactly)
+- none (9): Shakespeare, capital of France, H₂O, WWII, simple conversational, unknowable questions
+- edge cases: "Find population of Turkey in my documents" → expected `rag_search` (model obeys literal "in my documents"); "Can you find me a good book?" → expected `none` ("find" ≠ RAG)
+
+**Important:** `expected_tool` values must match the actual MCP tool names (`rag_search`, not `rag`).
 
 Run once: `.venv\Scripts\python eval/upload_dataset.py`
 
 ### Eval Runner
 
-`eval/run_eval.py` — sends each question to the live API, detects tool used from response text, reports to LangSmith.
+`eval/run_eval.py` — POSTs each question to `/api/v1/eval/route`, gets the tool name directly, compares with expected, reports to LangSmith. No SSE streaming or heuristic parsing needed.
 
-**Tool detection heuristic (`_detect_tool`):**
-1. "not found in your documents" in text → `rag`
-2. `Source: calculator` → `calculator`
-3. `Source: http(s)://...` → `web_search`
-4. `Source: [filename.ext]` or `[bracket]` without http → `rag`
-5. No `Source:` line → `none`
+**Endpoint:** `POST /api/v1/eval/route` — runs only the routing LLM call (~800 tokens vs ~2600 for full `/chat/stream`). Returns `{tool: str, args: dict}`. Defined in `app/api/v1/endpoints/eval.py`.
+
+**Model:** `meta-llama/llama-4-scout-17b-16e-instruct` (Groq). Separate token quota from the default chat model. Good tool-calling accuracy.
+
+**Rate limiting:** `REQUEST_DELAY=2.0s` between questions, group pause of `15s` every 5 questions, up to 4 retries with exponential backoff. Stays well under Groq's 30 RPM limit.
+
+**Warmup:** `GET /api/v1/chat/models` — zero tokens, just verifies the API is reachable.
 
 **Run subset:** set `FILTER = ["substring1", "substring2"]` to run matching questions only.
 
-**Run all 18:** `.venv\Scripts\python eval/run_eval.py` (requires live Docker stack)
+**Run all 30:** `.venv\Scripts\python eval/run_eval.py` (requires live Docker stack). Takes ~3.5 minutes.
+
+**Baseline accuracy:** 80% (24/30) with `llama-4-scout` and current routing prompt.
 
 **LangSmith project:** `groq-stream-fastapi` → view at https://smith.langchain.com
 
@@ -365,4 +373,4 @@ LANGSMITH_TRACING_ENABLED=true
 
 ---
 
-*Last updated: 2026-05-23*
+*Last updated: 2026-05-25*

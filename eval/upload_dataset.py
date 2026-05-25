@@ -1,5 +1,5 @@
 """
-Upload the 18-question tool-routing eval dataset to LangSmith.
+Upload the 30-question tool-routing eval dataset to LangSmith.
 
 Run from project root:
     .venv\Scripts\python eval/upload_dataset.py
@@ -25,7 +25,7 @@ _load_env()
 
 from langsmith import Client  # noqa: E402
 
-DATASET_NAME = "tool-routing-eval-v1"
+DATASET_NAME = "tool-routing-eval-v2"
 
 EXAMPLES = [
     # ── calculator (4) ────────────────────────────────────────────────────
@@ -83,17 +83,17 @@ EXAMPLES = [
     # ── rag (3) ───────────────────────────────────────────────────────────
     {
         "question": "Search my documents for the return policy.",
-        "expected_tool": "rag",
+        "expected_tool": "rag_search",
         "expected_answer": "relevant chunk from docs",
     },
     {
         "question": "What does my document say about payment terms?",
-        "expected_tool": "rag",
+        "expected_tool": "rag_search",
         "expected_answer": "relevant chunk from docs",
     },
     {
         "question": "Find information about delivery time in my files.",
-        "expected_tool": "rag",
+        "expected_tool": "rag_search",
         "expected_answer": "relevant chunk from docs",
     },
     # ── none (4) ──────────────────────────────────────────────────────────
@@ -120,8 +120,70 @@ EXAMPLES = [
     # ── edge cases (1) ────────────────────────────────────────────────────
     {
         "question": "Find the population of Turkey in my documents.",
+        "expected_tool": "rag_search",
+        "expected_answer": "user says 'in my documents' — rag_search is correct routing",
+    },
+    # ── ambiguous / tricky — web_search (7) ──────────────────────────────
+    {
+        "question": "What is the latest version of Python?",
         "expected_tool": "web_search",
-        "expected_answer": "no documents exist — should fall back to web",
+        "expected_answer": "current version — model's training data may be outdated",
+    },
+    {
+        "question": "Who is the CEO of OpenAI?",
+        "expected_tool": "web_search",
+        "expected_answer": "current CEO — leadership can change",
+    },
+    {
+        "question": "What is the current interest rate set by the Turkish Central Bank?",
+        "expected_tool": "web_search",
+        "expected_answer": "current rate — changes frequently",
+    },
+    {
+        "question": "How much does an iPhone cost?",
+        "expected_tool": "web_search",
+        "expected_answer": "current price — but model might answer from memory",
+    },
+    {
+        "question": "What document do I need to apply for a Turkish visa?",
+        "expected_tool": "web_search",
+        "expected_answer": "visa requirements — 'document' here is not about user's files",
+    },
+    {
+        "question": "Can you find me a good book to read?",
+        "expected_tool": "none",
+        "expected_answer": "general recommendation — no tool needed",
+    },
+    {
+        "question": "If the dollar is 34 TRY and I have 500 dollars, how much TRY is that?",
+        "expected_tool": "web_search",
+        "expected_answer": "needs current rate first — then math; tricky multi-step",
+    },
+    # ── ambiguous / tricky — none (5) ────────────────────────────────────
+    {
+        "question": "Tell me about Istanbul.",
+        "expected_tool": "none",
+        "expected_answer": "general knowledge answer — no tool needed for generic info",
+    },
+    {
+        "question": "What is 2+2?",
+        "expected_tool": "none",
+        "expected_answer": "4 — too trivial for calculator, model should answer directly",
+    },
+    {
+        "question": "What did my neighbor have for breakfast yesterday?",
+        "expected_tool": "none",
+        "expected_answer": "cannot know — model should refuse, not hallucinate",
+    },
+    {
+        "question": "What is the password to my email account?",
+        "expected_tool": "none",
+        "expected_answer": "cannot and should not answer",
+    },
+    {
+        "question": "Is Pluto a planet?",
+        "expected_tool": "none",
+        "expected_answer": "No (since 2006) — model knows this, but tests if it over-searches",
     },
 ]
 
@@ -139,8 +201,8 @@ def main() -> None:
     dataset = client.create_dataset(
         DATASET_NAME,
         description=(
-            "Tool routing eval: 18 questions — "
-            "calculator (4), web_search (6), rag (3), none (4), edge case (1)."
+            "Tool routing eval: 30 questions — "
+            "calculator (4), web_search (13), rag (3), none (9), edge case (1)."
         ),
     )
 

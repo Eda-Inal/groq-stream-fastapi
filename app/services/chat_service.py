@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 import json
+import re
 import time
 
 import structlog
@@ -28,11 +29,14 @@ ROUTING_SYSTEM_MESSAGE = {
         "You are a routing agent. Your ONLY task is to decide whether to call a tool. "
         "Do NOT write any text response — only make tool calls if needed.\n\n"
         "Available tools:\n"
-        "1. rag_search — user's private uploaded documents (policies, manuals, "
-        "reports, contracts, internal notes). If unsure whether the answer lives "
-        "in their documents, prefer trying rag_search.\n"
-        "2. web_search — live or current external information (weather, news, "
-        "real-time events, public facts that change over time).\n"
+        "1. rag_search — user's private uploaded documents. Use ONLY when the "
+        "question explicitly references the user's documents, or when the topic "
+        "is clearly internal/private (policies, contracts, personal reports).\n"
+        "2. web_search — use when the answer depends on real-time or "
+        "frequently changing data (prices, rates, weather, news, "
+        "current roles/positions), or events after your training cutoff. "
+        "Do NOT use for stable world knowledge: history, geography, "
+        "science, definitions, general concepts.\n"
         "3. calculator — ANY arithmetic the user explicitly asks to compute, "
         "regardless of how easy the numbers look (e.g. 'what is 18% of 1250'). "
         "Never compute in your head — always route through this tool.\n\n"
@@ -67,7 +71,8 @@ FINALIZATION_SYSTEM_MESSAGE = {
         "If rag_search returned nothing: respond with "
         "'This information was not found in your documents.' and do not search the web. "
         "Always end your response with a source line: "
-        "use 'Source: [filename]' for document answers, 'Source: [URL]' for web answers. "
+        "use 'Source: [filename]' for document answers, 'Source: [URL]' for web answers, "
+        "'Source: calculator' for calculator results. "
         "Do not write function calls as text in your response."
     ),
 }
@@ -426,6 +431,7 @@ class ChatService:
                 buffered_chunks: list[dict] = []
                 saw_tool_call = False
                 tool_call_generation_failed = False
+                detected_tool: str | None = None
 
                 # ── LLM call 1: tool routing pass ──────────────────────────────
                 async for event in self._traced_llm_call(
@@ -462,20 +468,39 @@ class ChatService:
                     if etype == "error":
                         msg = str(event.get("message", "")).lower()
                         if "call a function" in msg or "failed_generation" in msg:
-                            # Groq could not serialise the tool call JSON.
-                            # Retry this round without tools so the model answers directly.
                             tool_call_generation_failed = True
+                            # Try to extract the intended tool name from the error message.
+                            # Groq sometimes includes it (e.g. "failed to call web_search").
+                            for _tool in ("web_search", "rag_search", "calculator"):
+                                if _tool in msg:
+                                    detected_tool = _tool
+                                    break
                         break
 
                     if etype == "done":
                         break
 
                 if not saw_tool_call:
+                    # Detect Groq tool-call serialization failure via <|python_tag|> leaking
+                    # into chunk text — Groq couldn't build a proper tool_call event so the
+                    # model wrote the function call syntax as plain text instead.
+                    buffered_text = "".join(ev.get("text", "") for ev in buffered_chunks)
+                    if not tool_call_generation_failed and "<|python_tag|>" in buffered_text:
+                        tool_call_generation_failed = True
+
+                    # Parse the intended tool name from the leaked tag so the fallback
+                    # can call the right tool rather than always defaulting to rag_search.
+                    detected_tool: str | None = None
                     if tool_call_generation_failed:
-                        # Groq failed to serialise the tool call JSON.
-                        # Manually fetch RAG context for the last user message, inject it,
-                        # then retry without tools so the model still answers from the document.
-                        log.warning("tool_call_generation_failed_retrying_without_tools")
+                        tag_match = re.search(r"<\|python_tag\|>(\w+)", buffered_text)
+                        if tag_match:
+                            detected_tool = tag_match.group(1)
+
+                    if tool_call_generation_failed:
+                        log.warning(
+                            "tool_call_generation_failed_retrying_without_tools",
+                            detected_tool=detected_tool,
+                        )
 
                         last_user_msg = next(
                             (
@@ -485,43 +510,82 @@ class ChatService:
                             ),
                             None,
                         )
-                        if last_user_msg and rag_available:
-                            rag_args: dict = {"query": last_user_msg["content"]}
-                            if user_id:
-                                rag_args["metadata_filter"] = {"user_id": user_id}
-                            rag_result = await self.mcp.call_tool("rag_search", rag_args)
-                            rag_found = (
-                                rag_result.ok
-                                and rag_result.content.strip()
-                                and "No relevant information" not in rag_result.content
+
+                        if last_user_msg:
+                            query = last_user_msg["content"]
+
+                            if detected_tool in ("web_search", None):
+                                # detected_tool=None means Groq failed but we don't know which
+                                # tool was intended — try web_search first as the most common case.
+                                web_result = await self.mcp.call_tool("web_search", {"query": query})
+                                if web_result.ok and web_result.content.strip():
+                                    effective_messages = list(effective_messages) + [
+                                        {
+                                            "role": "system",
+                                            "content": (
+                                                "Web search results:\n"
+                                                f"{web_result.content}\n\n"
+                                                "Summarise the relevant information. "
+                                                "End your response with: Source: [URL]"
+                                            ),
+                                        }
+                                    ]
+                                    log.info(
+                                        "web_search_injected_after_tool_call_failure",
+                                        detected_tool=detected_tool,
+                                    )
+
+                            elif rag_available:
+                                rag_args: dict = {"query": query}
+                                if user_id:
+                                    rag_args["metadata_filter"] = {"user_id": user_id}
+                                rag_result = await self.mcp.call_tool("rag_search", rag_args)
+                                rag_found = (
+                                    rag_result.ok
+                                    and rag_result.content.strip()
+                                    and "No relevant information" not in rag_result.content
+                                )
+                                if rag_found:
+                                    effective_messages = list(effective_messages) + [
+                                        {
+                                            "role": "system",
+                                            "content": (
+                                                "Retrieved context from the knowledge base:\n"
+                                                f"{rag_result.content}\n\n"
+                                                "Answer ONLY using the retrieved context above. "
+                                                "Do not use your training knowledge to override these values. "
+                                                "Use the exact values from the text. "
+                                                "End your response with: Source: [filename]"
+                                            ),
+                                        }
+                                    ]
+                                    log.info("rag_context_injected_after_tool_call_failure")
+                                else:
+                                    effective_messages = list(effective_messages) + [
+                                        {
+                                            "role": "system",
+                                            "content": (
+                                                "rag_search returned no relevant results. "
+                                                "Tell the user: 'I could not find this in your documents. "
+                                                "Would you like me to search the web?'"
+                                            ),
+                                        }
+                                    ]
+                                    log.info("rag_empty_asking_user_for_web_search")
+
+                        # Strip the routing prompt so the fallback LLM does not
+                        # try to emit tool calls (which would produce <|python_tag|>
+                        # again). Replace it with a direct-answer instruction.
+                        fallback_messages = [
+                            m for m in effective_messages
+                            if not (
+                                isinstance(m, dict)
+                                and m.get("role") == "system"
+                                and isinstance(m.get("content"), str)
+                                and "You are a routing agent" in m["content"]
                             )
-                            if rag_found:
-                                effective_messages = list(effective_messages) + [
-                                    {
-                                        "role": "system",
-                                        "content": (
-                                            "Retrieved context from the knowledge base:\n"
-                                            f"{rag_result.content}\n\n"
-                                            "Answer ONLY using the retrieved context above. "
-                                            "Do not use your training knowledge to override these values. "
-                                            "Use the exact values from the text. "
-                                            "End your response with: Source: [filename]"
-                                        ),
-                                    }
-                                ]
-                                log.info("rag_context_injected_after_tool_call_failure")
-                            else:
-                                effective_messages = list(effective_messages) + [
-                                    {
-                                        "role": "system",
-                                        "content": (
-                                            "rag_search returned no relevant results. "
-                                            "Tell the user: 'I could not find this in your documents. "
-                                            "Would you like me to search the web?'"
-                                        ),
-                                    }
-                                ]
-                                log.info("rag_empty_asking_user_for_web_search")
+                        ]
+                        fallback_messages = [DIRECT_ANSWER_SYSTEM_MESSAGE] + fallback_messages
 
                         fallback_chunks: list[dict] = []
                         retry_final_event: dict | None = None
@@ -535,7 +599,7 @@ class ChatService:
                                 "with_tools": False,
                                 "reason": "tool_call_generation_failed",
                             },
-                            messages=effective_messages,
+                            messages=fallback_messages,
                             model=model,
                             tools=None,
                             temperature=temperature,
