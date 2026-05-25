@@ -156,8 +156,8 @@ EXAMPLES = [
     },
     {
         "question": "If the dollar is 34 TRY and I have 500 dollars, how much TRY is that?",
-        "expected_tool": "web_search",
-        "expected_answer": "needs current rate first — then math; tricky multi-step",
+        "expected_tool": "calculator",
+        "expected_answer": "17000 — rate is given in the question, only math needed",
     },
     # ── ambiguous / tricky — none (5) ────────────────────────────────────
     {
