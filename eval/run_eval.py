@@ -172,11 +172,12 @@ if __name__ == "__main__":
     print(f"API     : {ROUTE_URL}")
     print("=" * 60)
 
+    short_model = MODEL.split("/")[-1]  # e.g. "llama-4-scout-17b-16e-instruct"
     evaluate(
         target,
         data=data,
         evaluators=[tool_selection_evaluator],
-        experiment_prefix="tool-routing",
+        experiment_prefix=f"tool-routing-{short_model}",
         max_concurrency=1,
     )
 
