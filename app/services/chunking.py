@@ -169,31 +169,35 @@ def _extract_list_segments(text: str) -> list[tuple[str, str]]:
     return parts or [("prose", text)]
 
 
-def _split_by_markdown_headings(text: str) -> list[tuple[str, str]]:
+def _split_by_markdown_headings(text: str) -> list[tuple[str, str, str | None]]:
     """
     Split plain text on markdown headings (# through ######).
-    Returns list of ('heading', heading_line) and ('section', body) pairs in order.
+    Returns list of ('section', body_text, heading_title | None) tuples.
+    heading_title is the heading text without # marks (e.g. "Introduction").
     Heading text is prepended to its section body so downstream chunks carry context.
-    If no headings found, returns [('section', text)].
+    If no headings found, returns [('section', text, None)].
     """
     matches = list(_HEADING_RE.finditer(text))
     if not matches:
-        return [("section", text)]
+        return [("section", text, None)]
 
-    parts: list[tuple[str, str]] = []
+    parts: list[tuple[str, str, str | None]] = []
     # Text before the first heading (if any)
     preamble = text[: matches[0].start()].strip()
     if preamble:
-        parts.append(("section", preamble))
+        parts.append(("section", preamble, None))
 
     for i, m in enumerate(matches):
-        heading_line = m.group(0)  # e.g. "## Introduction"
+        heading_line = m.group(0)   # e.g. "## **Introduction**"
+        # Strip inline markdown formatting (**, *, __, _, `) from the metadata
+        # field — PyMuPDF markdown mode may wrap bold headings in ** markers.
+        heading_title = re.sub(r"[*_`]", "", m.group(2)).strip()
         body_start = m.end()
         body_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         body = text[body_start:body_end].strip()
         # Prepend heading to its body so the chunk always contains the section title
         section = (heading_line + "\n\n" + body).strip() if body else heading_line
-        parts.append(("section", section))
+        parts.append(("section", section, heading_title))
 
     return parts
 
@@ -367,36 +371,42 @@ def _chunk_plain_text(
     text: str,
     max_tokens: int,
     overlap: int,
-) -> list[str]:
-    """Plain text: heading split → table runs → list-block grouping → recursive split."""
+) -> list[tuple[str, str | None]]:
+    """Plain text: heading split → table runs → list-block grouping → recursive split.
+    Returns (chunk_text, detected_heading | None) pairs."""
     text = text.strip()
     if not text:
         return []
 
-    all_chunks: list[str] = []
-    for _, section in _split_by_markdown_headings(text):
+    result: list[tuple[str, str | None]] = []
+    for _, section, heading in _split_by_markdown_headings(text):
+        section_chunks: list[str] = []
         runs = _split_table_runs(section)
         for kind, seg in runs:
             if kind == "table":
                 if count_tokens(seg) <= max_tokens:
-                    all_chunks.append(seg)
+                    section_chunks.append(seg)
                 else:
                     lines = seg.split("\n")
-                    all_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
+                    section_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
             else:
                 for lkind, lseg in _extract_list_segments(seg):
                     if lkind == "list_block":
                         if count_tokens(lseg) <= max_tokens:
-                            all_chunks.append(lseg)
+                            section_chunks.append(lseg)
                         else:
                             items = lseg.split("\n")
-                            all_chunks.extend(
+                            section_chunks.extend(
                                 _merge_parts_under_limit(items, "\n", max_tokens, overlap)
                             )
                     else:
-                        all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
+                        section_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
 
-    return [c for c in all_chunks if c.strip()]
+        for c in section_chunks:
+            if c.strip():
+                result.append((c, heading))
+
+    return result
 
 
 def _chunk_code_fenced(block: str, max_tokens: int, overlap: int) -> list[str]:
@@ -418,18 +428,28 @@ def _chunk_code_fenced(block: str, max_tokens: int, overlap: int) -> list[str]:
 
 def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkRecord]:
     """
-    Drop only tiny *trailing* prose fragments.
+    Drop noise fragments from any position.
 
-    Does not strip trailing markdown code fences (they often fall below MIN_CHUNK_TOKENS).
+    A chunk is kept if ANY of these is true:
+    - token_count >= min_tokens  (normal sized content)
+    - starts with ``` (code fence — often legitimately short)
+    - token_count >= 5 AND contains at least one letter  (short but real text,
+      e.g. a section heading with a brief intro sentence)
+
+    The letter check removes PDF noise: standalone bullet symbols (•),
+    page-number footers ("5"), and separator lines with no words.
+
+    If filtering would remove everything, returns the original list unchanged.
     """
     if len(chunks) <= 1:
         return chunks
-    out = list(chunks)
-    while len(out) > 1 and out[-1].token_count < min_tokens:
-        if out[-1].text.lstrip().startswith("```"):
-            break
-        out.pop()
-    return out
+    filtered = [
+        c for c in chunks
+        if c.token_count >= min_tokens
+        or c.text.lstrip().startswith("```")
+        or (c.token_count >= 5 and any(ch.isalpha() for ch in c.text))
+    ]
+    return filtered if filtered else chunks
 
 
 def chunk_document(
@@ -489,10 +509,10 @@ def chunk_document(
         ]
 
     pieces = _split_by_code_fences(normalized)
-    raw_chunks: list[str] = []
+    raw_chunks: list[tuple[str, str | None]] = []
     for kind, seg in pieces:
         if kind == "code":
-            raw_chunks.extend(_chunk_code_fenced(seg, cst, ovt))
+            raw_chunks.extend((c, None) for c in _chunk_code_fenced(seg, cst, ovt))
         else:
             raw_chunks.extend(_chunk_plain_text(seg, cst, ovt))
 
@@ -507,10 +527,12 @@ def chunk_document(
             token_count=count_tokens(c.strip()),
             source_filename=source_filename,
             page_number=page_number,
-            section_heading=section_heading,
+            section_heading=detected_heading or section_heading,
             context_prefix=_prefix,
         )
-        for i, c in enumerate(c for c in raw_chunks if c.strip())
+        for i, (c, detected_heading) in enumerate(
+            (c, h) for c, h in raw_chunks if c.strip()
+        )
     ]
     records = _drop_tiny_chunks(records, mct)
     return records

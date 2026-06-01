@@ -72,8 +72,9 @@ def test_metadata_passed_through() -> None:
     assert chunks[0].section_heading == "Policy"
 
 
-def test_min_chunk_drops_only_when_multiple() -> None:
-    # Force many tiny pieces then rely on MIN_CHUNK_TOKENS drop
+def test_min_chunk_alpha_chunks_kept_above_5_tokens() -> None:
+    # Chunks with alphabetic content at >= 5 tokens are preserved even if below
+    # min_chunk_tokens — they are real text, not noise.
     text = "x " * 500
     chunks = chunk_document(
         text,
@@ -83,7 +84,38 @@ def test_min_chunk_drops_only_when_multiple() -> None:
         min_chunk_tokens=10,
     )
     assert chunks
-    assert all(c.token_count >= 10 for c in chunks)
+    for c in chunks:
+        has_alpha = any(ch.isalpha() for ch in c.text)
+        assert c.token_count >= 10 or (has_alpha and c.token_count >= 5), (
+            f"Unexpected chunk: {c.token_count} tokens, has_alpha={has_alpha}"
+        )
+
+
+def test_noise_chunks_without_alpha_dropped() -> None:
+    # PDF noise: bullet symbols and page-number footers have no alpha content
+    # and should be dropped regardless of position.
+    from app.services.chunking import _drop_tiny_chunks
+    from uuid import uuid4
+
+    def _c(text, tokens):
+        return ChunkRecord(
+            chunk_id=str(uuid4()), doc_id=0, chunk_index=0, total_chunks=0,
+            text=text, token_count=tokens, source_filename="", page_number=None,
+            section_heading=None, context_prefix="",
+        )
+
+    chunks = [
+        _c("Real section content here.", 25),
+        _c("• • • •", 9),
+        _c("Short but real intro text.", 18),
+        _c("5", 1),
+    ]
+    result = _drop_tiny_chunks(chunks, min_tokens=20)
+    texts = [c.text for c in result]
+    assert "Real section content here." in texts
+    assert "Short but real intro text." in texts
+    assert "• • • •" not in texts
+    assert "5" not in texts
 
 
 def test_chunks_are_ordered() -> None:
@@ -196,3 +228,51 @@ def test_no_heading_text_unchanged() -> None:
     combined = " ".join(c.text for c in chunks_before)
     assert "Paragraph one" in combined
     assert "Paragraph two" in combined
+
+
+def test_markdown_heading_propagated_to_section_heading_field() -> None:
+    body = "We collect your data to improve the service. " * 6
+    text = "# Privacy Policy\n\n" + body
+    chunks = chunk_document(text, chunk_size_tokens=500, short_doc_max_tokens=0)
+    assert chunks
+    assert all(c.section_heading == "Privacy Policy" for c in chunks)
+
+
+def test_section_heading_per_chunk_from_nearest_heading() -> None:
+    body = "Detailed content about this section. " * 6
+    text = "# Chapter One\n\n" + body + "\n\n# Chapter Two\n\n" + body
+    chunks = chunk_document(text, chunk_size_tokens=500, short_doc_max_tokens=0)
+    ch1 = [c for c in chunks if "Chapter One" in c.text]
+    ch2 = [c for c in chunks if "Chapter Two" in c.text]
+    assert ch1, "No chunk for Chapter One"
+    assert ch2, "No chunk for Chapter Two"
+    assert all(c.section_heading == "Chapter One" for c in ch1)
+    assert all(c.section_heading == "Chapter Two" for c in ch2)
+
+
+def test_caller_section_heading_used_when_no_markdown_headings() -> None:
+    text = "Plain prose without any markdown headings. " * 10
+    chunks = chunk_document(text, section_heading="Legal", short_doc_max_tokens=0)
+    assert chunks
+    assert all(c.section_heading == "Legal" for c in chunks)
+
+
+def test_detected_heading_takes_precedence_over_caller_param() -> None:
+    body = "Some body text here. " * 6
+    text = "## Detected Heading\n\n" + body
+    chunks = chunk_document(text, section_heading="Caller Override", short_doc_max_tokens=0)
+    assert chunks
+    assert all(c.section_heading == "Detected Heading" for c in chunks)
+
+
+def test_preamble_before_first_heading_has_no_section_heading() -> None:
+    preamble = "Introductory text before any heading. " * 4
+    body = "Section body content here. " * 4
+    text = preamble + "\n\n# First Section\n\n" + body
+    chunks = chunk_document(text, chunk_size_tokens=500, short_doc_max_tokens=0)
+    preamble_chunks = [c for c in chunks if "Introductory" in c.text]
+    section_chunks = [c for c in chunks if "First Section" in c.text]
+    assert preamble_chunks, "Preamble chunk missing"
+    assert section_chunks, "Section chunk missing"
+    assert all(c.section_heading is None for c in preamble_chunks)
+    assert all(c.section_heading == "First Section" for c in section_chunks)

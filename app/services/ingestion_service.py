@@ -222,22 +222,45 @@ class IngestionService:
 
         started = time.perf_counter()
 
-        # Collect all chunks from all pages before embedding.
-        all_chunks = []
+        # Merge all pages into one text so overlap can span page boundaries.
+        # Track each page's character range in the merged string to re-assign
+        # page_number per chunk after chunking.
+        page_char_ranges: list[tuple[int, int, int]] = []
+        merged_parts: list[str] = []
+        char_pos = 0
         for page in pages:
-            for item in chunk_document(
-                page["text"],
-                page_number=page["page"],
-                doc_id=doc.id,
-                source_filename=filename,
-            ):
-                all_chunks.append(item)
+            text = page["text"]
+            page_char_ranges.append((char_pos, char_pos + len(text), page["page"]))
+            merged_parts.append(text)
+            char_pos += len(text) + 2  # len("\n\n")
+
+        merged_text = "\n\n".join(merged_parts)
+        all_chunks = list(chunk_document(merged_text, doc_id=doc.id, source_filename=filename))
 
         if not all_chunks:
             raise ValueError("PDF produced zero chunks after preprocessing.")
 
+        def _page_for(chunk_text: str) -> int | None:
+            # Search for the chunk tail (not head — head may be an overlap prefix
+            # from the previous page). rfind returns the last match, which is safe
+            # since chunks are assigned in order and later chunks appear later.
+            tail = chunk_text.rstrip()[-60:]
+            idx = merged_text.rfind(tail)
+            if idx == -1:
+                tail = chunk_text.rstrip()[-20:]
+                idx = merged_text.rfind(tail)
+            if idx == -1:
+                return None
+            for c_start, c_end, page_num in page_char_ranges:
+                if c_start <= idx < c_end:
+                    return page_num
+            return None
+
         total = len(all_chunks)
-        all_chunks = [replace(c, chunk_index=i, total_chunks=total) for i, c in enumerate(all_chunks)]
+        all_chunks = [
+            replace(c, chunk_index=i, total_chunks=total, page_number=_page_for(c.text))
+            for i, c in enumerate(all_chunks)
+        ]
 
         embeddings = await self.embeddings.embed_batch([c.text for c in all_chunks])
         if embeddings is None:
