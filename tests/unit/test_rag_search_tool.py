@@ -74,9 +74,9 @@ def test_rag_search_invalid_query(monkeypatch) -> None:
 
 def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
     """
-    Hybrid search modunda similarity threshold uygulanmaz (RRF skoru cosine ile
-    ölçek uyumsuz olduğu için). Bu test threshold davranışını izole etmek için
-    hybrid'i devre dışı bırakır.
+    Similarity threshold is not applied in hybrid search mode (RRF scores are not
+    comparable to cosine similarity). This test disables hybrid mode to isolate
+    threshold behaviour.
     """
     monkeypatch.setattr(settings, "hybrid_search_enabled", False)
     tool = RagSearchTool()

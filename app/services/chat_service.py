@@ -492,13 +492,13 @@ class ChatService:
                         break
 
                 if hit_rate_limit:
-                    # RPM (dakikalık limit): retry_after küçükse bekle, aynı modelde dene.
+                    # RPM (per-minute limit): retry_after is small, wait and retry same model.
                     if rate_limit_retry_after is not None and rate_limit_retry_after <= 60:
                         log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=rate_limit_retry_after)
                         await asyncio.sleep(rate_limit_retry_after + 1)
                         round_no -= 1
                         continue
-                    # RPD (günlük limit) veya bilinmiyor: fallback varsa geç, yoksa hata dön.
+                    # RPD (daily limit) or unknown: switch to fallback model if available, else return error.
                     if allow_fallback:
                         next_m = self._next_fallback(active_model)
                         if next_m:

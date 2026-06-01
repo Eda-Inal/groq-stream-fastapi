@@ -237,8 +237,8 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     # RAG / document chunking (used by chunk_document when args omitted)
     # ------------------------------------------------------------------
-    chunk_size_tokens: int = 500
-    chunk_overlap_tokens: int = 100
+    chunk_size_tokens: int = 300
+    chunk_overlap_tokens: int = 75
     max_document_tokens: int = 100_000
     short_doc_single_chunk_max_tokens: int = 100
     min_chunk_tokens: int = 20

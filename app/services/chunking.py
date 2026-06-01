@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from uuid import uuid4
 
 import tiktoken
 
@@ -43,13 +44,32 @@ class DocumentTooLargeError(ValueError):
 class ChunkRecord:
     """One chunk ready for embedding / storage."""
 
+    # — Identity —
+    chunk_id: str
+    doc_id: int
+    chunk_index: int
+    total_chunks: int  # placeholder 0 until ingestion_service post-processes
+    # — Content —
     text: str
     token_count: int
-    page_number: int | None = None
-    section_heading: str | None = None
+    # — Source —
+    source_filename: str
+    page_number: int | None
+    # — Structure —
+    section_heading: str | None
+    context_prefix: str  # reserved for future use, always "" for now
 
 
 _FENCE_RE = re.compile(r"(```(?:[a-zA-Z0-9_-]*)?\n?)([\s\S]*?)(```)", re.MULTILINE)
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
+
+
+def _make_context_prefix(source_filename: str, page_number: int | None) -> str:
+    if source_filename and page_number is not None:
+        return f"[Belge: {source_filename} | Sayfa: {page_number}]"
+    if source_filename:
+        return f"[Belge: {source_filename}]"
+    return ""
 _LIST_ITEM_RE = re.compile(r"^[ \t]*(?:\d+[.)]\s+|[-*•]\s+)")
 
 
@@ -147,6 +167,35 @@ def _extract_list_segments(text: str) -> list[tuple[str, str]]:
     _flush_prose()
     _flush_list()
     return parts or [("prose", text)]
+
+
+def _split_by_markdown_headings(text: str) -> list[tuple[str, str]]:
+    """
+    Split plain text on markdown headings (# through ######).
+    Returns list of ('heading', heading_line) and ('section', body) pairs in order.
+    Heading text is prepended to its section body so downstream chunks carry context.
+    If no headings found, returns [('section', text)].
+    """
+    matches = list(_HEADING_RE.finditer(text))
+    if not matches:
+        return [("section", text)]
+
+    parts: list[tuple[str, str]] = []
+    # Text before the first heading (if any)
+    preamble = text[: matches[0].start()].strip()
+    if preamble:
+        parts.append(("section", preamble))
+
+    for i, m in enumerate(matches):
+        heading_line = m.group(0)  # e.g. "## Introduction"
+        body_start = m.end()
+        body_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        body = text[body_start:body_end].strip()
+        # Prepend heading to its body so the chunk always contains the section title
+        section = (heading_line + "\n\n" + body).strip() if body else heading_line
+        parts.append(("section", section))
+
+    return parts
 
 
 def _split_by_code_fences(text: str) -> list[tuple[str, str]]:
@@ -319,34 +368,33 @@ def _chunk_plain_text(
     max_tokens: int,
     overlap: int,
 ) -> list[str]:
-    """Plain text: table runs → list-block grouping → recursive split."""
+    """Plain text: heading split → table runs → list-block grouping → recursive split."""
     text = text.strip()
     if not text:
         return []
 
-    runs = _split_table_runs(text)
     all_chunks: list[str] = []
-    for kind, seg in runs:
-        if kind == "table":
-            if count_tokens(seg) <= max_tokens:
-                all_chunks.append(seg)
-            else:
-                lines = seg.split("\n")
-                all_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
-        else:
-            for lkind, lseg in _extract_list_segments(seg):
-                if lkind == "list_block":
-                    # Consecutive list items are grouped; split on
-                    # individual items if the block exceeds max_tokens.
-                    if count_tokens(lseg) <= max_tokens:
-                        all_chunks.append(lseg)
-                    else:
-                        items = lseg.split("\n")
-                        all_chunks.extend(
-                            _merge_parts_under_limit(items, "\n", max_tokens, overlap)
-                        )
+    for _, section in _split_by_markdown_headings(text):
+        runs = _split_table_runs(section)
+        for kind, seg in runs:
+            if kind == "table":
+                if count_tokens(seg) <= max_tokens:
+                    all_chunks.append(seg)
                 else:
-                    all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
+                    lines = seg.split("\n")
+                    all_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
+            else:
+                for lkind, lseg in _extract_list_segments(seg):
+                    if lkind == "list_block":
+                        if count_tokens(lseg) <= max_tokens:
+                            all_chunks.append(lseg)
+                        else:
+                            items = lseg.split("\n")
+                            all_chunks.extend(
+                                _merge_parts_under_limit(items, "\n", max_tokens, overlap)
+                            )
+                    else:
+                        all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
 
     return [c for c in all_chunks if c.strip()]
 
@@ -394,6 +442,8 @@ def chunk_document(
     min_chunk_tokens: int | None = None,
     page_number: int | None = None,
     section_heading: str | None = None,
+    doc_id: int = 0,
+    source_filename: str = "",
 ) -> list[ChunkRecord]:
     """
     Normalize and split document into chunks with metadata.
@@ -425,10 +475,16 @@ def chunk_document(
     if total <= sdm:
         return [
             ChunkRecord(
+                chunk_id=str(uuid4()),
+                doc_id=doc_id,
+                chunk_index=0,
+                total_chunks=0,
                 text=normalized,
                 token_count=total,
+                source_filename=source_filename,
                 page_number=page_number,
                 section_heading=section_heading,
+                context_prefix=_make_context_prefix(source_filename, page_number),
             )
         ]
 
@@ -440,15 +496,21 @@ def chunk_document(
         else:
             raw_chunks.extend(_chunk_plain_text(seg, cst, ovt))
 
+    _prefix = _make_context_prefix(source_filename, page_number)
     records = [
         ChunkRecord(
+            chunk_id=str(uuid4()),
+            doc_id=doc_id,
+            chunk_index=i,
+            total_chunks=0,
             text=c.strip(),
             token_count=count_tokens(c.strip()),
+            source_filename=source_filename,
             page_number=page_number,
             section_heading=section_heading,
+            context_prefix=_prefix,
         )
-        for c in raw_chunks
-        if c.strip()
+        for i, c in enumerate(c for c in raw_chunks if c.strip())
     ]
     records = _drop_tiny_chunks(records, mct)
     return records

@@ -32,6 +32,7 @@ class DocumentChunk(Base):
     chunk_token_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     page_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
     section_heading: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    context_prefix: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

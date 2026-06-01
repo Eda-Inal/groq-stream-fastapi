@@ -44,6 +44,7 @@ async def create_document_chunk(
     chunk_token_count: int | None,
     page_number: int | None,
     section_heading: str | None,
+    context_prefix: str | None = None,
 ) -> DocumentChunk:
     chunk = DocumentChunk(
         document_id=document_id,
@@ -53,6 +54,7 @@ async def create_document_chunk(
         chunk_token_count=chunk_token_count,
         page_number=page_number,
         section_heading=section_heading,
+        context_prefix=context_prefix,
     )
     session.add(chunk)
     await session.flush()
