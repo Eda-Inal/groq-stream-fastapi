@@ -82,6 +82,7 @@ def normalize_document_text(text: str) -> str:
     text = text.replace("\x00", "")
     text = text.encode("utf-8", errors="replace").decode("utf-8")
     text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"(?m)^[ \t]*---[ \t]*$", "", text)
     # Collapse 3+ newlines to double newline (paragraph boundary)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
@@ -187,6 +188,8 @@ def _split_by_markdown_headings(text: str) -> list[tuple[str, str, str | None]]:
     if preamble:
         parts.append(("section", preamble, None))
 
+    pending_prefix = ""
+
     for i, m in enumerate(matches):
         heading_line = m.group(0)   # e.g. "## **Introduction**"
         # Strip inline markdown formatting (**, *, __, _, `) from the metadata
@@ -195,9 +198,22 @@ def _split_by_markdown_headings(text: str) -> list[tuple[str, str, str | None]]:
         body_start = m.end()
         body_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         body = text[body_start:body_end].strip()
-        # Prepend heading to its body so the chunk always contains the section title
-        section = (heading_line + "\n\n" + body).strip() if body else heading_line
-        parts.append(("section", section, heading_title))
+
+        if body:
+            if pending_prefix:
+                section = (pending_prefix + "\n\n" + heading_line + "\n\n" + body).strip()
+            else:
+                section = (heading_line + "\n\n" + body).strip()
+            parts.append(("section", section, heading_title))
+            pending_prefix = ""
+        else:
+            pending_prefix = (
+                (pending_prefix + "\n\n" + heading_line).strip()
+                if pending_prefix else heading_line
+            )
+
+    if pending_prefix:
+        parts.append(("section", pending_prefix, None))
 
     return parts
 
