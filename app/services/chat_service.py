@@ -52,6 +52,32 @@ ROUTING_SYSTEM_MESSAGE = {
     ),
 }
 
+ROUTING_SYSTEM_MESSAGE_WITH_DOCS = {
+    "role": "system",
+    "content": (
+        "You are a routing agent. Your ONLY task is to decide whether to call a tool. "
+        "Do NOT write any text response — only make tool calls if needed.\n\n"
+        "This conversation has uploaded documents. "
+        "RULE: For any factual question, ALWAYS call rag_search. "
+        "Do not use web_search or answer from your own knowledge — "
+        "the answer will either be found in the documents or reported as not found.\n\n"
+        "Available tools:\n"
+        "1. rag_search — call this for every factual question without exception. "
+        "Do not skip it because the topic seems like general knowledge or real-time data. "
+        "Let the retrieval results determine whether the answer exists.\n"
+        "2. web_search — call this ONLY when the user explicitly asks to search the web "
+        "(e.g. 'search the web', 'look it up online', 'web'de ara', 'internette bak'). "
+        "In that case, skip rag_search.\n"
+        "3. calculator — ANY arithmetic the user explicitly asks to compute. "
+        "Never compute in your head.\n\n"
+        "Rules:\n"
+        "- Factual question → rag_search (always).\n"
+        "- User explicitly says 'search the web' → web_search only.\n"
+        "- Arithmetic → calculator.\n"
+        "- Pure conversational messages (greetings, thanks, opinions with no factual question) → output nothing."
+    ),
+}
+
 DIRECT_ANSWER_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
@@ -68,6 +94,10 @@ FINALIZATION_SYSTEM_MESSAGE = {
         "Tool results are available above. Read every tool message carefully before answering. "
         "If rag_search returned passages: base your answer exclusively on those passages. "
         "Do not use your training knowledge to override or supplement the retrieved content. "
+        "If the retrieved passages do not cover the specific framing of the user's question "
+        "(for example, the question asks about captivity but the document only describes wild behavior), "
+        "state explicitly what the document does and does not cover. "
+        "Do not extrapolate or infer information that is not explicitly stated in the retrieved text. "
         "If web_search returned results: summarise the relevant information. "
         "If rag_search returned nothing: respond with "
         "'This information was not found in your documents.' and do not search the web. "
@@ -391,16 +421,7 @@ class ChatService:
                 )
                 if not already_guided:
                     if conv_has_docs:
-                        doc_hint = (
-                            "\n\nThis conversation has uploaded documents. "
-                            "If the question could relate to those documents "
-                            "(work content, reports, data, domain-specific facts), "
-                            "prefer rag_search even without explicit 'my documents' phrasing."
-                        )
-                        routing_msg = {
-                            "role": "system",
-                            "content": ROUTING_SYSTEM_MESSAGE["content"] + doc_hint,
-                        }
+                        routing_msg = ROUTING_SYSTEM_MESSAGE_WITH_DOCS
                     else:
                         routing_msg = ROUTING_SYSTEM_MESSAGE
                     effective_messages = [routing_msg] + effective_messages
