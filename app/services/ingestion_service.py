@@ -58,7 +58,10 @@ class IngestionService:
 
         embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
         if embeddings is None:
-            raise RuntimeError("Embedding failed; document not persisted.")
+            raise RuntimeError(
+                "Embedding failed; document not persisted. "
+                "Please retry the upload. If the problem persists, check the embedding service."
+            )
 
         doc = await create_document(
             session,
@@ -153,7 +156,10 @@ class IngestionService:
         started = time.perf_counter()
         embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
         if embeddings is None:
-            raise RuntimeError("Embedding failed; document not reprocessed.")
+            raise RuntimeError(
+                "Embedding failed; document not reprocessed. "
+                "The existing document record is intact — retry reprocess or check the embedding service."
+            )
 
         total = len(chunks)
         chunks = [replace(c, chunk_index=i, total_chunks=total) for i, c in enumerate(chunks)]
@@ -270,7 +276,10 @@ class IngestionService:
 
         embeddings = await self.embeddings.embed_batch([c.text for c in all_chunks])
         if embeddings is None:
-            raise RuntimeError("Embedding failed; PDF not persisted.")
+            raise RuntimeError(
+                "Embedding failed; PDF not persisted. "
+                "Please retry the upload. If the problem persists, check the embedding service."
+            )
 
         chunks_created = 0
         tokens_processed = 0
