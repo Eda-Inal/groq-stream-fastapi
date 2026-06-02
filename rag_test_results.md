@@ -479,6 +479,41 @@ The document contains **zero mention** of "captivity" or "zoo." The correct resp
 
 ---
 
+### 4.9 — Factual retrieval re-test without "in my documents" phrasing
+
+**Context:** Tests 4.1–4.4 originally used explicit "In my documents" phrasing. Re-run here without any document reference to verify retrieval quality is preserved after the routing fix.
+
+**Model:** `openai/gpt-oss-120b:free` | **conversation_id:** `test-woodpecker-001`
+
+| # | Question | Old phrasing result | New result |
+|---|----------|---------------------|------------|
+| 4.1 | What do you know about the tongue tip being barbed and coated with sticky saliva? | ✅ | ✅ |
+| 4.2 | How does a woodpecker pull insects out of trees with its tongue? | ✅ | ✅ |
+| 4.3 | How long does woodpecker egg incubation take? | ✅ | ✅ |
+| 4.4 | What role do woodpeckers play in the ecosystem for other animals? | ✅ | ✅ |
+
+**Q4.1 answer:**
+> "The tongue tip of a woodpecker is described as 'barbed and coated with sticky saliva,' which helps the bird extract insects and larvae from deep within wood cavities."  
+> Source: woodpecker.md (section Physical Characteristics)
+
+**Q4.2 answer:**
+> "Their tongue can extend up to three times the length of the beak and, when retracted, wraps around the skull. The tip is barbed and coated with sticky saliva, which lets the bird extract insects and larvae from deep wood cavities with great precision."  
+> Source: woodpecker.md
+
+**Q4.3 answer:**
+> "Woodpecker eggs are incubated for approximately 11 to 14 days."  
+> Source: woodpecker.md
+
+**Q4.4 answer:**
+> "Woodpeckers create cavities in trees used by owls, starlings, small ducks, wood ducks, great horned owls, flying squirrels, and various mammals for nesting and shelter. By providing these nesting sites, woodpeckers act as 'ecosystem engineers,' shaping habitat availability for dozens of other species."  
+> Source: woodpecker.md
+
+**Score: 4/4** — retrieval quality fully preserved without explicit document phrasing.
+
+> ★ **Final verdict:** All Test 4 questions (factual retrieval, multi-chunk synthesis, out-of-scope, zero-overlap) pass without "in my documents" phrasing after the `ROUTING_SYSTEM_MESSAGE_WITH_DOCS` fix. The routing change improves UX without any regression in retrieval accuracy.
+
+---
+
 ## Test 5 — USD/TRY Exchange Rate (usdtry_march2024.md)
 
 **document_id:** 39 | **chunks:** 6 | **tokens:** 184  
