@@ -193,6 +193,7 @@ class Settings(BaseSettings):
     embedding_timeout: float = 15.0
     embedding_max_retries: int = 3
     embedding_retry_backoff: float = 1.5
+    embedding_batch_size: int = 50
     embedding_cache_enabled: bool = True
     embedding_cache_max_entries: int = 1000
 

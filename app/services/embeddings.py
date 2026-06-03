@@ -100,9 +100,51 @@ class EmbeddingService:
         if not uncached_texts:
             return results  # type: ignore[return-value]
 
-        payload: dict[str, Any] = {"model": target_model, "input": uncached_texts}
+        # Split into mini-batches so a single large PDF never sends tens of
+        # thousands of tokens in one HTTP request, which would hit API payload
+        # limits and timeouts.
+        batch_size = max(1, settings.embedding_batch_size)
+        mini_batches = [
+            (uncached_indices[i : i + batch_size], uncached_texts[i : i + batch_size])
+            for i in range(0, len(uncached_texts), batch_size)
+        ]
+
+        log = logger.bind(
+            model=target_model,
+            total_texts=len(uncached_texts),
+            mini_batches=len(mini_batches),
+            batch_size=batch_size,
+        )
+
+        for mb_num, (mb_indices, mb_texts) in enumerate(mini_batches):
+            mini_result = await self._embed_mini_batch(
+                texts=texts,
+                mb_texts=mb_texts,
+                mb_indices=mb_indices,
+                target_model=target_model,
+                results=results,
+            )
+            if mini_result is None:
+                log.error("embedding_batch_mini_batch_failed", mini_batch=mb_num)
+                return None
+
+        log.info("embedding_batch_success", total_texts=len(uncached_texts))
+        return results  # type: ignore[return-value]
+
+    async def _embed_mini_batch(
+        self,
+        *,
+        texts: list[str],
+        mb_texts: list[str],
+        mb_indices: list[int],
+        target_model: str,
+        results: list,
+    ) -> list | None:
+        """Send one mini-batch to the API with retry. Fills results in-place.
+        Returns results on success, None on unrecoverable failure."""
+        payload: dict[str, Any] = {"model": target_model, "input": mb_texts}
         retries = max(1, settings.embedding_max_retries)
-        log = logger.bind(model=target_model, batch_size=len(uncached_texts))
+        log = logger.bind(model=target_model, batch_size=len(mb_texts))
 
         for attempt in range(retries):
             started = time.perf_counter()
@@ -118,7 +160,7 @@ class EmbeddingService:
 
                 data = response.json()
                 rows = data.get("data") if isinstance(data, dict) else None
-                if not isinstance(rows, list) or len(rows) != len(uncached_texts):
+                if not isinstance(rows, list) or len(rows) != len(mb_texts):
                     log.error("embedding_batch_invalid_shape", latency_ms=latency_ms)
                     return None
 
@@ -140,13 +182,13 @@ class EmbeddingService:
                                   expected=settings.embedding_dim, got=len(normalized))
                         return None
 
-                    orig_idx = uncached_indices[batch_i]
+                    orig_idx = mb_indices[batch_i]
                     emb_result = EmbeddingResult(vector=normalized, model_name=resolved_model)
                     results[orig_idx] = emb_result
                     self._cache_set(self._cache_key(texts[orig_idx], target_model), emb_result)
 
-                log.info("embedding_batch_success", latency_ms=latency_ms)
-                return results  # type: ignore[return-value]
+                log.info("embedding_mini_batch_success", latency_ms=latency_ms)
+                return results
 
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 latency_ms = int((time.perf_counter() - started) * 1000)
