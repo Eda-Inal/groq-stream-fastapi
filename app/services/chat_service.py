@@ -48,7 +48,9 @@ ROUTING_SYSTEM_MESSAGE = {
         "definitions, classical authors, established formulas): output nothing. "
         "A separate step will answer.\n"
         "- For simple conversational messages (greetings, thanks): output nothing.\n"
-        "- Choose the minimum number of tools required."
+        "- Choose the minimum number of tools required.\n"
+        "- When calling rag_search, preserve all keywords from the user's question "
+        "in the query parameter. Do not abbreviate or drop terms."
     ),
 }
 
@@ -74,7 +76,9 @@ ROUTING_SYSTEM_MESSAGE_WITH_DOCS = {
         "- Factual question → rag_search (always).\n"
         "- User explicitly says 'search the web' → web_search only.\n"
         "- Arithmetic → calculator.\n"
-        "- Pure conversational messages (greetings, thanks, opinions with no factual question) → output nothing."
+        "- Pure conversational messages (greetings, thanks, opinions with no factual question) → output nothing.\n"
+        "- When calling rag_search, preserve all keywords from the user's question "
+        "in the query parameter. Do not abbreviate or drop terms."
     ),
 }
 

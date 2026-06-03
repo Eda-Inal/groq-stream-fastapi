@@ -30,7 +30,11 @@ class RagSearchTool(Tool):
         "properties": {
             "query": {
                 "type": "string",
-                "description": "Natural-language search query to retrieve relevant document passages.",
+                "description": (
+                    "Search query derived from the user's question. "
+                    "Keep all keywords and domain-specific terms from the user's question. "
+                    "Do not summarize or shorten — every keyword is a search signal."
+                ),
             },
             "top_k": {
                 "type": "integer",
