@@ -56,7 +56,10 @@ class IngestionService:
         if not chunks:
             raise ValueError("Document produced zero chunks after preprocessing.")
 
-        embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
+        embeddings = await self.embeddings.embed_batch([
+            f"{c.context_prefix} {c.text}".strip() if c.context_prefix else c.text
+            for c in chunks
+        ])
         if embeddings is None:
             raise RuntimeError(
                 "Embedding failed; document not persisted. "
@@ -154,7 +157,10 @@ class IngestionService:
             raise ValueError("Document produced zero chunks after preprocessing.")
 
         started = time.perf_counter()
-        embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
+        embeddings = await self.embeddings.embed_batch([
+            f"{c.context_prefix} {c.text}".strip() if c.context_prefix else c.text
+            for c in chunks
+        ])
         if embeddings is None:
             raise RuntimeError(
                 "Embedding failed; document not reprocessed. "
@@ -274,7 +280,10 @@ class IngestionService:
             for i, c in enumerate(all_chunks)
         ]
 
-        embeddings = await self.embeddings.embed_batch([c.text for c in all_chunks])
+        embeddings = await self.embeddings.embed_batch([
+            f"{c.context_prefix} {c.text}".strip() if c.context_prefix else c.text
+            for c in all_chunks
+        ])
         if embeddings is None:
             raise RuntimeError(
                 "Embedding failed; PDF not persisted. "

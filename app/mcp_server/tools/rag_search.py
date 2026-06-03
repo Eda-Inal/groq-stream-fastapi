@@ -208,6 +208,9 @@ class RagSearchTool(Tool):
                     section_heading=chunk.section_heading,
                 )
                 content = chunk.text.strip().replace("\n\n\n", "\n\n")
+                prefix = (chunk.context_prefix or "").strip()
+                if prefix:
+                    content = f"{prefix} {content}"
                 blocks.append(
                     "\n".join(
                         [
