@@ -8,7 +8,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
-from app.db.repositories.document import has_documents_for_conversation
+from app.db.repositories.document import has_documents_for_conversation, has_documents_for_user
 from app.mcp_server.tools.base import ToolResult
 from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
@@ -313,6 +313,7 @@ class ChatService:
         seed: int | None = None,
         conversation_id: str | None = None,
         allow_fallback: bool = True,
+        tags: list[str] | None = None,
     ) -> AsyncIterator[dict]:
 
         log = logger.bind(model=model)
@@ -338,7 +339,7 @@ class ChatService:
                     "seed": seed,
                 }.items() if v is not None
             },
-            tags=[model],
+            tags=[model] + (tags or []),
         )
 
         effective_messages = list(messages)
@@ -384,11 +385,17 @@ class ChatService:
                 if history_messages:
                     effective_messages = history_messages + effective_messages
 
+            # TEST MODE: conversation_id filter disabled — checks documents by user_id only.
+            # To revert: replace the block below with the original:
+            #   conv_has_docs = (
+            #       conversation_id is not None
+            #       and await has_documents_for_conversation(
+            #           session, conversation_id=conversation_id, user_id=user_id
+            #       )
+            #   )
             conv_has_docs = (
-                conversation_id is not None
-                and await has_documents_for_conversation(
-                    session, conversation_id=conversation_id, user_id=user_id
-                )
+                user_id is not None
+                and await has_documents_for_user(session, user_id=user_id)
             )
 
             tools_schema = await self.mcp.list_tools()
@@ -801,7 +808,9 @@ class ChatService:
                             metadata_filter = {}
                         if user_id:
                             metadata_filter["user_id"] = user_id
-                        metadata_filter["conversation_id"] = conversation_id
+                        # TEST MODE: conversation_id filter disabled — documents are found by user_id only.
+                        # To revert: uncomment the line below:
+                        # metadata_filter["conversation_id"] = conversation_id
                         args["metadata_filter"] = metadata_filter
 
                     # ── Tool call span ──────────────────────────────────────────

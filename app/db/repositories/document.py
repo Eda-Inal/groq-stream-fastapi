@@ -385,6 +385,18 @@ async def has_documents_for_conversation(
     return result.scalar_one_or_none() is not None
 
 
+# TEST MODE: used when conversation_id injection is disabled.
+# Checks whether any documents exist for the given user_id, ignoring conversation_id.
+async def has_documents_for_user(
+    session: AsyncSession,
+    *,
+    user_id: str,
+) -> bool:
+    stmt = select(Document.id).where(Document.user_id == user_id).limit(1)
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
+
 async def count_documents(session: AsyncSession) -> int:
     result = await session.execute(select(func.count()).select_from(Document))
     return int(result.scalar_one() or 0)

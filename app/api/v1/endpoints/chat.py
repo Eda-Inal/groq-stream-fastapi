@@ -89,6 +89,7 @@ async def stream_chat(
         seed=payload.seed,
         conversation_id=conversation_id,
         allow_fallback=payload.model is None,
+        tags=payload.tags,
     )
 
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
