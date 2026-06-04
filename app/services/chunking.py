@@ -447,6 +447,13 @@ def _chunk_code_fenced(block: str, max_tokens: int, overlap: int) -> list[str]:
     return out
 
 
+# Matches standalone section headings like "4. DISCUSSION" or "II. METHODS"
+# with no body text — these are noise chunks that carry no retrievable content.
+_SECTION_HEADING_ONLY_RE = re.compile(
+    r"^(?:\d+\.?|\b[IVXivx]+\.)\s+[A-Z][A-Z\s]{1,40}$"
+)
+
+
 def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkRecord]:
     """
     Drop noise fragments from any position.
@@ -454,11 +461,13 @@ def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkR
     A chunk is kept if ANY of these is true:
     - token_count >= min_tokens  (normal sized content)
     - starts with ``` (code fence — often legitimately short)
-    - token_count >= 5 AND contains at least one letter  (short but real text,
-      e.g. a section heading with a brief intro sentence)
+    - token_count >= 5 AND contains at least one letter AND is not a
+      standalone section heading (e.g. "4. DISCUSSION", "II. METHODS")
 
     The letter check removes PDF noise: standalone bullet symbols (•),
     page-number footers ("5"), and separator lines with no words.
+    The heading check removes section-number-only chunks that have no body text
+    and would otherwise pollute retrieval results.
 
     If filtering would remove everything, returns the original list unchanged.
     """
@@ -468,7 +477,11 @@ def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkR
         c for c in chunks
         if c.token_count >= min_tokens
         or c.text.lstrip().startswith("```")
-        or (c.token_count >= 5 and any(ch.isalpha() for ch in c.text))
+        or (
+            c.token_count >= 5
+            and any(ch.isalpha() for ch in c.text)
+            and not _SECTION_HEADING_ONLY_RE.match(c.text.strip())
+        )
     ]
     return filtered if filtered else chunks
 
