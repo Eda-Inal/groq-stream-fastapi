@@ -8,6 +8,216 @@
 
 ---
 
+## Source Documents
+
+### Document 1 — whitmore_estate.txt (Legal Memorandum)
+
+```
+IN THE MATTER OF ESTATE OF HAROLD JAMES WHITMORE, DECEASED
+Probate Case No. 2024-PR-0847 | Superior Court, County of Harwick
+
+MEMORANDUM OF LAW IN SUPPORT OF PETITION TO CONTEST TESTAMENTARY
+CAPACITY AND UNDUE INFLUENCE
+
+Submitted by: Counsel for Petitioners Eleanor Whitmore-Callahan and Thomas Whitmore
+Date: March 14, 2024
+
+I. INTRODUCTION AND PROCEDURAL BACKGROUND
+
+This memorandum is submitted in support of the Petition filed by Eleanor
+Whitmore-Callahan and Thomas Whitmore ("Petitioners"), adult children of the decedent
+Harold James Whitmore ("Decedent"), challenging the validity of the Last Will and
+Testament dated September 3, 2022 ("the 2022 Will"). The 2022 Will was admitted to
+probate on January 9, 2024, following Decedent's death on December 28, 2023, at age 81.
+
+Petitioners contend that (1) the Decedent lacked testamentary capacity at the time of
+execution of the 2022 Will, and (2) the 2022 Will was the product of undue influence
+exercised by Respondent Diane Kowalski, Decedent's live-in caregiver from April 2021
+until his death.
+
+The 2022 Will revoked a prior will dated June 14, 2018 ("the 2018 Will"), which
+distributed the estate equally among the Decedent's three children: Eleanor
+Whitmore-Callahan, Thomas Whitmore, and the late Michael Whitmore (deceased June 2020).
+Under the 2022 Will, the entirety of the estate — estimated at $4.2 million, comprising
+a primary residence at 14 Brentwood Lane, Harwick; a vacation property in Lake Carver;
+investment accounts totaling approximately $2.8 million; and miscellaneous personal
+property — is bequeathed to Diane Kowalski.
+
+II. TESTAMENTARY CAPACITY: LEGAL STANDARD
+
+Under controlling precedent in this jurisdiction, a testator must, at the time of
+execution, satisfy a four-part test: (1) know the natural objects of his bounty;
+(2) understand the nature and extent of his property; (3) understand the nature of the
+testamentary act itself; and (4) be capable of relating these elements to form an
+orderly plan of disposition. In re Estate of Calloway, 318 Harwick App. 2d 201, 209 (2009).
+
+Critically, the capacity required is that which existed at the moment of execution.
+A testator may have lucid intervals, and a will executed during such an interval may be
+valid even if the testator was otherwise incompetent. Pemberton v. Higgins, 402 Harwick
+3d 87, 94 (2016).
+
+The burden of proof rests initially with the proponent of the will to establish due
+execution and that the testator was of sound mind. Once established, the burden shifts
+to the contestant.
+
+III. EVIDENCE OF LACK OF TESTAMENTARY CAPACITY
+
+Medical records obtained from Harwick General Hospital and the Decedent's treating
+physician, Dr. Susan Alvarez, reveal the following:
+
+March 2021: Decedent diagnosed with mild cognitive impairment (MCI), with
+neuropsychological testing placing him at the 14th percentile on the Montreal Cognitive
+Assessment (MoCA), scoring 21 out of 30.
+
+January 2022: Follow-up evaluation showed progression; MoCA score declined to 16 out
+of 30, consistent with moderate dementia per DSM-5 criteria.
+
+August 2022 (approximately five weeks before will execution): Dr. Alvarez's clinical
+notes document that Decedent "frequently failed to recognize family members," "expressed
+confusion regarding ownership of the Brentwood Lane property, believing at times it had
+already been sold," and "demonstrated significant short-term memory deficits."
+
+The drafting attorney, Mr. Gerald Finch, met with the Decedent on a single occasion on
+September 3, 2022, for approximately 35 minutes. Mr. Finch did not request or review
+any medical records, did not consult with Dr. Alvarez, and did not conduct or arrange
+for any independent cognitive assessment. His notes reflect only that Decedent "appeared
+oriented and expressed clear wishes."
+
+Petitioners submit that Mr. Finch's cursory assessment falls below the standard of care
+and is insufficient to establish testamentary capacity in a case involving documented
+progressive dementia.
+
+IV. UNDUE INFLUENCE: LEGAL STANDARD AND APPLICATION
+
+Undue influence sufficient to void a will requires proof that: (1) the testator was
+susceptible to undue influence; (2) the influencer had opportunity to exert influence;
+(3) the influencer had a motive or disposition to exert influence; and (4) the will
+appears to be the effect of such influence. Harwick Trust Co. v. Dellacroix, 289
+Harwick 2d 344, 351 (2001).
+
+Susceptibility: Decedent was diagnosed with progressive dementia and was wholly
+dependent on Ms. Kowalski for daily living activities including bathing, medication
+management, and meal preparation.
+
+Opportunity: Ms. Kowalski resided in the Decedent's home continuously from April 2021
+and was his primary and frequently sole point of contact with the outside world.
+Petitioners document that Ms. Kowalski screened phone calls, managed correspondence,
+and accompanied Decedent to all medical appointments after July 2022.
+
+Motive: Ms. Kowalski had no prior familial or longstanding personal relationship with
+the Decedent. She was engaged through a private caregiving agency at $28 per hour and
+stands to receive the entirety of a $4.2 million estate under the contested will.
+
+Effect: The 2022 Will represented a complete and unexplained reversal from Decedent's
+longstanding testamentary intent, disinheriting his two surviving children without
+stated reason.
+
+V. RELIEF REQUESTED
+
+Petitioners respectfully request that this Court: (1) deny probate of the 2022 Will;
+(2) admit the 2018 Will to probate in its stead; and (3) award Petitioners their
+reasonable attorneys' fees and costs from the estate.
+```
+
+---
+
+### Document 2 — brt447_trial.txt (Academic Clinical Trial)
+
+```
+JOURNAL OF BIOMEDICAL RESEARCH & INNOVATION
+Vol. 12, No. 3 | September 2023 | DOI: 10.7891/JBRI.2023.0312
+
+Efficacy of Novel mRNA-Based Therapeutic Agents in Late-Stage Pancreatic Adenocarcinoma:
+A Randomized Controlled Trial
+Dr. Priya Nandakumar, Dr. Stefan Holweg, Dr. Amelia Forsythe
+
+ABSTRACT
+This randomized controlled trial evaluated the efficacy and safety of BRT-447, a novel
+mRNA-based therapeutic agent, in patients diagnosed with late-stage pancreatic
+adenocarcinoma (Stage III-IV). A total of 284 patients were enrolled across seven
+clinical sites between January 2021 and August 2022. Participants were randomized 1:1
+to receive either BRT-447 (n=142) or standard-of-care gemcitabine-based chemotherapy
+(n=142). The primary endpoint was overall survival (OS) at 18 months.
+
+Results demonstrated a statistically significant improvement in OS in the BRT-447 arm:
+41.3% of BRT-447 patients were alive at 18 months compared to 22.7% in the control arm
+(HR=0.58, 95% CI: 0.43-0.79, p<0.001). Median PFS was 7.4 months in the BRT-447 group
+versus 3.9 months in the control group. Grade 3-4 adverse events occurred in 18.3% of
+BRT-447 recipients, compared to 34.6% in the control arm.
+
+1. INTRODUCTION
+Pancreatic adenocarcinoma remains one of the most lethal malignancies worldwide, with a
+five-year survival rate of approximately 11% across all stages and fewer than 3% in
+metastatic disease. Despite advances in surgical technique and systemic chemotherapy,
+median overall survival for Stage IV disease has remained stubbornly below 12 months
+for over two decades.
+
+BRT-447 was developed by Bridgeton Therapeutics (Cambridge, MA) and encodes a modified
+variant of the KRAS-G12D suppressor peptide, delivered via lipid nanoparticle (LNP)
+formulation. KRAS mutations, present in over 90% of pancreatic adenocarcinomas, have
+historically been considered undruggable; BRT-447 represents a novel approach to
+targeting this pathway at the mRNA translation level.
+
+2. METHODS
+2.1 Study Design
+Phase III, open-label, randomized controlled trial across seven sites in the United
+States and Germany. Ethical approval was obtained from each site's IRB prior to
+enrollment. All participants provided written informed consent.
+
+2.2 Participants
+Eligible patients were adults aged 18-75 with histologically confirmed pancreatic
+adenocarcinoma (Stage III or IV), an ECOG performance status of 0-2, and no prior
+exposure to mRNA-based therapeutics.
+
+2.3 Intervention
+BRT-447 was administered intravenously at 0.5 mg/kg every three weeks for up to 12
+cycles. The control arm received gemcitabine 1000 mg/m2 plus nab-paclitaxel 125 mg/m2
+on Days 1, 8, and 15 of each 28-day cycle, consistent with current NCCN guidelines.
+
+3. RESULTS
+3.1 Overall Survival
+At the 18-month landmark, 41.3% of patients in the BRT-447 arm remained alive, compared
+to 22.7% in the control arm. The hazard ratio for death was 0.58 (95% CI: 0.43-0.79),
+with a log-rank p-value of <0.001.
+
+3.2 Progression-Free Survival
+Median PFS was 7.4 months (IQR: 5.1-10.2) in the BRT-447 group compared to 3.9 months
+(IQR: 2.7-5.8) in the control group (HR=0.61, p<0.001).
+
+3.3 Quality of Life
+Global health status scores (EORTC QLQ-C30) at Week 12 showed a mean improvement of
+14.2 points in the BRT-447 arm versus a decline of 3.1 points in the control arm.
+
+3.4 Safety
+Grade 3-4 adverse events were reported in 26 patients (18.3%) receiving BRT-447, most
+commonly fatigue (6.3%), elevated liver enzymes (4.9%), and infusion-related reactions
+(3.5%). In the control arm, 49 patients (34.6%) experienced Grade 3-4 adverse events,
+with the most frequent being neutropenia (18.3%), nausea (9.2%), and peripheral
+neuropathy (7.7%). No treatment-related deaths were reported in the BRT-447 arm.
+
+4. DISCUSSION
+The results of this trial establish BRT-447 as the first mRNA-based therapeutic to
+demonstrate statistically significant improvement in overall survival in late-stage
+pancreatic adenocarcinoma. The absolute improvement of 18.6 percentage points in
+18-month survival is clinically substantial.
+
+The favorable safety profile of BRT-447 relative to standard chemotherapy is
+particularly noteworthy. The near-halving of Grade 3-4 adverse event rates suggests
+that mRNA-based targeted therapy may circumvent the systemic toxicities that have
+historically limited dose intensity in this population.
+
+5. CONCLUSION
+BRT-447 demonstrates clinically meaningful and statistically significant improvements
+in overall survival, progression-free survival, and quality of life compared to standard
+chemotherapy in late-stage pancreatic adenocarcinoma.
+
+FUNDING: Bridgeton Therapeutics and the National Cancer Institute (Grant NCI-R01-CA284471).
+CONFLICTS OF INTEREST: Dr. Nandakumar and Dr. Holweg report consultancy fees from
+Bridgeton Therapeutics. Dr. Forsythe reports no conflicts.
+```
+
+---
+
 ## Overall: 4/7 PASS
 
 | Q | Type | Source correct? | Content correct? | Result |
@@ -334,3 +544,62 @@ The chunk's dense embedding is dominated by clinical outcome language ("overall 
 **Attempted fix — query description expansion:** Added synonym hints to the `rag_search` query parameter description (`'financial motivation' → 'conflicts of interest consultancy fees funding'`). This was inconsistent — worked for Q5 (ECOG) but not Q4 — and was reverted. The description approach is model-dependent and not reliable across query types.
 
 **Status:** Q4 remains unresolved. Accepted as a known limitation: short metadata sections at document end are hard to retrieve when their embedding is diluted by surrounding content.
+
+---
+
+## Fix Attempt 3 — Extract metadata sections as standalone chunks
+
+**Change:** Added `_extract_metadata_sections()` to `app/services/chunking.py`. Instead of inserting blank lines (which the greedy merger ignores), metadata sections (FUNDING, CONFLICTS OF INTEREST, ACKNOWLEDGEMENTS, etc.) are now extracted from the text before chunking and appended as their own `ChunkRecord` entries after normal chunking completes.
+
+**Result:** brt447 chunk count 6 → 8.
+- Chunk 6 (25 tokens): `"FUNDING: Bridgeton Therapeutics and the National Cancer Institute..."`
+- Chunk 7 (38 tokens): `"CONFLICTS OF INTEREST: Dr. Nandakumar and Dr. Holweg report consultancy fees from Bridgeton Therapeutics..."`
+
+Each now has its own dense embedding vector representing only its content.
+
+**Q4 retest with original question — PARTIAL**
+
+> **Whitmore estate:** Kowalski stands to inherit $4.2M estate, paid $28/hour — motive for undue influence. ✅
+>
+> **BRT-447 trial:** FUNDING chunk retrieved — Bridgeton Therapeutics + NCI funding described as institutional support enabling the research. ✅ However, **CONFLICTS OF INTEREST chunk (consultancy fees) was not retrieved** — model did not mention Dr. Nandakumar and Dr. Holweg's personal consultancy fees. ❌
+>
+> Source: whitmore_estate.txt, brt447_trial.txt
+
+**Finding:** FUNDING chunk now surfaces correctly. CONFLICTS OF INTEREST chunk still not retrieved for this query. Both chunks exist and have clean embeddings, but "financial motivation" / "how money influences behavior" maps more strongly to FUNDING (institutional) than to CONFLICTS OF INTEREST (personal fees). The query does not specifically signal "personal financial ties" or "investigator conflicts."
+
+**Remaining gap:** To retrieve the COI chunk, the question would need vocabulary like "conflicts of interest", "personal financial ties", or "consultancy" — which a typical user would not naturally use.
+
+**Status:** Partial improvement. FUNDING now retrievable. COI retrieval depends on query vocabulary — a known limitation of dense retrieval without query rewriting.
+
+---
+
+## Summary — Root Cause & Fix Attempts
+
+### Root cause
+
+All cross-document failures (Q3, Q4, Q5) share the same underlying problem: **query vocabulary does not match document vocabulary.** Dense embeddings cannot bridge the semantic gap between abstract user language and domain-specific document terms.
+
+| Question | User vocabulary | Document vocabulary | Gap type |
+|----------|----------------|--------------------|----|
+| Q3 | "cognitive assessment tools" | "EORTC QLQ-C30", "quality of life" | Conceptual mismatch — EORTC is not a cognitive tool |
+| Q4 | "financial motivation" | "consultancy fees", "conflicts of interest" | Vocabulary mismatch — same concept, different words |
+| Q5 | "vulnerability" | "ECOG performance status", "frailer populations" | Vocabulary mismatch — same concept, different words |
+
+Additionally, the document had two structural problems that made retrieval worse:
+1. `"4. DISCUSSION"` was stored as a standalone 5-token chunk with no content, polluting retrieval results
+2. FUNDING and CONFLICTS OF INTEREST were merged into the conclusion chunk, diluting their embedding signal
+
+### What was tried
+
+| Fix | What changed | Result |
+|-----|-------------|--------|
+| Manual question rewrite (Q3-B, Q4-B, Q5-B) | Replaced abstract vocabulary with document-aligned terms | All 3 PASS — but not applicable to real users |
+| Description expansion in rag_search tool | Added synonym hints to query parameter description | Q5 PASS, Q4 still FAIL — model-dependent, reverted |
+| Noise chunk filter (`_SECTION_HEADING_ONLY_RE`) | Drop heading-only chunks like "4. DISCUSSION" | Structural fix — noise removed, retrieval cleaner |
+| Metadata section extraction (`_extract_metadata_sections`) | FUNDING, COI extracted as standalone chunks before merge | FUNDING now retrievable. COI still depends on query vocabulary |
+
+### What remains
+
+The COI retrieval gap is a **dense retrieval limitation**. The chunk exists and has a clean embedding, but "financial motivation" does not semantically map to "consultancy fees" strongly enough for the chunk to rank in top-k.
+
+**Permanent fix requires query rewriting** — having the model expand or rephrase the user's query into document-vocabulary-aligned terms before embedding. This is a separate feature that needs its own implementation and testing.

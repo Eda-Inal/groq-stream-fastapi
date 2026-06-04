@@ -453,6 +453,52 @@ _SECTION_HEADING_ONLY_RE = re.compile(
     r"^(?:\d+\.?|\b[IVXivx]+\.)\s+[A-Z][A-Z\s]{1,40}$"
 )
 
+# Metadata section labels that must be kept as separate chunks regardless of size.
+# These sections (funding, COI, etc.) are semantically distinct and often short —
+# merging them into the preceding chunk dilutes their embedding signal.
+_METADATA_SECTION_RE = re.compile(
+    r"^(FUNDING|CONFLICTS?\s+OF\s+INTEREST|ACKNOWLEDGEMENTS?|AUTHOR\s+CONTRIBUTIONS?|"
+    r"DATA\s+AVAILABILITY|COMPETING\s+INTERESTS?|DISCLOSURES?|ETHICS\s+STATEMENT)\b",
+    re.IGNORECASE,
+)
+
+
+def _extract_metadata_sections(text: str) -> tuple[str, list[str]]:
+    """Remove metadata sections from text and return them as separate blocks.
+
+    Metadata sections (FUNDING, CONFLICTS OF INTEREST, etc.) are short and
+    semantically distinct. If left in the document they get merged into the
+    preceding chunk by the greedy merger, diluting their embedding signal.
+    Extracting them ensures each gets its own dense vector.
+
+    Returns:
+        cleaned_text: original text with metadata lines removed
+        metadata_blocks: list of metadata section strings, each as one block
+    """
+    lines = text.split("\n")
+    clean_lines: list[str] = []
+    metadata_blocks: list[str] = []
+    current_meta: list[str] = []
+
+    for line in lines:
+        if _METADATA_SECTION_RE.match(line.strip()):
+            if current_meta:
+                metadata_blocks.append("\n".join(current_meta).strip())
+            current_meta = [line]
+        elif current_meta:
+            if line.strip():
+                current_meta.append(line)
+            else:
+                metadata_blocks.append("\n".join(current_meta).strip())
+                current_meta = []
+        else:
+            clean_lines.append(line)
+
+    if current_meta:
+        metadata_blocks.append("\n".join(current_meta).strip())
+
+    return "\n".join(clean_lines).strip(), [b for b in metadata_blocks if b]
+
 
 def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkRecord]:
     """
@@ -477,6 +523,7 @@ def _drop_tiny_chunks(chunks: list[ChunkRecord], min_tokens: int) -> list[ChunkR
         c for c in chunks
         if c.token_count >= min_tokens
         or c.text.lstrip().startswith("```")
+        or _METADATA_SECTION_RE.match(c.text.strip())
         or (
             c.token_count >= 5
             and any(ch.isalpha() for ch in c.text)
@@ -517,6 +564,7 @@ def chunk_document(
     mct = min_chunk_tokens if min_chunk_tokens is not None else settings.min_chunk_tokens
 
     normalized = normalize_document_text(text)
+    normalized, metadata_blocks = _extract_metadata_sections(normalized)
     total = count_tokens(normalized)
     if total > mdt:
         raise DocumentTooLargeError(
@@ -569,4 +617,21 @@ def chunk_document(
         )
     ]
     records = _drop_tiny_chunks(records, mct)
+
+    for meta_text in metadata_blocks:
+        records.append(
+            ChunkRecord(
+                chunk_id=str(uuid4()),
+                doc_id=doc_id,
+                chunk_index=len(records),
+                total_chunks=0,
+                text=meta_text,
+                token_count=count_tokens(meta_text),
+                source_filename=source_filename,
+                page_number=page_number,
+                section_heading=None,
+                context_prefix=_prefix,
+            )
+        )
+
     return records
