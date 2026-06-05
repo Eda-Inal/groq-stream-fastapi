@@ -294,7 +294,7 @@ Request body:
   "conversation_id": "abc123",
   "user_id": "user-42",
   "model": null,
-  "temperature": 0.3,
+  "temperature": 0.0,
   "max_tokens": null,
   "top_p": 1.0,
   "frequency_penalty": 0.0,
