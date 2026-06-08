@@ -249,7 +249,7 @@ class Settings(BaseSettings):
     # routing/tool/finalization pipeline to flag adversarial user input.
     # ------------------------------------------------------------------
     prompt_injection_guard_enabled: bool = True
-    guard_model: str = "llama-3.1-8b-instant"
+    guard_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     guard_max_tokens: int = 8
 
     # ------------------------------------------------------------------
