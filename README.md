@@ -564,6 +564,20 @@ The eval model is set via the `MODEL` constant at the top of `eval/run_eval.py`.
 
 ---
 
+## Guardrails
+
+The app ships a pre-flight `PromptInjectionGuard` (`app/services/guardrails.py`, powered by `meta-llama/llama-4-scout-17b-16e-instruct` via `settings.guard_model`) that screens incoming user messages for jailbreak / prompt-injection attempts before they reach the chat pipeline.
+
+Three risk categories — prompt injection, harmful content, and hallucination — were each tested by running the real model(s) through a hand-written question set, recording the responses, and only adding a guard where the underlying model's own behavior left a real gap. The full methodology, test scripts, and per-question results are documented in [`guardrail.md`](guardrail.md):
+
+- **Prompt injection** — guard added: the raw model leaked its system prompt and internal tool-call syntax on several prompts; Scout reliably catches these before the chat pipeline runs.
+- **Harmful content** — no guard added: the primary model's built-in alignment already refuses direct harmful requests cleanly (8/8).
+- **Hallucination** — no guard added: a full-pipeline RAG baseline (real ingestion → retrieval → generation, no guard) showed the primary model produced zero observed hallucinations across grounded, fabricated, distorted, and adversarial "hard hallucination" question sets — even though a guard classifier for this category is feasible (Scout scored 28/28 in isolation), the model it would protect doesn't currently need it.
+
+Test scripts live in `scripts/guard/` and follow a shared convention: each question is sent as a fresh, history-free conversation, rate-limited between calls, with raw responses saved to `scripts/guard/responses/`.
+
+---
+
 ## Gradio UI (development only)
 
 A minimal Gradio chat interface is included for local testing:
