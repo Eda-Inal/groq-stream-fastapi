@@ -4,7 +4,9 @@
       "Bash(curl -s http://localhost:8001/tools)",
       "Bash(python -m json.tool)",
       "Bash(.venv/Scripts/python.exe -m pytest tests/unit/test_rag_search_tool.py -v)",
-      "Bash(docker exec groq_stream_db *)"
+      "Bash(docker exec groq_stream_db *)",
+      "Bash(grep -n 'scripts\\\\\\\\\\\\\\\\test\\\\|scripts/test\\\\|Usage' scripts/guard/*.py)",
+      "Bash(grep -n 'scripts/test_\\\\|scripts/guard_\\\\|scripts/guardrail_\\\\|scripts\\\\\\\\\\\\\\\\test_' guardrail.md guard_model_comparison.md)"
     ]
   }
 }

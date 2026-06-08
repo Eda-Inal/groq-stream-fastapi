@@ -245,6 +245,14 @@ class Settings(BaseSettings):
     min_chunk_tokens: int = 20
 
     # ------------------------------------------------------------------
+    # Guardrails — small classifier LLM calls that run before the main
+    # routing/tool/finalization pipeline to flag adversarial user input.
+    # ------------------------------------------------------------------
+    prompt_injection_guard_enabled: bool = True
+    guard_model: str = "llama-3.1-8b-instant"
+    guard_max_tokens: int = 8
+
+    # ------------------------------------------------------------------
     # LangSmith tracing
     # ------------------------------------------------------------------
     langsmith_api_key: str | None = None

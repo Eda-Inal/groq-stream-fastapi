@@ -12,6 +12,7 @@ from app.db.repositories.document import has_documents_for_conversation, has_doc
 from app.tool_server.tools.base import ToolResult
 from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
+from app.services.guardrails import PromptInjectionGuard
 from app.services.tool_client.remote_client import RemoteToolClient
 from app.services import tracing as ls
 from app.core.config import settings, AVAILABLE_MODELS, FALLBACK_CHAIN
@@ -117,6 +118,7 @@ class ChatService:
     def __init__(self) -> None:
         self.client = LLMClient()
         self.mcp = RemoteToolClient()
+        self.prompt_injection_guard = PromptInjectionGuard()
 
         if not settings.tool_server_url:
             logger.error("tool_server_url_missing")
@@ -384,6 +386,68 @@ class ChatService:
 
                 if history_messages:
                     effective_messages = history_messages + effective_messages
+
+            # ── Guardrail: prompt-injection pre-flight check ─────────────────────
+            # Runs a small/fast classifier model before the routing/tool/
+            # finalization pipeline so adversarial input is short-circuited
+            # without spending tokens on the full agentic loop.
+            if self.prompt_injection_guard.enabled:
+                last_user_message = next(
+                    (
+                        m.get("content") for m in reversed(messages)
+                        if isinstance(m, dict)
+                        and m.get("role") == "user"
+                        and isinstance(m.get("content"), str)
+                    ),
+                    None,
+                )
+                if last_user_message:
+                    guard_run = ls.create_run(
+                        name="guard.prompt_injection",
+                        run_type="llm",
+                        inputs={"user_message": last_user_message},
+                        parent_run=root_run,
+                        metadata={"model": settings.guard_model},
+                        tags=["guardrail", "prompt_injection"],
+                    )
+                    verdict = await self.prompt_injection_guard.check(last_user_message)
+                    ls.end_run(
+                        guard_run,
+                        outputs={"flagged": verdict.flagged, "category": verdict.category},
+                    )
+
+                    if verdict.flagged:
+                        log.warning("prompt_injection_blocked", category=verdict.category)
+                        refusal = "I can't help with that request."
+                        full_response.append(refusal)
+                        yield {"type": "chunk", "text": refusal}
+                        yield {"type": "done", "finish_reason": "stop"}
+
+                        if conversation_id:
+                            max_turn = 0
+                            for log_item in history_logs:
+                                if log_item.turn_index and log_item.turn_index > max_turn:
+                                    max_turn = log_item.turn_index
+                            turn_index = max_turn + 1 if max_turn else 1
+
+                        await create_chat_log(
+                            session=session,
+                            prompt=messages[0]["content"] if messages else "",
+                            messages=effective_messages,
+                            response=refusal,
+                            model_name=model,
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            top_p=top_p,
+                            frequency_penalty=frequency_penalty,
+                            presence_penalty=presence_penalty,
+                            seed=seed,
+                            conversation_id=conversation_id,
+                            turn_index=turn_index,
+                            user_id=user_id,
+                        )
+                        await session.commit()
+                        return
 
             # TEST MODE: conversation_id filter disabled — checks documents by user_id only.
             # To revert: replace the block below with the original:
