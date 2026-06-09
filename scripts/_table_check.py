@@ -31,12 +31,12 @@ def _page_for(t):
 all_chunks = [replace(c, chunk_index=i, total_chunks=len(all_chunks),
     page_number=_page_for(c.text)) for i, c in enumerate(all_chunks)]
 
-# Tablo ile ilgili chunk'ları bul
+# Find table-related chunks
 for c in all_chunks:
     if "table" in (c.section_heading or "").lower() or "tablo" in c.text.lower():
         print(f"\n{'='*60}")
         print(f"Chunk {c.chunk_index+1}  [{c.token_count} token]  section_heading={c.section_heading!r}")
         print(f"{'='*60}")
         print(repr(c.text[:500]))
-        print(f"\n--- GORSEL ---")
+        print(f"\n--- VISUAL ---")
         print(c.text[:500])

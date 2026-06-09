@@ -1,11 +1,30 @@
 from __future__ import annotations
 
+import re
 from sqlalchemy import delete, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.db.models.document import Document
 from app.db.models.document_chunk import DocumentChunk
+
+# Matches structured identifiers: SVC-TXN-0041, ERR::UNMATCHED_RULE,
+# dlq://orion-dead-letter-eu, WARN::DEPRECATED_RULESET, INFRA-TKT-20240219-003
+_IDENTIFIER_RE = re.compile(
+    r'\b[A-Z][A-Z0-9]{1,}(?:[_:\-/]{1,2}[A-Z0-9][A-Z0-9_\-]*)+\b'
+)
+
+_STOP_WORDS = frozenset({
+    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+    "have", "has", "had", "do", "does", "did", "will", "would", "could",
+    "should", "may", "might", "shall", "can", "need", "dare", "ought",
+    "what", "which", "who", "whom", "whose", "when", "where", "why", "how",
+    "and", "but", "or", "nor", "for", "yet", "so", "in", "on", "at", "to",
+    "by", "of", "up", "as", "it", "its", "this", "that", "these", "those",
+    "if", "not", "no", "with", "from", "into", "than", "then", "there",
+    "their", "they", "them", "about", "after", "before", "between", "any",
+    "all", "each", "every", "both", "give", "given", "used", "still",
+})
 
 
 async def create_document(
@@ -184,6 +203,104 @@ async def search_document_chunks(
     )
 
 
+
+
+
+def _extract_grep_terms(query_text: str) -> list[str]:
+    """Extract searchable terms from a natural-language query.
+
+    Two passes:
+    1. Identifier extraction — uppercase tokens with separator chars
+       (SVC-TXN-0041, ERR::UNMATCHED_RULE, dlq://...). These are searched
+       as exact substrings; tsvector destroys them on tokenisation.
+    2. Keyword bigrams — consecutive non-stop-word pairs of length ≥ 4.
+       Catches natural-language phrases that narrow down the right chunk
+       when no identifier appears in the query.
+
+    Returns at most 6 terms to keep the SQL WHERE clause small.
+    """
+    terms: list[str] = []
+
+    # Pass 1 — identifiers
+    for m in _IDENTIFIER_RE.finditer(query_text):
+        t = m.group(0)
+        if t not in terms:
+            terms.append(t)
+
+    # Pass 2 — keyword bigrams (only when identifiers are scarce)
+    if len(terms) < 2:
+        words = [
+            w.lower()
+            for w in re.findall(r"[a-zA-Z]+", query_text)
+            if len(w) >= 4 and w.lower() not in _STOP_WORDS
+        ]
+        for i in range(len(words) - 1):
+            bigram = f"{words[i]} {words[i + 1]}"
+            if bigram not in terms:
+                terms.append(bigram)
+
+    return terms[:6]
+
+
+async def _grep_search(
+    session: AsyncSession,
+    *,
+    query_text: str,
+    top_k: int,
+    metadata_filter: dict,
+    embedding_model: str | None = None,
+) -> list[tuple[int, int]]:
+    """Exact substring search using pg_trgm ILIKE against raw chunk text.
+
+    Returns [(chunk_id, rank_1based)] sorted by number of term matches
+    (chunks matching more terms rank higher). Only chunks matching at
+    least one term are returned.
+
+    Requires: pg_trgm extension + GIN index on document_chunks.text
+    (migration j5k6l7m8n9o0).
+    """
+    terms = _extract_grep_terms(query_text)
+    if not terms:
+        return []
+
+    fetch_k = max(top_k, top_k * settings.hybrid_fetch_multiplier)
+
+    meta_clauses = _metadata_where_clauses(metadata_filter)
+    meta_params = _metadata_sql_params(metadata_filter)
+
+    # Build per-term ILIKE expressions that count how many terms each chunk
+    # matches. Chunks matching more terms float to the top.
+    match_exprs = " + ".join(
+        f"(CASE WHEN dc.text ILIKE :grep_term_{i} THEN 1 ELSE 0 END)"
+        for i in range(len(terms))
+    )
+    term_params = {f"grep_term_{i}": f"%{t}%" for i, t in enumerate(terms)}
+
+    where_any = " OR ".join(
+        f"dc.text ILIKE :grep_term_{i}" for i in range(len(terms))
+    )
+
+    all_where = meta_clauses + [f"({where_any})"]
+    if embedding_model:
+        all_where.append("dc.embedding_model_name = :embedding_model")
+        meta_params["embedding_model"] = embedding_model
+
+    params: dict = {**meta_params, **term_params, "fetch_k": fetch_k}
+
+    sql = text(
+        f"SELECT dc.id, ({match_exprs}) AS match_count "
+        "FROM document_chunks dc "
+        "JOIN documents d ON d.id = dc.document_id "
+        "WHERE " + " AND ".join(all_where) + " "
+        "ORDER BY match_count DESC, dc.id "
+        "LIMIT :fetch_k"
+    )
+
+    result = await session.execute(sql, params)
+    rows = result.all()
+    return [(row.id, i + 1) for i, row in enumerate(rows)]
+
+
 async def _dense_search(
     session: AsyncSession,
     *,
@@ -274,14 +391,29 @@ async def _hybrid_search(
     # {chunk_id: sparse_rank_1based}
     sparse_rank: dict[int, int] = {row.id: i + 1 for i, row in enumerate(sparse_rows)}
 
+    # --- Grep leg (third RRF leg) ---
+    grep_rank: dict[int, int] = {}
+    if settings.grep_search_enabled and query_text:
+        grep_rows = await _grep_search(
+            session,
+            query_text=query_text,
+            top_k=fetch_k,
+            metadata_filter=metadata_filter,
+            embedding_model=embedding_model,
+        )
+        grep_rank = {chunk_id: rank for chunk_id, rank in grep_rows}
+
     # --- RRF fusion ---
-    all_ids = set(dense_rank) | set(sparse_rank)
+    all_ids = set(dense_rank) | set(sparse_rank) | set(grep_rank)
     rrf_scores: list[tuple[int, float]] = []
     for chunk_id in all_ids:
         d_rank = dense_rank.get(chunk_id)
         s_rank = sparse_rank.get(chunk_id)
-        score = (1.0 / (rrf_k + d_rank[0]) if d_rank else 0.0) + (
-            1.0 / (rrf_k + s_rank) if s_rank else 0.0
+        g_rank = grep_rank.get(chunk_id)
+        score = (
+            (1.0 / (rrf_k + d_rank[0]) if d_rank else 0.0)
+            + (1.0 / (rrf_k + s_rank) if s_rank else 0.0)
+            + (1.0 / (rrf_k + g_rank) if g_rank else 0.0)
         )
         rrf_scores.append((chunk_id, score))
 

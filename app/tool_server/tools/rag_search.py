@@ -37,25 +37,21 @@ class RagSearchTool(Tool):
                 ),
             },
             "top_k": {
-                "type": "integer",
+                "anyOf": [{"type": "integer"}, {"type": "string"}],
                 "description": (
-                    "Number of passages to retrieve. "
+                    "Number of passages to retrieve (integer 3-10). "
                     "Use higher values (8-10) for broad or complex questions, "
                     "lower values (3-5) for narrow or factual questions."
                 ),
-                "minimum": 3,
-                "maximum": 10,
                 "default": 5,
             },
             "similarity_threshold": {
-                "type": "number",
+                "anyOf": [{"type": "number"}, {"type": "string"}],
                 "description": (
-                    "Minimum semantic similarity score for a passage to be included. "
+                    "Minimum semantic similarity score for a passage to be included (0.5-0.9). "
                     "Higher values return only closely matching passages; "
                     "lower values cast a wider net. Default 0.7 works for most cases."
                 ),
-                "minimum": 0.5,
-                "maximum": 0.9,
                 "default": 0.7,
             },
         },

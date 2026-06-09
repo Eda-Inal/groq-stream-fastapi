@@ -225,6 +225,14 @@ class Settings(BaseSettings):
     hybrid_fetch_multiplier: int = 3
 
     # ------------------------------------------------------------------
+    # Grep search (third RRF leg — exact substring match via pg_trgm)
+    # Catches structured identifiers (SVC-X-0000, ERR::CODE, dlq://...)
+    # that tsvector tokenisation fragments. Requires pg_trgm extension
+    # and GIN index on document_chunks.text (migration j5k6l7m8n9o0).
+    # ------------------------------------------------------------------
+    grep_search_enabled: bool = True
+
+    # ------------------------------------------------------------------
     # Reranking (optional — improves retrieval precision)
     # ------------------------------------------------------------------
     reranker_enabled: bool = False
