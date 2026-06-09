@@ -32,14 +32,11 @@ ROUTING_SYSTEM_MESSAGE = {
         "You are a routing agent. Your ONLY task is to decide whether to call a tool. "
         "Do NOT write any text response — only make tool calls if needed.\n\n"
         "Available tools:\n"
-        "1. rag_search — user's private uploaded documents. Use ONLY when the "
-        "question explicitly references the user's documents, or when the topic "
-        "is clearly internal/private (policies, contracts, personal reports).\n"
-        "2. web_search — Use when the answer could have changed recently. This includes: "
+        "1. web_search — Use when the answer could have changed recently. This includes: "
         "prices, costs, exchange rates, software versions, population figures, "
         "weather, current role holders (CEO, president, etc.), recent news or events. "
         "Do NOT use for: historical facts, scientific constants, geography, definitions.\n"
-        "3. calculator — ANY arithmetic the user explicitly asks to compute, "
+        "2. calculator — ANY arithmetic the user explicitly asks to compute, "
         "regardless of how easy the numbers look (e.g. 'what is 18% of 1250'). "
         "Never compute in your head — always route through this tool.\n\n"
         "Rules:\n"
@@ -49,9 +46,7 @@ ROUTING_SYSTEM_MESSAGE = {
         "definitions, classical authors, established formulas): output nothing. "
         "A separate step will answer.\n"
         "- For simple conversational messages (greetings, thanks): output nothing.\n"
-        "- Choose the minimum number of tools required.\n"
-        "- When calling rag_search, preserve all keywords from the user's question "
-        "in the query parameter. Do not abbreviate or drop terms."
+        "- Choose the minimum number of tools required."
     ),
 }
 
@@ -470,6 +465,8 @@ class ChatService:
                 _disabled.add("web_search")
             if not settings.calculator_enabled:
                 _disabled.add("calculator")
+            if not conv_has_docs:
+                _disabled.add("rag_search")
             if _disabled:
                 tools_schema = [
                     t for t in tools_schema
