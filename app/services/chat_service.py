@@ -659,6 +659,16 @@ class ChatService:
                             query = last_user_msg["content"]
 
                             if detected_tool in ("web_search", None):
+                                if conv_has_docs and detected_tool is None:
+                                    # The intended tool was likely rag_search but Groq couldn't
+                                    # serialize it. Silently falling back to web_search would return
+                                    # wrong-source answers without the user knowing. Tell them
+                                    # directly instead.
+                                    err = "I encountered an issue with the document search. Please try your question again."
+                                    full_response.append(err)
+                                    yield {"type": "chunk", "text": err}
+                                    yield {"type": "done", "finish_reason": "stop"}
+                                    break
                                 # detected_tool=None means Groq failed but we don't know which
                                 # tool was intended — try web_search first as the most common case.
                                 web_result = await self.mcp.call_tool("web_search", {"query": query})
