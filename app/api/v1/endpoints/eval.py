@@ -56,6 +56,7 @@ async def route_question(payload: RouteRequest) -> RouteResponse:
         tools=tools_schema,
         temperature=0,
         max_tokens=256,
+        call_type="eval_routing",
     ):
         etype = event.get("type")
         if etype == "tool_call":

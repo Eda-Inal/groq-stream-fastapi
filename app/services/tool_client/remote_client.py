@@ -64,7 +64,7 @@ class RemoteToolClient(ToolClient):
         log = logger.bind(tool=name)
 
         try:
-            log.info("tool_client_call_started")
+            log.info("tool_client_call_started", arguments=args or {})
 
             url = f"{self.base_url}/tools/call"
             payload: Dict[str, Any] = {

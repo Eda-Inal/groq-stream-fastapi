@@ -60,6 +60,7 @@ class PromptInjectionGuard:
                 tools=None,
                 temperature=0,
                 max_tokens=settings.guard_max_tokens,
+                call_type="guard",
             ):
                 etype = event.get("type")
                 if etype == "chunk" and event.get("text"):

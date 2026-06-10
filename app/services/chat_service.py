@@ -269,6 +269,7 @@ class ChatService:
                 presence_penalty=presence_penalty,
                 stop=stop,
                 seed=seed,
+                call_type=name.rsplit(".", 1)[-1],
             ):
                 etype = event.get("type")
                 if etype == "usage":
@@ -1135,6 +1136,7 @@ class ChatService:
                     model=model,
                     tools=None,
                     temperature=item.temperature,
+                    call_type="bulk",
                 ):
                     etype = event.get("type")
                     if etype == "chunk" and event.get("text"):

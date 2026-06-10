@@ -57,9 +57,14 @@ async def stream_chat(
     The response is sent incrementally as OpenAI-compatible
     chat.completion.chunk events using Server-Sent Events (SSE).
     """
+    # Resolve conversation_id (use client-provided or generate server-side)
+    conversation_id = payload.conversation_id or uuid.uuid4().hex
+
     log = logger.bind(
         message_count=len(payload.messages),
         model_override=payload.model,
+        conversation_id=conversation_id,
+        user_id=payload.user_id,
     )
     log.info("chat_stream_request_received")
 
@@ -71,9 +76,6 @@ async def stream_chat(
             status_code=400,
             detail=f"Unsupported model: {model}",
         )
-
-    # Resolve conversation_id (use client-provided or generate server-side)
-    conversation_id = payload.conversation_id or uuid.uuid4().hex
 
     generator = chat_service.stream_chat(
         session=db,

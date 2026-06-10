@@ -74,6 +74,7 @@ class LLMClient:
         presence_penalty: float | None = None,
         stop: str | list[str] | None = None,
         seed: int | None = None,
+        call_type: str | None = None,
     ) -> AsyncIterator[dict]:
         """
         Stream chat completion from any OpenAI-compatible provider.
@@ -125,7 +126,14 @@ class LLMClient:
             for key in ("frequency_penalty", "presence_penalty", "seed", "stream_options"):
                 payload.pop(key, None)
 
-        log.info("llm_request", provider=provider, base_url=base_url)
+        log.info(
+            "llm_request",
+            provider=provider,
+            base_url=base_url,
+            stream=use_stream,
+            temperature=temperature,
+            call_type=call_type,
+        )
 
         # State for filtering <think>...</think> blocks (reasoning models e.g. Qwen3)
         _in_think = False
