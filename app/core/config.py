@@ -261,6 +261,14 @@ class Settings(BaseSettings):
     guard_max_tokens: int = 8
 
     # ------------------------------------------------------------------
+    # ReAct agent (/api/v1/agent/stream)
+    # ------------------------------------------------------------------
+    agent_default_model: str = "llama-3.3-70b-versatile"
+    agent_max_iterations: int = 5
+    agent_rag_timeout: float = 10.0
+    agent_web_search_timeout: float = 15.0
+
+    # ------------------------------------------------------------------
     # LangSmith tracing
     # ------------------------------------------------------------------
     langsmith_api_key: str | None = None
