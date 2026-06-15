@@ -57,7 +57,7 @@ class RemoteToolClient(ToolClient):
             logger.error("tool_client_list_tools_exception", exc_info=True)
             return []
 
-    async def call_tool(self, name: str, args: dict) -> ToolResult:
+    async def call_tool(self, name: str, args: dict, timeout: float | None = None) -> ToolResult:
         if not self.base_url:
             return ToolResult(ok=False, content="Tool server not configured.")
 
@@ -72,7 +72,11 @@ class RemoteToolClient(ToolClient):
                 "arguments": args or {},
             }
 
-            r = await self._get_client().post(url, json=payload)
+            request_kwargs: Dict[str, Any] = {"json": payload}
+            if timeout is not None:
+                request_kwargs["timeout"] = timeout
+
+            r = await self._get_client().post(url, **request_kwargs)
 
             if r.status_code != 200:
                 logger.error("tool_client_call_http_error", status=r.status_code)
