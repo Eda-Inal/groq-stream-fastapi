@@ -1,0 +1,68 @@
+{
+  "run_id": "0cd3c49a",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "test_user",
+  "timestamp": "2026-06-16T05:41:08.056361",
+  "results": [
+    {
+      "index": 1,
+      "conv_id": "whitmore-rag-2e343dd2",
+      "question": "How old was Harold Whitmore and when did he die?",
+      "answer": "Harold James Whitmore was 81 years old when he died, and his death occurred on December 28, 2023.  \n\nSource: whitmore_estate_993b0a.md"
+    },
+    {
+      "index": 2,
+      "conv_id": "whitmore-rag-830078da",
+      "question": "On what date was the 2022 Will executed?",
+      "answer": "The 2022 Will was executed on **September 3, 2022**.  \nSource: whitmore_estate_a82f0f.md"
+    },
+    {
+      "index": 3,
+      "conv_id": "whitmore-rag-ae0d05ff",
+      "question": "Why is attorney Gerald Finch's capacity assessment considered inadequate and what medical evidence supports that conclusion?",
+      "answer": "Attorney Gerald Finch’s assessment is deemed inadequate because it was a brief, single‑meeting observation that relied on no medical records, no consultation with the decedent’s physician, and no independent cognitive testing. Finch spent only about 35 minutes with the decedent, noted only that the decedent “appeared oriented and expressed clear wishes,” and failed to request or review any of the decedent’s medical documentation or to arrange a formal capacity evaluation. Petitioners argue that this cursory approach falls below the standard of care for establishing testamentary capacity, especially given the decedent’s documented cognitive decline.\n\nThe medical evidence underscoring the inadequacy includes:\n\n* **January 2022 neurocognitive testing:** The decedent’s Montreal Cognitive Assessment (MoCA) score dropped to 16 out of 30, which is consistent with moderate dementia under DSM‑5 criteria.  \n* **August 2022 clinical notes from Dr. Alvarez (≈ five weeks before the will was executed):** The decedent “frequently failed to recognize family members,” was “confused regarding ownership of the Brentwood Lane property, believing at times it had already been sold,” and showed “significant short‑term memory deficits.”\n\nThese findings demonstrate progressive dementia and substantial impairments in memory, recognition, and judgment—conditions that require a thorough, medically informed capacity assessment, which Finch’s brief, unsubstantiated observation did not provide.  \n\n**Source:** whitmore_estate_a82f0f.md"
+    },
+    {
+      "index": 4,
+      "conv_id": "whitmore-rag-3d8438ad",
+      "question": "What was Harold's cognitive condition in the weeks immediately before the will was executed, and which elements of the testamentary capacity test does that condition fail to satisfy?",
+      "answer": "In the weeks immediately before the will was executed (approximately five weeks prior, in August 2022), Dr. Alvarez’s clinical notes describe the decedent’s (Harold’s) cognitive condition as follows:\n\n* **MoCA score:** 16 out of 30, indicating moderate dementia under DSM‑5 criteria.  \n* **Observed deficits:** He “frequently failed to recognize family members,” was “confused regarding ownership of the Brentwood Lane property, believing at times it had already been sold,” and showed “significant short‑term memory deficits.”【Source: whitmore_estate_a82f0f.md】\n\nThe documents provide this description of Harold’s cognitive impairment but do **not** list the specific elements of the testamentary‑capacity test (e.g., understanding the nature of the act, the property to be disposed of, and the claims of heirs) nor explain which of those elements his condition fails to satisfy. Consequently, the required information about which capacity‑test elements are not met is not covered in the supplied documents.  \n\n**Source:** whitmore_estate_a82f0f.md"
+    },
+    {
+      "index": 5,
+      "conv_id": "whitmore-rag-5f06d0f8",
+      "question": "Is there any legitimate prior relationship between Diane Kowalski and the Decedent that could explain her inclusion in the will, and what does that mean under the undue influence test?",
+      "answer": "The documents state that Diane Kowalski **had no prior familial or longstanding personal relationship** with Harold James Whitmore.  She entered the decedent’s home only in April 2021 as a **private‑agency caregiver** paid $28 per hour, and she remained his **live‑in caregiver** until his death.  Because there was no earlier connection, the petitioners argue that there is no legitimate relationship that would explain why the entire $4.2 million estate was left to her.\n\nUnder the undue‑influence analysis presented in the filings, the parties point to three classic elements:\n\n* **Opportunity** – Kowalski lived continuously with the decedent and was his primary (often sole) point of contact, handling phone calls, correspondence, and medical appointments.  \n* **Motive** – She had no family tie to the decedent and stood to receive the whole estate, giving her a financial incentive.  \n* **Effect** – The 2022 will completely reversed the decedent’s long‑standing testamentary plan (the 2018 will that divided the estate equally among his three children) without any stated reason.\n\nThese factors are used to argue that the inclusion of Kowalski in the will is the product of undue influence rather than a legitimate prior relationship.\n\n**Sources**  \n- Opportunity and motive description: *whitmore_estate_78076a.md* (and identical text in *whitmore_estate_993b0a.md*).  \n- Lack of prior relationship: same passages indicate “Ms. Kowalski had no prior familial or longstanding personal relationship with the Decedent.”"
+    },
+    {
+      "index": 6,
+      "conv_id": "whitmore-rag-9cd83064",
+      "question": "What changed between the 2018 Will and the 2022 Will, and how is that change being used as legal argument?",
+      "answer": "The 2018 Will left Harold James Whitmore’s roughly $4.2 million estate to be divided equally among his three children – Eleanor Whitmore‑Callahan, Thomas Whitmore and his late son Michael. The 2022 Will expressly revoked that 2018 Will and instead left the entire estate to Diane Kowalski, the decedent’s live‑in caregiver, thereby disinheriting the children.\n\nPetitioners argue that this stark, “complete and unexplained reversal” of the decedent’s long‑standing testamentary intent shows that the 2022 Will was the product of undue influence (and that the decedent may have lacked testamentary capacity). The change is therefore used as the central factual basis for their request that the court deny probate of the 2022 Will and admit the 2018 Will instead.  \n\nSource: whitmore_estate_993b0a.md, whitmore_estate_a82f0f.md, whitmore_estate_78076a.md"
+    },
+    {
+      "index": 7,
+      "conv_id": "whitmore-rag-508a195f",
+      "question": "How did Harold's cognitive decline progress from 2021 to 2022, and how does that progression support the susceptibility argument?",
+      "answer": "Harold’s cognitive abilities showed a clear decline over the course of a year.  \n\n* **March 2021:** He was diagnosed with mild cognitive impairment (MCI). Neuro‑psychological testing placed him in the 14th percentile on the Montreal Cognitive Assessment (MoCA), scoring **21 out of 30**.  \n* **January 2022:** A follow‑up evaluation showed further deterioration; his MoCA score fell to **16 out of 30**, which meets the DSM‑5 criteria for **moderate dementia**.  \n* **August 2022 (≈ 5 weeks before the will was executed):** Clinical notes recorded that he “frequently failed to recognize family members,” was confused about ownership of his property, and exhibited “significant short‑term memory deficits.”  \n\nThis documented progression from mild impairment to moderate dementia demonstrates that Harold’s mental capacity was rapidly eroding. Courts treat such cognitive decline as a factor that **heightens a testator’s susceptibility to undue influence**, especially when the individual also depends on a caregiver for daily activities. The record notes that Harold was “diagnosed with progressive dementia and was wholly dependent on Ms. Kowalski for daily living activities,” reinforcing the argument that his weakened mental state made him especially vulnerable to influence at the time the will was executed【Source: whitmore_estate_a82f0f.md】."
+    },
+    {
+      "index": 8,
+      "conv_id": "whitmore-rag-4db3c0f4",
+      "question": "How does Diane Kowalski's control over Harold's daily life and external communications establish the opportunity element of undue influence?",
+      "answer": "Diane Kowalski’s opportunity to exert undue influence is shown by the fact that she lived in Harold James Whitmore’s home continuously from April 2021 and became his primary—and often sole—point of contact with the outside world.  Because she screened his phone calls, handled his correspondence, and accompanied him to every medical appointment after July 2022, she had constant, close access to his daily activities and to any communications that might affect his decisions about his estate.  This level of control and proximity satisfies the “opportunity” element required to prove undue influence.  \n\nSource: whitmore_estate_78076a.md"
+    },
+    {
+      "index": 9,
+      "conv_id": "whitmore-rag-bce71f7c",
+      "question": "What two core claims must Petitioners prove together to have the 2022 Will invalidated and the 2018 Will admitted, and what is the key evidence for each?",
+      "answer": "The Petitioners must prove **both** of the following claims in order to have the 2022 Will set aside and the 2018 Will admitted:\n\n1. **Lack of testamentary capacity** – they must show that the decedent did not satisfy the jurisdiction’s four‑part capacity test (knowing the natural objects of his bounty, understanding the nature and extent of his property, understanding the testamentary act, and being able to relate those elements into an orderly plan). The petitioners assert that the decedent “lacked testamentary capacity at the time of execution of the 2022 Will”【Source: whitmore_estate_78076a.md】.\n\n2. **Undue influence** – they must demonstrate that the 2022 Will was the product of undue influence by Diane Kowalski. The key evidence presented is Kowalski’s continuous residence in the decedent’s home from April 2021, her control over his communications and medical appointments, her lack of any prior familial relationship, her $28‑per‑hour caregiver fee, and the fact that she stands to receive the entire $4.2 million estate under the contested will【Source: whitmore_estate_a82f0f.md】.  \n\nThese two claims together form the basis of the petitioners’ request to invalidate the 2022 Will and admit the 2018 Will.  \n\nSource: whitmore_estate_78076a.md; whitmore_estate_a82f0f.md"
+    },
+    {
+      "index": 10,
+      "conv_id": "whitmore-rag-092c378d",
+      "question": "If the court applies the lucid interval doctrine, accepting that Harold may have had a moment of clarity when signing, what evidence can Petitioners use to counter that argument?",
+      "answer": "Petitioners can undermine a “lucid‑interval” argument by pointing to the concrete medical and factual record that shows Harold’s mental abilities were already severely impaired at the time the 2022 will was executed:\n\n* **Progressive cognitive decline documented by his physician.**  \n  * March 2021 – diagnosed with mild cognitive impairment; MoCA 21/30 (14th percentile).  \n  * January 2022 – MoCA fell to 16/30, meeting the DSM‑5 definition of moderate dementia. These scores demonstrate that even a year after the diagnosis Harold’s capacity was well below the level required to understand and appreciate the nature of a testamentary act. (Source: whitmore_estate_993b0a.md; whitmore_estate_78076a.md; whitmore_estate_a82f0f.md)\n\n* **The only contemporaneous observation of “clear wishes” is a brief note by Mr. Finch that the decedent “appeared oriented and expressed clear wishes.”**  \n  Petitioners can argue that this cursory assessment falls short of the standard of care for establishing testamentary capacity, especially in a case with documented progressive dementia. (Source: whitmore_estate_78076a.md; whitmore_estate_a82f0f.md)\n\n* **Undue‑influence factors that further erode any claim of a moment of clarity.**  \n  – Harold was wholly dependent on his live‑in caregiver, Diane Kowalski, for daily activities (bathing, medication, meals).  \n  – Kowalski lived with him continuously from April 2021, controlled his communications, and accompanied him to medical appointments after July 2022.  \n  These facts show heightened susceptibility to influence, which the court must consider alongside any alleged lucid interval. (Source: whitmore_estate_78076a.md; whitmore_estate_a82f0f.md)\n\n* **Legal burden of proof.**  \n  The proponent of the will must first prove due execution and sound mind; once that is established, the burden shifts to the contestants. Petitioners can meet that shifted burden by presenting the medical records and the inadequate capacity assessment described above. (Source: whitmore_estate_993b0a.md; whitmore_estate_78076a.md; whitmore_estate_a82f0f.md)"
+    }
+  ]
+}
