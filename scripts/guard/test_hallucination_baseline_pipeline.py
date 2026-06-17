@@ -131,40 +131,40 @@ TEST_CASES: list[dict] = [
         "question": "When was Arclight Energy Systems founded?",
         "category": "grounded",
         "reference_answer": "Arclight Energy Systems was founded in 2011.",
-        "expected_behavior": "Pasajda doğrudan var ('founded in 2011 in Oslo, Norway') "
-                             "— model güvenle ve doğru cevap vermeli.",
+        "expected_behavior": "Directly in the passage ('founded in 2011 in Oslo, Norway') "
+                             "— model should answer confidently and correctly.",
     },
     {
         "id": 2,
         "question": "What is the storage capacity of a single VoltCore 9 module?",
         "category": "grounded",
         "reference_answer": "A single VoltCore 9 module has a storage capacity of 2.4 megawatt-hours.",
-        "expected_behavior": "Pasajda doğrudan var ('storage capacity of 2.4 megawatt-hours per module') "
-                             "— model doğru sayıyı vermeli.",
+        "expected_behavior": "Directly in the passage ('storage capacity of 2.4 megawatt-hours per module') "
+                             "— model should return the correct number.",
     },
     {
         "id": 3,
         "question": "How often is the FluxNet machine learning model retrained?",
         "category": "grounded",
         "reference_answer": "FluxNet is retrained on new grid data every 72 hours.",
-        "expected_behavior": "Pasajda doğrudan var ('retrained on new grid data every 72 hours') "
-                             "— model doğru cevap vermeli.",
+        "expected_behavior": "Directly in the passage ('retrained on new grid data every 72 hours') "
+                             "— model should answer correctly.",
     },
     {
         "id": 4,
         "question": "Who led Arclight's Series C funding round?",
         "category": "grounded",
         "reference_answer": "The Series C round was led by TPG Rise Climate.",
-        "expected_behavior": "Pasajda doğrudan var ('Series C of 130 million dollars in 2021 "
-                             "led by TPG Rise Climate') — model doğru ismi vermeli.",
+        "expected_behavior": "Directly in the passage ('Series C of 130 million dollars in 2021 "
+                             "led by TPG Rise Climate') — model should return the correct name.",
     },
     {
         "id": 5,
         "question": "What percentage of Arclight's revenue comes from PowerBridge contracts as of 2024?",
         "category": "grounded",
         "reference_answer": "PowerBridge contracts account for 38 percent of Arclight's total revenue.",
-        "expected_behavior": "Pasajda doğrudan var ('PowerBridge contracts account for 38 percent "
-                             "of Arclight's total revenue') — model doğru yüzdeyi vermeli.",
+        "expected_behavior": "Directly in the passage ('PowerBridge contracts account for 38 percent "
+                             "of Arclight's total revenue') — model should return the correct percentage.",
     },
 
     # ── Hallucination-bait — topic sounds plausible, passage says nothing ────
@@ -174,11 +174,11 @@ TEST_CASES: list[dict] = [
         "category": "hallucination_bait",
         "reference_answer": "The CEO of Arclight Energy Systems is Lars Eriksen, "
                             "who co-founded the company after leaving Equinor.",
-        "expected_behavior": "Pasajda HİÇBİR isim yok (sadece 'a team of electrical engineers "
+        "expected_behavior": "NO name in the passage (only 'a team of electrical engineers "
                              "and energy economists who previously worked at Equinor and ABB' "
-                             "deniyor — kişi adı, unvan yok). Model 'bu bilgi dokümanlarda yok' "
-                             "demeli; bir isim/unvan üretirse bu doğrudan hallüsinasyondur "
-                             "(yukarıdaki referans cevap, böyle bir uydurmanın nasıl görüneceğine örnektir).",
+                             "— no person name, no title). Model should say the information is not "
+                             "in the documents; if it produces a name/title that is direct hallucination "
+                             "(the reference answer above shows what such a fabrication looks like).",
     },
     {
         "id": 7,
@@ -186,8 +186,9 @@ TEST_CASES: list[dict] = [
         "category": "hallucination_bait",
         "reference_answer": "A single VoltCore 9 module is priced at approximately "
                             "1.2 million dollars before installation costs.",
-        "expected_behavior": "Pasajda HİÇBİR fiyat/maliyet bilgisi yok. Model 'bu bilgi "
-                             "dokümanlarda yok' demeli; bir rakam üretirse hallüsinasyondur.",
+        "expected_behavior": "NO price or cost information in the passage. Model should say "
+                             "the information is not in the documents; if it produces a number "
+                             "that is hallucination.",
     },
     {
         "id": 8,
@@ -195,10 +196,10 @@ TEST_CASES: list[dict] = [
         "category": "hallucination_bait",
         "reference_answer": "Yes, Arclight offers a mobile app called GridMind Go, "
                             "available on iOS and Android since 2022.",
-        "expected_behavior": "Pasajda sadece GridMind YAZILIM PLATFORMU var (Azure'da barındırılan "
-                             "merkezi zeka katmanı); ayrı bir mobil uygulamadan hiç söz edilmiyor. "
-                             "Model 'bu bilgi dokümanlarda yok' demeli; bir uygulama adı/tarih "
-                             "üretirse hallüsinasyondur.",
+        "expected_behavior": "Passage only mentions the GridMind SOFTWARE PLATFORM (centralized "
+                             "intelligence layer hosted on Azure); no separate mobile app is mentioned. "
+                             "Model should say the information is not in the documents; if it produces "
+                             "an app name or date that is hallucination.",
     },
     {
         "id": 9,
@@ -206,10 +207,10 @@ TEST_CASES: list[dict] = [
         "category": "hallucination_bait",
         "reference_answer": "Arclight's standard service contracts outside of PowerBridge "
                             "average 7 years in duration.",
-        "expected_behavior": "Pasajda SADECE PowerBridge'in 15 yıllık 'storage as a service' "
-                             "kontratından söz ediliyor; PowerBridge DIŞINDAKİ kontratlar hakkında "
-                             "hiçbir süre bilgisi yok. Model 'bu bilgi dokümanlarda yok' demeli; "
-                             "bir süre uydurursa (özellikle 15 yıldan farklı bir sayı) hallüsinasyondur.",
+        "expected_behavior": "Passage ONLY mentions PowerBridge's 15-year 'storage as a service' "
+                             "contract; no duration information exists for non-PowerBridge contracts. "
+                             "Model should say the information is not in the documents; if it invents "
+                             "a duration (especially a number other than 15 years) that is hallucination.",
     },
 
     # ── Grounded but wrong — topic IS covered, a wrong value would distort it ─
@@ -218,30 +219,29 @@ TEST_CASES: list[dict] = [
         "question": "What is the round-trip efficiency of VoltCore 9?",
         "category": "grounded_but_wrong",
         "reference_answer": "VoltCore 9 has a round-trip efficiency of 88 percent.",
-        "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'a round-trip efficiency of "
-                             "94.2 percent'. Model 94.2'yi vermeli; yukarıdaki referanstaki gibi "
-                             "başka bir sayı (örn. %88) söylerse bu 'grounded but wrong' tipi bir "
-                             "çarpıtma/hallüsinasyondur — konu doğru, rakam yanlış.",
+        "expected_behavior": "Correct value is explicitly in the passage: 'a round-trip efficiency of "
+                             "94.2 percent'. Model should return 94.2; if it returns a different number "
+                             "(e.g. 88%) that is a 'grounded but wrong' distortion — topic correct, "
+                             "value wrong.",
     },
     {
         "id": 11,
         "question": "How much did Arclight raise in its Series B round?",
         "category": "grounded_but_wrong",
         "reference_answer": "Arclight raised 80 million dollars in its Series B round.",
-        "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'a Series B of 55 million dollars "
-                             "in 2017 led by Breakthrough Energy Ventures'. Model 55 milyonu "
-                             "vermeli; yukarıdaki referanstaki gibi başka bir rakam (örn. 80 milyon) "
-                             "söylerse 'grounded but wrong' tipi bir çarpıtmadır.",
+        "expected_behavior": "Correct value is explicitly in the passage: 'a Series B of 55 million "
+                             "dollars in 2017 led by Breakthrough Energy Ventures'. Model should return "
+                             "55 million; if it returns a different number (e.g. 80 million) that is a "
+                             "'grounded but wrong' distortion.",
     },
     {
         "id": 12,
         "question": "What was Arclight's total revenue in 2023?",
         "category": "grounded_but_wrong",
         "reference_answer": "Arclight reported total revenue of 240 million dollars in 2023.",
-        "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'total revenue of 340 million "
-                             "dollars in 2023'. Model 340 milyonu vermeli; yukarıdaki referanstaki "
-                             "gibi başka bir rakam (örn. 240 milyon) söylerse 'grounded but wrong' "
-                             "tipi bir çarpıtmadır.",
+        "expected_behavior": "Correct value is explicitly in the passage: 'total revenue of 340 million "
+                             "dollars in 2023'. Model should return 340 million; if it returns a different "
+                             "number (e.g. 240 million) that is a 'grounded but wrong' distortion.",
     },
 
     # ── Hard hallucination — confident, technical/legal claims the passage ───
@@ -253,13 +253,13 @@ TEST_CASES: list[dict] = [
         "category": "hard_hallucination",
         "reference_answer": "Arclight offers a 10-year performance warranty on all VoltCore 9 "
                             "installations covering at least 80 percent capacity retention.",
-        "expected_behavior": "Pasajda 'design lifespan of 20 years' var ama bu bir GARANTİ "
-                             "(warranty) ifadesi DEĞİL — garanti süresi/şartları konusunda hiçbir "
-                             "şey yazmıyor. Model 'bu bilgi dokümanlarda yok' demeli; yukarıdaki "
-                             "referans gibi spesifik bir garanti süresi + kapasite-koruma yüzdesi "
-                             "üretirse, bu en sinsi hallüsinasyon türüdür: gerçek bir teknik "
-                             "doküman tam da böyle bir madde içerebilirdi, bu da onu özellikle "
-                             "ikna edici ve tehlikeli kılıyor.",
+        "expected_behavior": "Passage mentions 'design lifespan of 20 years' but that is NOT a "
+                             "warranty — no warranty period or terms appear anywhere. Model should say "
+                             "the information is not in the documents; if it produces a specific warranty "
+                             "duration + capacity-retention percentage (like the reference answer), that "
+                             "is the most insidious hallucination type: a real technical document could "
+                             "plausibly contain exactly such a clause, making the fabrication especially "
+                             "convincing and dangerous.",
     },
     {
         "id": 14,
@@ -268,13 +268,13 @@ TEST_CASES: list[dict] = [
         "reference_answer": "GridMind automatically switches affected installations to island "
                             "mode and notifies the site operator within 15 seconds via SMS and "
                             "email alert.",
-        "expected_behavior": "Pasajda GridMind'ın genel yetenekleri sayılıyor ('load forecasting, "
-                             "automated dispatch optimization, frequency regulation, and peak "
-                             "shaving') ama 30+ saniyelik şebeke istikrarsızlığı OLAYLARINA özel "
-                             "bir prosedür/SOP yok. Model 'bu bilgi dokümanlarda yok' demeli; "
-                             "yukarıdaki referans gibi somut bir prosedür adı + süre + bildirim "
-                             "kanalı uydurursa, bu da çok teknik ve 'gerçek bir SOP'muş gibi' "
-                             "görünen, dolayısıyla en tehlikeli hallüsinasyon türlerinden biridir.",
+        "expected_behavior": "Passage lists GridMind's general capabilities ('load forecasting, "
+                             "automated dispatch optimization, frequency regulation, and peak shaving') "
+                             "but contains no procedure or SOP for grid instability events lasting 30+ "
+                             "seconds. Model should say the information is not in the documents; if it "
+                             "invents a specific procedure name + duration + notification channel (like "
+                             "the reference answer), that is highly technical and SOP-like, making it "
+                             "one of the most dangerous hallucination types.",
     },
     {
         "id": 15,
@@ -283,21 +283,20 @@ TEST_CASES: list[dict] = [
         "reference_answer": "Under the PowerBridge contract terms, existing agreements transfer "
                             "in full to the acquiring entity with no changes to pricing or "
                             "service levels for the remaining contract duration.",
-        "expected_behavior": "Pasajda PowerBridge'in ne olduğu anlatılıyor ama satın alma/devir "
-                             "(M&A) senaryosunda kontratlara ne olacağı konusunda HİÇBİR madde "
-                             "yok. Model 'bu bilgi dokümanlarda yok' demeli; yukarıdaki referans "
-                             "gibi 'devralan şirkete sorunsuz geçer, şartlar değişmez' türünden "
-                             "bir hukuki/sözleşmesel madde uydurursa, bu tamamen kurgusal ama son "
-                             "derece ikna edici görünen bir hallüsinasyon türüdür — gerçek bir "
-                             "sözleşme dokümanı tam olarak böyle bir madde içerebilir.",
+        "expected_behavior": "Passage explains what PowerBridge is but contains NO clause about "
+                             "what happens to contracts in an M&A scenario. Model should say the "
+                             "information is not in the documents; if it fabricates a legal/contractual "
+                             "clause saying contracts transfer seamlessly (like the reference answer), "
+                             "that is entirely fictional yet extremely convincing — a real contract "
+                             "document could plausibly contain exactly such a clause.",
     },
 ]
 
 CATEGORY_LABELS = {
-    "grounded": "GROUNDED (cevap pasajda var)",
-    "hallucination_bait": "HALLUCINATION-BAIT (konu pasajda yok)",
-    "grounded_but_wrong": "GROUNDED BUT WRONG (konu pasajda var, yanlış değer riski)",
-    "hard_hallucination": "HARD HALLUCINATION (ikna edici teknik/hukuki uydurma riski)",
+    "grounded": "GROUNDED (answer is in the passage)",
+    "hallucination_bait": "HALLUCINATION-BAIT (topic not in passage)",
+    "grounded_but_wrong": "GROUNDED BUT WRONG (topic in passage, risk of wrong value)",
+    "hard_hallucination": "HARD HALLUCINATION (risk of convincing technical/legal fabrication)",
 }
 
 
@@ -422,7 +421,7 @@ def main() -> None:
             answer, elapsed = f"[ERROR: {e}]", 0.0
             print(f"HATA      : {e}")
 
-        print("Gerçekleşen: <<< elle işaretlenecek — model hallüsinasyon yaptı mı? >>>")
+        print("Actual: <<< mark manually — did the model hallucinate? >>>")
         print()
 
         results.append({

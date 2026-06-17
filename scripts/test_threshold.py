@@ -184,7 +184,7 @@ def main() -> None:
         print("\nWaiting 3s before first question...\n")
         time.sleep(3)
     else:
-        print(f"Mevcut belge kullanılıyor: {FILENAME}")
+        print(f"Using existing document: {FILENAME}")
         print(f"Conv ID: {CONVERSATION_ID}\n")
 
     for i, q in enumerate(QUESTIONS):

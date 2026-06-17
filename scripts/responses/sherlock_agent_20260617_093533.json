@@ -1,0 +1,23 @@
+{
+  "run_id": "983890ec7fd24798a21c9fc75a1a7227",
+  "timestamp": "2026-06-17T09:35:33.539573",
+  "endpoint": "http://localhost:8000/api/v1/agent/stream",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "sherlock-rag-test",
+  "results": [
+    {
+      "id": "Q6",
+      "category": "multi_retrieval",
+      "question": "Holmes deduces Watson's profession from objects on his person, and later does the same for Jabez Wilson. What specific object on Watson reveals he is a doctor, and what object on Wilson's body — combined with a second object on his watch chain — reveals he has been to China?",
+      "conversation_id": "ac06912437b8451894ef678cf7136510",
+      "thoughts": [],
+      "actions": [],
+      "observations": [],
+      "retrieved_chunks": [],
+      "answer": "",
+      "rag_search_count": 0,
+      "duration_s": 4.91,
+      "error": null
+    }
+  ]
+}

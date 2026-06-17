@@ -69,6 +69,8 @@ class ReActAgentService:
             iter_log = log.bind(iteration=iteration + 1)
 
             buffer: list[str] = []
+            native_tool_call: dict | None = None
+            failed_generation: str | None = None
             async for event in self.client.stream_chat_completion(
                 messages=llm_messages,
                 model=model,
@@ -81,15 +83,77 @@ class ReActAgentService:
                 if event["type"] == "chunk":
                     if event.get("text"):
                         buffer.append(event["text"])
+                elif event["type"] == "tool_call":
+                    calls = event.get("tool_calls", [])
+                    if calls and native_tool_call is None:
+                        native_tool_call = calls[0]
                 elif event["type"] == "error":
-                    iter_log.error("agent_llm_error", message=event.get("message"))
-                    yield {"type": "error", "message": event.get("message", "LLM error")}
-                    yield {"type": "done", "finish_reason": "error"}
-                    return
+                    # Groq returns 400 when the model generates a native tool call
+                    # but no tools were declared (tool_choice=none). The actual tool
+                    # call is recoverable from failed_generation in the error body.
+                    fg = event.get("failed_generation")
+                    if event.get("status") == 400 and fg:
+                        failed_generation = fg
+                        iter_log.info("native_tool_call_via_failed_generation", raw=fg[:120])
+                    else:
+                        iter_log.error("agent_llm_error", message=event.get("message"))
+                        yield {"type": "error", "message": event.get("message", "LLM error")}
+                        yield {"type": "done", "finish_reason": "error"}
+                        return
                 elif event["type"] == "done":
                     break
 
             raw_response = "".join(buffer)
+
+            # Model produced a native tool call (either as a tool_call event or
+            # as a 400 failed_generation). Recover the tool name + args and
+            # append them to whatever text the model already wrote, so the
+            # ReAct parser finds a complete Thought/Action/Action Input block.
+            recovered_tool: str | None = None
+            recovered_args_str = "{}"
+
+            if native_tool_call is not None:
+                import json as _json
+                fn = native_tool_call.get("function", {})
+                recovered_tool = fn.get("name", "")
+                try:
+                    raw_args = _json.loads(fn.get("arguments", "{}"))
+                    clean_args = {k: v for k, v in raw_args.items()
+                                  if k not in ("top_k", "similarity_threshold")}
+                    recovered_args_str = _json.dumps(clean_args)
+                except (_json.JSONDecodeError, AttributeError):
+                    recovered_args_str = "{}"
+            elif failed_generation is not None:
+                import json as _json
+                try:
+                    fg_obj = _json.loads(failed_generation)
+                    recovered_tool = fg_obj.get("name")
+                    raw_args = fg_obj.get("arguments", {})
+                    # Drop model-supplied top_k / similarity_threshold so system
+                    # defaults (RAG_DEFAULT_TOP_K from .env) apply instead.
+                    clean_args = {k: v for k, v in raw_args.items()
+                                  if k not in ("top_k", "similarity_threshold")}
+                    recovered_args_str = _json.dumps(clean_args)
+                except (_json.JSONDecodeError, AttributeError):
+                    pass
+
+            if recovered_tool:
+                if not raw_response.strip():
+                    raw_response = (
+                        f"Thought: I need to search the documents for this information.\n"
+                        f"Action: {recovered_tool}\n"
+                        f"Action Input: {recovered_args_str}"
+                    )
+                else:
+                    # Thought text exists but Action was emitted as native tool call —
+                    # append the Action so the parser can find a complete block.
+                    raw_response = (
+                        f"{raw_response.rstrip()}\n"
+                        f"Action: {recovered_tool}\n"
+                        f"Action Input: {recovered_args_str}"
+                    )
+                iter_log.info("native_tool_call_converted_to_react", tool=recovered_tool)
+
             last_raw_response = raw_response
             parsed = parse_react_response(raw_response)
 
@@ -110,7 +174,16 @@ class ReActAgentService:
             action = parsed["action"]
             action_input = parsed["action_input"]
 
+            # If model skipped the "Action:" line but wrote "Action Input:" with a
+            # query key, infer rag_search (it is the only available tool).
+            if action is None and isinstance(action_input, dict) and "query" in action_input:
+                action = "rag_search"
+
             if action == "rag_search" and action in available_names and isinstance(action_input, dict):
+                # Strip model-supplied retrieval params so system defaults apply.
+                action_input.pop("top_k", None)
+                action_input.pop("similarity_threshold", None)
+
                 # Server-side injection -- the model never controls this.
                 metadata_filter = action_input.get("metadata_filter")
                 if not isinstance(metadata_filter, dict):
@@ -143,9 +216,6 @@ class ReActAgentService:
         if final_answer is None:
             final_answer = last_raw_response
 
-        yield {"type": "chunk", "text": final_answer}
-        yield {"type": "done", "finish_reason": "stop"}
-
         prompt_text = ""
         for m in reversed(messages):
             if m.get("role") == "user":
@@ -165,3 +235,6 @@ class ReActAgentService:
             user_id=user_id,
         )
         await session.commit()
+
+        yield {"type": "chunk", "text": final_answer}
+        yield {"type": "done", "finish_reason": "stop"}

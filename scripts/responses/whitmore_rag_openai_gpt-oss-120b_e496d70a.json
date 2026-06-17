@@ -1,0 +1,14 @@
+{
+  "run_id": "e496d70a",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "test_user",
+  "timestamp": "2026-06-16T13:22:42.878445",
+  "results": [
+    {
+      "index": 1,
+      "conv_id": "whitmore-rag-b1f783bf",
+      "question": "What independent verification steps were skipped before Harold put pen to paper on September 3, and why does their absence matter legally?",
+      "answer": "The attorney who prepared the September 3, 2022 will did not take any of the usual independent steps that would verify the decedent’s mental capacity. He \n\n* **Did not request or review any of Harold’s medical records**,  \n* **Did not consult with his treating physician, Dr. Alvarez**, and  \n* **Did not conduct or arrange for an independent cognitive assessment** of the decedent’s capacity.  \n\nPetitioners argue that this “cursory assessment falls below the standard of care and is insufficient to establish testamentary capacity” in a case where the decedent had documented progressive dementia. Because capacity is a legal prerequisite for a valid will, the lack of independent verification weakens the proponent’s ability to prove that Harold understood the nature and extent of his property and the effect of the testamentary act. Without such verification, the will is vulnerable to challenge on both testamentary‑capacity and undue‑influence grounds.  \n\nSource: whitmore_estate_78076a.md."
+    }
+  ]
+}

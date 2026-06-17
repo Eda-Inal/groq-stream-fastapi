@@ -1,0 +1,23 @@
+{
+  "run_id": "f425f9c3234248ddad12d76e1b33d3a5",
+  "timestamp": "2026-06-17T09:48:56.353653",
+  "endpoint": "http://localhost:8000/api/v1/agent/stream",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "sherlock-rag-test",
+  "results": [
+    {
+      "id": "Q1",
+      "category": "baseline",
+      "question": "What specific physical clues does Holmes use to deduce that Watson has recently returned to medical practice?",
+      "conversation_id": "78d95c98a25a4c399d770a4c4d97348b",
+      "thoughts": [],
+      "actions": [],
+      "observations": [],
+      "retrieved_chunks": [],
+      "answer": "",
+      "rag_search_count": 0,
+      "duration_s": 18.18,
+      "error": "Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kffebj19ev1sxpb5m4n348g0` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3081, Requested 5850. Please try again in 6.9825s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "0ffc8b70728742ca9ab337b153303a66",
+  "timestamp": "2026-06-17T10:26:22.902092",
+  "endpoint": "http://localhost:8000/api/v1/agent/stream",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "sherlock-rag-test",
+  "results": [
+    {
+      "id": "Q1",
+      "category": "baseline",
+      "question": "What specific physical clues does Holmes use to deduce that Watson has recently returned to medical practice?",
+      "conversation_id": "8fcaf8e4472d466e9673ad75de3f657f",
+      "thoughts": [
+        "I need:\n  [ ] 1. The passage in the Sherlock Holmes stories where Holmes observes physical clues that indicate Watson has recently returned to medical practice.\n  [ ] 2. The specific physical clues mentioned by Holmes in that passage.\n  Searching for item 1.Action: rag_search"
+      ],
+      "actions": [],
+      "observations": [],
+      "retrieved_chunks": [],
+      "answer": "Thought: I need:\n  [ ] 1. The passage in the Sherlock Holmes stories where Holmes observes physical clues that indicate Watson has recently returned to medical practice.\n  [ ] 2. The specific physical clues mentioned by Holmes in that passage.\n  Searching for item 1.Action: rag_search\nAction Input: {\"query\": \"Holmes deduces Watson has recently returned to medical practice physical clues\", \"top_k\": 8, \"similarity_threshold\": 0.6}",
+      "rag_search_count": 0,
+      "duration_s": 5.13,
+      "error": null
+    }
+  ]
+}

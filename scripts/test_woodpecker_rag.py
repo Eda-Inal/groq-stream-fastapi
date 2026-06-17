@@ -90,7 +90,7 @@ QUESTIONS = [
         "expected": "barbed + sticky saliva + 3x beak length",
     },
     {
-        "id": "Q3 (4.4 — çok bölüm sentezi)",
+        "id": "Q3 (4.4 — multi-section synthesis)",
         "text": "What role do woodpeckers play in the ecosystem for other animals?",
         "expected": "ecosystem engineers, cavity nesting for owls/ducks/squirrels",
     },

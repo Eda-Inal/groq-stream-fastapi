@@ -1,0 +1,14 @@
+{
+  "run_id": "4ff7d2ee",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "test_user",
+  "timestamp": "2026-06-16T13:07:09.481092",
+  "results": [
+    {
+      "index": 1,
+      "conv_id": "whitmore-rag-a04433da",
+      "question": "If Petitioners succeed on the undue influence claim but fail on the testamentary capacity claim, what is the legal outcome for the 2022 Will — and what evidence would have been sufficient to prove capacity at the time of signing?",
+      "answer": "If a court finds that the 2022 Will was the product of undue influence, the will is **voided** even if the capacity challenge fails.  Under the jurisdiction’s law, “undue influence sufficient to void a will requires proof that … the will appears to be the effect of such influence”【source: whitmore_estate_78076a.md】.  Because the petitioners also ask that the 2022 Will be denied probate and the earlier 2018 Will be admitted, a successful undue‑influence finding would lead the court to **deny probate of the 2022 Will and admit the 2018 Will in its place**【source: whitmore_estate_78076a.md】.\n\n**Evidence that would have been sufficient to establish testamentary capacity**\n\nThe legal standard requires the testator, at the moment of execution, to satisfy a four‑part test:  \n\n1. Know the natural objects of his bounty;  \n2. Understand the nature and extent of his property;  \n3. Understand the nature of the testamentary act itself; and  \n4. Be capable of relating these elements to form an orderly plan of disposition【source: whitmore_estate_78076a.md】.\n\nEvidence that can satisfy that standard includes:\n\n* **Contemporary medical or neuro‑psychological assessments** showing the decedent’s cognitive abilities were adequate (e.g., a MoCA score in the normal range or physician testimony that the decedent “appeared oriented and expressed clear wishes” during a thorough evaluation).  \n* **Physician testimony** confirming the decedent knew who his heirs were, understood the property he owned, and grasped that he was executing a will that would dispose of that property.  \n* **Documentation of a lucid interval** – the law recognizes that a testator may have brief periods of competence; proof that the will was executed during such an interval would support capacity【source: whitmore_estate_78076a.md】.  \n* **Detailed contemporaneous statements** by the testator indicating awareness of his assets, the beneficiaries, and the effect of the disposition.\n\nIn this case, the only capacity‑related evidence presented was a brief note from the drafting attorney that the decedent “appeared oriented and expressed clear wishes,” which the petitioners argue is insufficient【source: whitmore_estate_78076a.md】.  More robust evidence—such as an independent cognitive assessment, physician testimony, or clear contemporaneous statements meeting the four‑part test—would have been needed to prove capacity."
+    }
+  ]
+}

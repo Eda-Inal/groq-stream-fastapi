@@ -1,0 +1,19 @@
+{
+  "run_id": "cf33eb71",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "test_user",
+  "endpoint": "http://localhost:8000/api/v1/agent/stream",
+  "timestamp": "2026-06-16T13:22:22.571825",
+  "results": [
+    {
+      "index": 1,
+      "conv_id": "whitmore-agent-2837459f",
+      "question": "What independent verification steps were skipped before Harold put pen to paper on September 3, and why does their absence matter legally?",
+      "answer": "",
+      "thoughts": [],
+      "actions": [],
+      "observations": [],
+      "error": "Tool choice is none, but model called a tool"
+    }
+  ]
+}

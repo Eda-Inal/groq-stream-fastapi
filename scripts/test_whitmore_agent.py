@@ -1,19 +1,14 @@
 """
-Whitmore estate RAG test — 10 independent questions.
+Whitmore estate ReAct agent test.
 
-Each question is sent with a unique conversation_id so there is no
-shared history between questions. The Whitmore document is already
-in the DB (user_id=test_user); no upload step needed.
+Sends questions to /api/v1/agent/stream and parses the custom SSE
+event stream (thought / action / observation / chunk / done).
 
-TEST MODE must be active in chat_service.py:
-  - documents are scoped by user_id only (not conversation_id)
-  - so a new conv_id per question still finds the same documents
-
-Rate: 3 questions/minute (20s delay) — safe for openai/gpt-oss-120b:free
-  limits: 30 RPM | 1K RPD | 8K TPM | 200K TPD
+The Whitmore document must already be in the DB (user_id=test_user).
+Agent endpoint only has rag_search available — no web_search, no calculator.
 
 Usage:
-  .venv\\Scripts\\python scripts\\test_whitmore_rag.py
+  .venv\\Scripts\\python scripts\\test_whitmore_agent.py
 """
 
 from __future__ import annotations
@@ -34,15 +29,15 @@ if hasattr(sys.stdout, "buffer"):
 # ── config ────────────────────────────────────────────────────────────────────
 
 BASE_URL  = "http://localhost:8000/api/v1"
-CHAT_URL  = f"{BASE_URL}/chat/stream"
+AGENT_URL = f"{BASE_URL}/agent/stream"
 MODEL     = "openai/gpt-oss-120b"
 USER_ID   = "test_user"
-DELAY_S   = 20.0  # 3 questions/minute
+DELAY_S   = 5.0
 
 RESPONSES_DIR = Path(__file__).parent / "responses"
 
 # ── questions ─────────────────────────────────────────────────────────────────
-
+#.venv\Scripts\python scripts\test_whitmore_agent.py
 QUESTIONS: list[str] = [
     "What independent verification steps were skipped before Harold put pen to paper on September 3, and why does their absence matter legally?",
 ]
@@ -59,7 +54,17 @@ def _health_check() -> None:
         sys.exit(1)
 
 
-def _ask(question: str, conv_id: str) -> str:
+def _ask(question: str, conv_id: str) -> dict:
+    """
+    Stream one question through the agent endpoint.
+
+    Returns a dict with:
+      answer      - final answer text (from "chunk" events)
+      thoughts    - list of thought strings
+      actions     - list of {tool, args} dicts
+      observations- list of {tool, result} dicts
+      error       - error message string or None
+    """
     payload = {
         "messages": [{"role": "user", "content": question}],
         "model": MODEL,
@@ -67,22 +72,63 @@ def _ask(question: str, conv_id: str) -> str:
         "conversation_id": conv_id,
         "temperature": 0,
     }
-    parts: list[str] = []
-    with httpx.stream("POST", CHAT_URL, json=payload, timeout=120) as r:
+
+    answer_parts: list[str] = []
+    thoughts: list[str] = []
+    actions: list[dict] = []
+    observations: list[dict] = []
+    error: str | None = None
+
+    with httpx.stream("POST", AGENT_URL, json=payload, timeout=120) as r:
         r.raise_for_status()
         for line in r.iter_lines():
             if not line.startswith("data:"):
                 continue
             raw = line[5:].strip()
-            if raw == "[DONE]":
-                break
+            if not raw:
+                continue
             try:
-                chunk = json.loads(raw)
-                delta = chunk["choices"][0]["delta"].get("content", "")
-                parts.append(delta)
-            except (json.JSONDecodeError, IndexError, KeyError):
-                pass
-    return "".join(parts).strip()
+                event = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+
+            etype = event.get("type")
+
+            if etype == "thought":
+                text = event.get("text", "")
+                thoughts.append(text)
+                print(f"  [Thought] {text}")
+
+            elif etype == "action":
+                tool = event.get("tool", "")
+                args = event.get("args", {})
+                actions.append({"tool": tool, "args": args})
+                print(f"  [Action]  {tool}({json.dumps(args, ensure_ascii=False)[:120]})")
+
+            elif etype == "observation":
+                tool = event.get("tool", "")
+                result = event.get("result", "")
+                observations.append({"tool": tool, "result": result})
+                preview = result[:200].replace("\n", " ")
+                print(f"  [Obs]     {tool} → {preview}{'...' if len(result) > 200 else ''}")
+
+            elif etype == "chunk":
+                answer_parts.append(event.get("text", ""))
+
+            elif etype == "error":
+                error = event.get("message", "Unknown error")
+                print(f"  [ERROR]   {error}")
+
+            elif etype == "done":
+                break
+
+    return {
+        "answer": "".join(answer_parts).strip(),
+        "thoughts": thoughts,
+        "actions": actions,
+        "observations": observations,
+        "error": error,
+    }
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -90,21 +136,21 @@ def _ask(question: str, conv_id: str) -> str:
 def main() -> None:
     questions = [q for q in QUESTIONS if q.strip()]
     if not questions:
-        print("ERROR: QUESTIONS list is empty. Add questions and re-run.")
+        print("ERROR: QUESTIONS list is empty.")
         sys.exit(1)
 
     _health_check()
 
     slug = MODEL.replace("/", "_").replace(":", "_")
     run_id = uuid4().hex[:8]
-    out_path = RESPONSES_DIR / f"whitmore_rag_{slug}_{run_id}.json"
+    out_path = RESPONSES_DIR / f"whitmore_agent_{slug}_{run_id}.json"
 
     print("=" * 70)
-    print(f"  Whitmore RAG Test")
+    print(f"  Whitmore ReAct Agent Test")
     print(f"  Model     : {MODEL}")
     print(f"  User ID   : {USER_ID}")
+    print(f"  Endpoint  : {AGENT_URL}")
     print(f"  Questions : {len(questions)}")
-    print(f"  Delay     : {DELAY_S}s between questions")
     print(f"  Output    : {out_path.name}")
     print("=" * 70)
     print()
@@ -112,25 +158,35 @@ def main() -> None:
     results: list[dict] = []
 
     for i, question in enumerate(questions, start=1):
-        conv_id = f"whitmore-rag-{uuid4().hex[:8]}"
+        conv_id = f"whitmore-agent-{uuid4().hex[:8]}"
         print(f"{'─' * 70}")
         print(f"Q{i:02d} | conv_id={conv_id}")
         print(f"Q    : {question}")
         print()
 
         try:
-            answer = _ask(question, conv_id)
+            result = _ask(question, conv_id)
         except Exception as e:
-            answer = f"ERROR: {e}"
+            result = {
+                "answer": f"ERROR: {e}",
+                "thoughts": [],
+                "actions": [],
+                "observations": [],
+                "error": str(e),
+            }
 
-        print(f"A    : {answer}")
+        print()
+        print(f"A    : {result['answer']}")
+        print(f"       ({len(result['thoughts'])} thought(s), "
+              f"{len(result['actions'])} action(s), "
+              f"{len(result['observations'])} observation(s))")
         print()
 
         results.append({
             "index": i,
             "conv_id": conv_id,
             "question": question,
-            "answer": answer,
+            **result,
         })
 
         if i < len(questions):
@@ -147,6 +203,7 @@ def main() -> None:
                 "run_id": run_id,
                 "model": MODEL,
                 "user_id": USER_ID,
+                "endpoint": AGENT_URL,
                 "timestamp": datetime.utcnow().isoformat(),
                 "results": results,
             },

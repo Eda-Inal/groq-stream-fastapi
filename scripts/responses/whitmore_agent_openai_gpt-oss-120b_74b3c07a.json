@@ -1,0 +1,19 @@
+{
+  "run_id": "74b3c07a",
+  "model": "openai/gpt-oss-120b",
+  "user_id": "test_user",
+  "endpoint": "http://localhost:8000/api/v1/agent/stream",
+  "timestamp": "2026-06-16T13:14:43.213250",
+  "results": [
+    {
+      "index": 1,
+      "conv_id": "whitmore-agent-65ea41aa",
+      "question": "Harold signed the 2022 Will on September 3, 2022 — at that moment, what was his documented medical condition according to his physician, who had control over his access to the outside world, and what would a court need to find in the drafting attorney's notes to conclude the signing was legally valid?",
+      "answer": "",
+      "thoughts": [],
+      "actions": [],
+      "observations": [],
+      "error": null
+    }
+  ]
+}
