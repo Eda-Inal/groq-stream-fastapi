@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
 from app.db.repositories.document import has_documents_for_conversation, has_documents_for_user
 from app.tool_server.tools.base import ToolResult
-from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
 from app.services.guardrails import PromptInjectionGuard
 from app.services.tool_client.remote_client import RemoteToolClient
@@ -358,7 +357,7 @@ class ChatService:
                     session=session,
                     conversation_id=conversation_id,
                     user_id=user_id,
-                    limit=20,
+                    limit=5,
                 )
 
                 history_messages: list[dict] = []
@@ -1109,51 +1108,3 @@ class ChatService:
                 },
             )
 
-    async def bulk_complete(
-        self,
-        *,
-        session: AsyncSession,
-        items: list[BulkChatItem],
-    ) -> list[dict]:
-        """
-        Non-streaming bulk completions. Each item is an independent request
-        processed sequentially. Returns a list of {model, response, error?} dicts.
-        """
-        results: list[dict] = []
-
-        for idx, item in enumerate(items):
-            model = item.model or settings.groq_default_model
-            if model not in AVAILABLE_MODELS:
-                results.append({"index": idx, "model": model, "response": None, "error": f"Unsupported model: {model}"})
-                continue
-
-            collected: list[str] = []
-            error_msg: str | None = None
-
-            try:
-                async for event in self.client.stream_chat_completion(
-                    messages=item.messages,
-                    model=model,
-                    tools=None,
-                    temperature=item.temperature,
-                    call_type="bulk",
-                ):
-                    etype = event.get("type")
-                    if etype == "chunk" and event.get("text"):
-                        collected.append(event["text"])
-                    elif etype == "error":
-                        error_msg = event.get("message", "Unknown error")
-                        break
-                    elif etype == "done":
-                        break
-            except Exception as exc:
-                error_msg = str(exc)
-
-            results.append({
-                "index": idx,
-                "model": model,
-                "response": "".join(collected) if collected else None,
-                "error": error_msg,
-            })
-
-        return results

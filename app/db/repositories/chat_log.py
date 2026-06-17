@@ -57,7 +57,7 @@ async def list_chat_logs_by_conversation(
     session: AsyncSession,
     conversation_id: str,
     user_id: str | None = None,
-    limit: int = 20,
+    limit: int = 5,
 ) -> List[ChatLog]:
     """
     Fetch recent chat logs for a given conversation_id.

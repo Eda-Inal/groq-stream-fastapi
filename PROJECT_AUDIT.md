@@ -49,7 +49,7 @@ Client
 
 1. `POST /api/v1/chat/stream` → `chat.py:stream_chat()` resolves model, conversation_id, calls `ChatService.stream_chat()`
 2. `ChatService.stream_chat()`:
-   - Loads conversation history from DB (last 20 turns, scoped to user_id + conversation_id)
+   - Loads conversation history from DB (last 5 turns, scoped to user_id + conversation_id)
    - Fetches tool schemas from MCP server via `RemoteMCPClient.list_tools()`
    - Prepends `ROUTING_SYSTEM_MESSAGE` (tool routing prompt)
    - **Round loop** (max 8 rounds, max 10 total tool calls):
@@ -121,7 +121,7 @@ Client
 | File | Purpose |
 |------|---------|
 | `app/api/v1/router.py` | Aggregates all routers under `/api/v1` |
-| `app/api/v1/endpoints/chat.py` | `GET /chat/models`, `POST /chat/stream` (SSE), `POST /chat/bulk` |
+| `app/api/v1/endpoints/chat.py` | `GET /chat/models`, `POST /chat/stream` (SSE) |
 | `app/api/v1/endpoints/documents.py` | CRUD for documents + PDF upload (`POST /documents/upload`) + `POST /documents/{id}/reprocess` |
 | `app/api/v1/endpoints/rag_metrics.py` | `GET /rag/metrics` — proxies metrics from MCP server + total doc/chunk counts from DB |
 | `app/api/v1/endpoints/eval.py` | `POST /eval/route` — lightweight routing-only endpoint for eval. Runs 1 LLM call (~800 tokens), returns `{tool, args}`. No tool execution, no answer generation. |

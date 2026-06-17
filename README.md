@@ -56,7 +56,7 @@ FastAPI Endpoint (chat.py)
   v
 ChatService.stream_chat()
   |
-  |-- 1. Load last 20 history turns from DB
+  |-- 1. Load last 5 history turns from DB
   |-- 2. Fetch tool schemas from tool-server (/tools)
   |-- 3. Choose routing prompt
   |       - conversation has uploaded docs → "always call rag_search for factual questions"
@@ -120,7 +120,7 @@ groq-stream-fastapi/
 │   ├── api/v1/
 │   │   ├── router.py
 │   │   └── endpoints/
-│   │       ├── chat.py                  # POST /chat/stream, /chat/bulk, GET /chat/models
+│   │       ├── chat.py                  # POST /chat/stream, GET /chat/models
 │   │       ├── documents.py             # POST /documents/upload, CRUD
 │   │       ├── eval.py                  # POST /eval/route — lightweight routing test
 │   │       └── rag_metrics.py           # GET /rag/metrics
@@ -162,7 +162,6 @@ groq-stream-fastapi/
 │   │
 │   ├── schemas/
 │   │   ├── chat.py                      # ChatStreamRequest, ChatMessage
-│   │   ├── chat_bulk.py                 # BulkChatRequest
 │   │   └── document.py                  # DocumentIngestRequest/Response/Read
 │   │
 │   ├── core/
@@ -307,7 +306,7 @@ Request body:
 
 All fields except `messages` are optional.
 
-- `conversation_id` — if provided, the last 20 turns of history are loaded and prepended. If omitted, a new UUID is generated server-side.
+- `conversation_id` — if provided, the last 5 turns of history are loaded and prepended. If omitted, a new UUID is generated server-side.
 - `user_id` — used to scope RAG search to the user's uploaded documents.
 - `model` — must be a key in `AVAILABLE_MODELS`. Defaults to `GROQ_DEFAULT_MODEL`. If explicitly set, automatic fallback is disabled.
 - `tags` — forwarded to LangSmith as trace tags.
@@ -322,10 +321,6 @@ curl -N http://localhost:8000/api/v1/chat/stream \
     "user_id": "user-42"
   }'
 ```
-
-#### `POST /api/v1/chat/bulk`
-
-Non-streaming batch completions. Each item is processed independently and sequentially. Returns all results when complete.
 
 #### `GET /api/v1/chat/models`
 
@@ -533,7 +528,7 @@ Each completed turn is persisted to the `chat_logs` table with:
 - `prompt`, `response` — plain-text copies for quick querying
 - LLM parameters: `model_name`, `temperature`, `max_tokens`, `top_p`, `seed`
 
-When a request includes a `conversation_id`, the last 20 turns are loaded and prepended to the current messages before any LLM call is made.
+When a request includes a `conversation_id`, the last 5 turns are loaded and prepended to the current messages before any LLM call is made.
 
 ---
 
@@ -576,6 +571,22 @@ Three risk categories — prompt injection, harmful content, and hallucination �
 - **Hallucination** — no guard added: a full-pipeline RAG baseline (real ingestion → retrieval → generation, no guard) showed the primary model produced zero observed hallucinations across grounded, fabricated, distorted, and adversarial "hard hallucination" question sets — even though a guard classifier for this category is feasible (Scout scored 28/28 in isolation), the model it would protect doesn't currently need it.
 
 Test scripts live in `scripts/guard/` and follow a shared convention: each question is sent as a fresh, history-free conversation, rate-limited between calls, with raw responses saved to `scripts/guard/responses/`.
+
+---
+
+## Local development (without Docker)
+
+Run the API and tool server directly with hot reload:
+
+```bash
+# Terminal 1 — API server (port 8000)
+python -m app.main
+
+# Terminal 2 — Tool server (port 8001)
+python -m app.tool_server.main
+```
+
+Both servers start with `--reload` enabled by default.
 
 ---
 

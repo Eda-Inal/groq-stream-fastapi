@@ -14,7 +14,6 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.chat_bulk import BulkChatRequest
 from app.schemas.chat import ChatStreamRequest
 from app.db.session import get_db
 from app.services.chat_service import ChatService
@@ -173,23 +172,3 @@ async def stream_chat(
         stream_generator(),
         media_type="text/event-stream",
     )
-
-
-@router.post("/bulk")
-async def bulk_chat(
-    payload: BulkChatRequest,
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Bulk non-streaming chat endpoint.
-    """
-
-    results = await chat_service.bulk_complete(
-        session=db,
-        items=payload.items,
-    )
-
-    return {
-        "total": len(payload.items),
-        "results": results,
-    }
