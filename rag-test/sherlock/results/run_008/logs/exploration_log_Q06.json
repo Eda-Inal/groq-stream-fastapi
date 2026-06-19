@@ -1,0 +1,685 @@
+{
+  "question": {
+    "q_id": "Q06",
+    "category": "medium",
+    "question": "What was the King of Bohemia's problem and why did he need Holmes's help?",
+    "expected_keywords": [
+      "photograph",
+      "Irene Adler",
+      "compromising",
+      "marriage",
+      "Clotilde Lothman von Saxe-Meningen",
+      "blackmail"
+    ],
+    "expected_answer": "The King had a compromising photograph taken with Irene Adler. He was about to marry Clotilde Lothman von Saxe-Meningen, and Adler threatened to send the photograph to ruin the engagement. Five attempts to recover it had already failed.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": [
+      19,
+      20,
+      21
+    ],
+    "chunk_text": [
+      "Chunk 19: \"...became entangled with this young person, wrote her some compromising letters, and is now desirous of getting those letters back.\"",
+      "Chunk 20: \"We were both in the photograph.\" \"Oh, dear! That is very bad!\"",
+      "Chunk 21: \"To Clotilde Lothman von Saxe-Meningen, second daughter of the King of Scandinavia...\" \"Threatens to send them the photograph.\" \"Five attempts have been made.\""
+    ]
+  },
+  "debug_response": {
+    "query": "What was the King of Bohemia's problem and why did he need Holmes's help?",
+    "user_id": "sherlock-rag-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 530.4,
+      "search_ms": 75.4,
+      "rerank_ms": 569.8,
+      "total_ms": 1175.7
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 45,
+      "sparse_candidates": 45,
+      "grep_candidates": 0,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 517,
+          "chunk_index": 17,
+          "document_id": 103,
+          "cosine_similarity": 0.83222
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 518,
+          "chunk_index": 18,
+          "document_id": 103,
+          "cosine_similarity": 0.8035
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 501,
+          "chunk_index": 1,
+          "document_id": 103,
+          "cosine_similarity": 0.75006
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 512,
+          "chunk_index": 12,
+          "document_id": 103,
+          "cosine_similarity": 0.72295
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 515,
+          "chunk_index": 15,
+          "document_id": 103,
+          "cosine_similarity": 0.71595
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 516,
+          "chunk_index": 16,
+          "document_id": 103,
+          "cosine_similarity": 0.71558
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 552,
+          "chunk_index": 52,
+          "document_id": 103,
+          "cosine_similarity": 0.70022
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 521,
+          "chunk_index": 21,
+          "document_id": 103,
+          "cosine_similarity": 0.69115
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 585,
+          "chunk_index": 85,
+          "document_id": 103,
+          "cosine_similarity": 0.69079
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 514,
+          "chunk_index": 14,
+          "document_id": 103,
+          "cosine_similarity": 0.68848
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 558,
+          "chunk_index": 58,
+          "document_id": 103,
+          "cosine_similarity": 0.68647
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 596,
+          "chunk_index": 96,
+          "document_id": 103,
+          "cosine_similarity": 0.6809
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 522,
+          "chunk_index": 22,
+          "document_id": 103,
+          "cosine_similarity": 0.67355
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 551,
+          "chunk_index": 51,
+          "document_id": 103,
+          "cosine_similarity": 0.67326
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 603,
+          "chunk_index": 103,
+          "document_id": 103,
+          "cosine_similarity": 0.67181
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 502,
+          "chunk_index": 2,
+          "document_id": 103,
+          "cosine_similarity": 0.66795
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 513,
+          "chunk_index": 13,
+          "document_id": 103,
+          "cosine_similarity": 0.66515
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 540,
+          "chunk_index": 40,
+          "document_id": 103,
+          "cosine_similarity": 0.66476
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 519,
+          "chunk_index": 19,
+          "document_id": 103,
+          "cosine_similarity": 0.66433
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 503,
+          "chunk_index": 3,
+          "document_id": 103,
+          "cosine_similarity": 0.66195
+        }
+      ],
+      "sparse_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 517,
+          "chunk_index": 17,
+          "document_id": 103,
+          "fts_score": 0.0483
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 558,
+          "chunk_index": 58,
+          "document_id": 103,
+          "fts_score": 0.04255
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 557,
+          "chunk_index": 57,
+          "document_id": 103,
+          "fts_score": 0.04255
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 518,
+          "chunk_index": 18,
+          "document_id": 103,
+          "fts_score": 0.04255
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 516,
+          "chunk_index": 16,
+          "document_id": 103,
+          "fts_score": 0.04163
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 585,
+          "chunk_index": 85,
+          "document_id": 103,
+          "fts_score": 0.04163
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 552,
+          "chunk_index": 52,
+          "document_id": 103,
+          "fts_score": 0.04087
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 521,
+          "chunk_index": 21,
+          "document_id": 103,
+          "fts_score": 0.03952
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 554,
+          "chunk_index": 54,
+          "document_id": 103,
+          "fts_score": 0.03175
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 551,
+          "chunk_index": 51,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 513,
+          "chunk_index": 13,
+          "document_id": 103,
+          "fts_score": 0.02871
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 553,
+          "chunk_index": 53,
+          "document_id": 103,
+          "fts_score": 0.02871
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 597,
+          "chunk_index": 97,
+          "document_id": 103,
+          "fts_score": 0.02871
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 512,
+          "chunk_index": 12,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 515,
+          "chunk_index": 15,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 584,
+          "chunk_index": 84,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 588,
+          "chunk_index": 88,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 596,
+          "chunk_index": 96,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 555,
+          "chunk_index": 55,
+          "document_id": 103,
+          "fts_score": 0.02736
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 556,
+          "chunk_index": 56,
+          "document_id": 103,
+          "fts_score": 0.02736
+        }
+      ],
+      "grep_leg": [],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 517,
+          "rrf_score": 0.032787,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.016393,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.83222,
+          "chunk_index": 17,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 260,
+          "text_preview": "To speak\nplainly, the matter implicates the great House of Ormstein, hereditary\nkings of Bohemia.”\n\n“I was also aware of that,” murmured Holmes, settling himself down in\nhis armchair and closing his e"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 518,
+          "rrf_score": 0.031754,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.015625,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.8035,
+          "chunk_index": 18,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 222,
+          "text_preview": "“You are right,”\nhe cried; “I am the King. Why should I attempt to conceal it?”\n\n“Why, indeed?” murmured Holmes. “Your Majesty had not spoken before I\nwas aware that I was addressing Wilhelm Gottsreic"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 516,
+          "rrf_score": 0.030536,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.015385,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.71558,
+          "chunk_index": 16,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 297,
+          "text_preview": "If not, I should much prefer to communicate with you\nalone.”\n\nI rose to go, but Holmes caught me by the wrist and pushed me back into\nmy chair. “It is both, or none,” said he. “You may say before this"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 558,
+          "rrf_score": 0.030214,
+          "dense_contrib": 0.014085,
+          "sparse_contrib": 0.016129,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.68647,
+          "chunk_index": 58,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 288,
+          "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 552,
+          "rrf_score": 0.029851,
+          "dense_contrib": 0.014925,
+          "sparse_contrib": 0.014925,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.70022,
+          "chunk_index": 52,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 258,
+          "text_preview": "“I’ve heard that voice before,” said Holmes, staring down the dimly lit\nstreet. “Now, I wonder who the deuce that could have been.”\n\nIII.\n\nI slept at Baker Street that night, and we were engaged upon"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 585,
+          "rrf_score": 0.029644,
+          "dense_contrib": 0.014493,
+          "sparse_contrib": 0.015152,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.69079,
+          "chunk_index": 85,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 259,
+          "text_preview": "Yes, 17 King\nEdward Street, near St. Paul’s.’\n\n“I started off, Mr. Holmes, but when I got to that address it was a\nmanufactory of artificial knee-caps, and no one in it had ever heard of\neither Mr. Wi"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 521,
+          "rrf_score": 0.029412,
+          "dense_contrib": 0.014706,
+          "sparse_contrib": 0.014706,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.69115,
+          "chunk_index": 21,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 306,
+          "text_preview": "It must be bought.”\n\n“She will not sell.”\n\n“Stolen, then.”\n\n“Five attempts have been made. Twice burglars in my pay ransacked her\nhouse. Once we diverted her luggage when she travelled. Twice she has"
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 512,
+          "rrf_score": 0.029139,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.013514,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.72295,
+          "chunk_index": 12,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 311,
+          "text_preview": "‘Remarkable\nas being the scene of the death of Wallenstein, and for its numerous\nglass-factories and paper-mills.’ Ha, ha, my boy, what do you make of\nthat?” His eyes sparkled, and he sent up a great"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 515,
+          "rrf_score": 0.028718,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.013333,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.71595,
+          "chunk_index": 15,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 255,
+          "text_preview": "From the lower part of the face\nhe appeared to be a man of strong character, with a thick, hanging lip,\nand a long, straight chin suggestive of resolution pushed to the length\nof obstinacy.\n\n“You had"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 557,
+          "rrf_score": 0.028068,
+          "dense_contrib": 0.012195,
+          "sparse_contrib": 0.015873,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.66183,
+          "chunk_index": 57,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 299,
+          "text_preview": "I keep it only to safeguard myself, and to preserve a\n    weapon which will always secure me from any steps which he might\n    take in the future. I leave a photograph which he might care to\n    posse"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 551,
+          "rrf_score": 0.027799,
+          "dense_contrib": 0.013514,
+          "sparse_contrib": 0.014286,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.67326,
+          "chunk_index": 51,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 310,
+          "text_preview": "I rose, and, making my excuses, escaped from the\nhouse. I hesitated whether to attempt to secure the photograph at once;\nbut the coachman had come in, and as he was watching me narrowly, it\nseemed saf"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 513,
+          "rrf_score": 0.027072,
+          "dense_contrib": 0.012987,
+          "sparse_contrib": 0.014085,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.66515,
+          "chunk_index": 13,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 204,
+          "text_preview": "Holmes\nwhistled. “A pair, by the sound,” said he. “Yes,” he continued, glancing out of\nthe window. “A nice little brougham and a pair of beauties. A hundred\nand fifty guineas apiece. There’s money in"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 596,
+          "rrf_score": 0.026709,
+          "dense_contrib": 0.013889,
+          "sparse_contrib": 0.012821,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.6809,
+          "chunk_index": 96,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 314,
+          "text_preview": "I shall want your help to-night.”\n\n“At what time?”\n\n“Ten will be early enough.”\n\n“I shall be at Baker Street at ten.”\n\n“Very well. And, I say, Doctor, there may be some little danger, so\nkindly put yo"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 501,
+          "rrf_score": 0.025974,
+          "dense_contrib": 0.015873,
+          "sparse_contrib": 0.010101,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.75006,
+          "chunk_index": 1,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 150,
+          "text_preview": "I.     A Scandal in Bohemia\n   II.    The Red-Headed League\n   III.   A Case of Identity\n   IV.    The Boscombe Valley Mystery\n   V.     The Five Orange Pips\n   VI.    The Man with the Twisted Lip"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 514,
+          "rrf_score": 0.02578,
+          "dense_contrib": 0.014286,
+          "sparse_contrib": 0.011494,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.68848,
+          "chunk_index": 14,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 333,
+          "text_preview": "I may want your help, and so may he. Here he comes. Sit down in that armchair, Doctor, and give us your best attention.”\n\nA slow and heavy step, which had been heard upon the stairs and in the\npassage"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 569.8,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 1,
+        "chunk_db_id": 517,
+        "rrf_score": 0.032787,
+        "dense_contrib": 0.016393,
+        "sparse_contrib": 0.016393,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.83222,
+        "chunk_index": 17,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 260,
+        "text_preview": "To speak\nplainly, the matter implicates the great House of Ormstein, hereditary\nkings of Bohemia.”\n\n“I was also aware of that,” murmured Holmes, settling himself down in\nhis armchair and closing his e",
+        "rerank_score": 0.42108,
+        "pre_rerank_position": 1,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 2,
+        "chunk_db_id": 518,
+        "rrf_score": 0.031754,
+        "dense_contrib": 0.016129,
+        "sparse_contrib": 0.015625,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.8035,
+        "chunk_index": 18,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 222,
+        "text_preview": "“You are right,”\nhe cried; “I am the King. Why should I attempt to conceal it?”\n\n“Why, indeed?” murmured Holmes. “Your Majesty had not spoken before I\nwas aware that I was addressing Wilhelm Gottsreic",
+        "rerank_score": 0.40028,
+        "pre_rerank_position": 2,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 5,
+        "chunk_db_id": 552,
+        "rrf_score": 0.029851,
+        "dense_contrib": 0.014925,
+        "sparse_contrib": 0.014925,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.70022,
+        "chunk_index": 52,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 258,
+        "text_preview": "“I’ve heard that voice before,” said Holmes, staring down the dimly lit\nstreet. “Now, I wonder who the deuce that could have been.”\n\nIII.\n\nI slept at Baker Street that night, and we were engaged upon",
+        "rerank_score": 0.38723,
+        "pre_rerank_position": 5,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 10,
+        "chunk_db_id": 557,
+        "rrf_score": 0.028068,
+        "dense_contrib": 0.012195,
+        "sparse_contrib": 0.015873,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.66183,
+        "chunk_index": 57,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 299,
+        "text_preview": "I keep it only to safeguard myself, and to preserve a\n    weapon which will always secure me from any steps which he might\n    take in the future. I leave a photograph which he might care to\n    posse",
+        "rerank_score": 0.35042,
+        "pre_rerank_position": 10,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 4,
+        "chunk_db_id": 558,
+        "rrf_score": 0.030214,
+        "dense_contrib": 0.014085,
+        "sparse_contrib": 0.016129,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.68647,
+        "chunk_index": 58,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 288,
+        "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped",
+        "rerank_score": 0.32595,
+        "pre_rerank_position": 4,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}

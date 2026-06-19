@@ -1,0 +1,72 @@
+{
+  "run_id": "run_005",
+  "timestamp": "2026-06-19T15:32:36.010027",
+  "config": {
+    "embedding_model": "mxbai-embed-large",
+    "hybrid_search": true,
+    "grep_search": true,
+    "reranker_enabled": true,
+    "rrf_k": 60,
+    "requested_top_k": 5,
+    "fetch_k": 15
+  },
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "easy",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        2
+      ],
+      "found_chunks": [
+        2
+      ],
+      "dense_found": [
+        2
+      ],
+      "sparse_found": [
+        2
+      ],
+      "grep_found": [
+        2
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 1,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.7546,
+      "correct_chunk_score_rerank": 0.64512,
+      "top1_score_dense": 0.7546,
+      "top1_score_rerank": 0.64512,
+      "pre_rerank_top5": [
+        2,
+        59,
+        53,
+        58,
+        56
+      ],
+      "post_rerank_top5": [
+        2,
+        59,
+        58,
+        57,
+        3
+      ]
+    }
+  ],
+  "summary": {
+    "total_questions": 1,
+    "total_with_expected": 1,
+    "total_found": 1,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 1.0,
+    "mrr_post_rerank": 1.0,
+    "avg_correct_cosine": 0.7546,
+    "avg_chunk_recall": 1.0,
+    "dense_recall": "1/1",
+    "sparse_recall": "1/1",
+    "grep_recall": "1/1",
+    "rerank_improved_count": 0,
+    "rerank_same_or_worse_count": 1
+  }
+}

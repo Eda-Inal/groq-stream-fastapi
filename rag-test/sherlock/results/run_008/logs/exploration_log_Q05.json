@@ -1,0 +1,734 @@
+{
+  "question": {
+    "q_id": "Q05",
+    "category": "medium",
+    "question": "What did Holmes deduce about Jabez Wilson upon first meeting him, and how?",
+    "expected_keywords": [
+      "manual labour",
+      "snuff",
+      "Freemason",
+      "China",
+      "writing",
+      "right hand",
+      "tattoo",
+      "arc-and-compass"
+    ],
+    "expected_answer": "Holmes deduced that Wilson had done manual labour (his right hand was larger), took snuff, was a Freemason (arc-and-compass breastpin), had been in China (fish tattoo and Chinese coin), and had done considerable writing lately (shiny right cuff).",
+    "section": "The Red-Headed League",
+    "chunk_index": [
+      63,
+      64
+    ],
+    "chunk_text": [
+      "Chunk 63: \"Beyond the obvious facts that he has at some time done manual labour, that he takes snuff, that he is a Freemason, that he has been in China, and that he has done a considerable amount of writing lately, I can deduce nothing else.\"",
+      "Chunk 64: \"Your hands, my dear sir. Your right hand is quite a size larger than your left...\" \"...arc-and-compass breastpin.\" \"...right cuff so very shiny for five inches...\" \"The fish that you have tattooed immediately above your right wrist could only have been done in China.\""
+    ]
+  },
+  "debug_response": {
+    "query": "What did Holmes deduce about Jabez Wilson upon first meeting him, and how?",
+    "user_id": "sherlock-rag-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 497.8,
+      "search_ms": 81.2,
+      "rerank_ms": 534.3,
+      "total_ms": 1113.4
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 45,
+      "sparse_candidates": 45,
+      "grep_candidates": 12,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 575,
+          "chunk_index": 75,
+          "document_id": 103,
+          "cosine_similarity": 0.74152
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 574,
+          "chunk_index": 74,
+          "document_id": 103,
+          "cosine_similarity": 0.70765
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 563,
+          "chunk_index": 63,
+          "document_id": 103,
+          "cosine_similarity": 0.69676
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 586,
+          "chunk_index": 86,
+          "document_id": 103,
+          "cosine_similarity": 0.68967
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 587,
+          "chunk_index": 87,
+          "document_id": 103,
+          "cosine_similarity": 0.68411
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 561,
+          "chunk_index": 61,
+          "document_id": 103,
+          "cosine_similarity": 0.67676
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 567,
+          "chunk_index": 67,
+          "document_id": 103,
+          "cosine_similarity": 0.67443
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 580,
+          "chunk_index": 80,
+          "document_id": 103,
+          "cosine_similarity": 0.67029
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 566,
+          "chunk_index": 66,
+          "document_id": 103,
+          "cosine_similarity": 0.65602
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 565,
+          "chunk_index": 65,
+          "document_id": 103,
+          "cosine_similarity": 0.65162
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 560,
+          "chunk_index": 60,
+          "document_id": 103,
+          "cosine_similarity": 0.65063
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 597,
+          "chunk_index": 97,
+          "document_id": 103,
+          "cosine_similarity": 0.64652
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 576,
+          "chunk_index": 76,
+          "document_id": 103,
+          "cosine_similarity": 0.6422
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 591,
+          "chunk_index": 91,
+          "document_id": 103,
+          "cosine_similarity": 0.63625
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 588,
+          "chunk_index": 88,
+          "document_id": 103,
+          "cosine_similarity": 0.63541
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 505,
+          "chunk_index": 5,
+          "document_id": 103,
+          "cosine_similarity": 0.63478
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 598,
+          "chunk_index": 98,
+          "document_id": 103,
+          "cosine_similarity": 0.63195
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 529,
+          "chunk_index": 29,
+          "document_id": 103,
+          "cosine_similarity": 0.63136
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 600,
+          "chunk_index": 100,
+          "document_id": 103,
+          "cosine_similarity": 0.62891
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 599,
+          "chunk_index": 99,
+          "document_id": 103,
+          "cosine_similarity": 0.62623
+        }
+      ],
+      "sparse_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 567,
+          "chunk_index": 67,
+          "document_id": 103,
+          "fts_score": 0.0497
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 563,
+          "chunk_index": 63,
+          "document_id": 103,
+          "fts_score": 0.04927
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 586,
+          "chunk_index": 86,
+          "document_id": 103,
+          "fts_score": 0.04873
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 590,
+          "chunk_index": 90,
+          "document_id": 103,
+          "fts_score": 0.04559
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 587,
+          "chunk_index": 87,
+          "document_id": 103,
+          "fts_score": 0.04125
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 585,
+          "chunk_index": 85,
+          "document_id": 103,
+          "fts_score": 0.03842
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 566,
+          "chunk_index": 66,
+          "document_id": 103,
+          "fts_score": 0.03691
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 565,
+          "chunk_index": 65,
+          "document_id": 103,
+          "fts_score": 0.03691
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 574,
+          "chunk_index": 74,
+          "document_id": 103,
+          "fts_score": 0.03474
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 600,
+          "chunk_index": 100,
+          "document_id": 103,
+          "fts_score": 0.03474
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 599,
+          "chunk_index": 99,
+          "document_id": 103,
+          "fts_score": 0.03474
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 564,
+          "chunk_index": 64,
+          "document_id": 103,
+          "fts_score": 0.03474
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 577,
+          "chunk_index": 77,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 588,
+          "chunk_index": 88,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 561,
+          "chunk_index": 61,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 559,
+          "chunk_index": 59,
+          "document_id": 103,
+          "fts_score": 0.02919
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 509,
+          "chunk_index": 9,
+          "document_id": 103,
+          "fts_score": 0.02919
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 591,
+          "chunk_index": 91,
+          "document_id": 103,
+          "fts_score": 0.02823
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 578,
+          "chunk_index": 78,
+          "document_id": 103,
+          "fts_score": 0.02605
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 579,
+          "chunk_index": 79,
+          "document_id": 103,
+          "fts_score": 0.02605
+        }
+      ],
+      "grep_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 561
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 563
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 564
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 565
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 567
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 574
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 575
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 579
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 580
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 585
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 586
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 590
+        }
+      ],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 563,
+          "rrf_score": 0.048131,
+          "dense_contrib": 0.015873,
+          "sparse_contrib": 0.016129,
+          "grep_contrib": 0.016129,
+          "cosine_similarity": 0.69676,
+          "chunk_index": 63,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 281,
+          "text_preview": "A frayed top-hat and a faded brown\novercoat with a wrinkled velvet collar lay upon a chair beside him. Altogether, look as I would, there was nothing remarkable about the man\nsave his blazing red head"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 567,
+          "rrf_score": 0.046703,
+          "dense_contrib": 0.014925,
+          "sparse_contrib": 0.016393,
+          "grep_contrib": 0.015385,
+          "cosine_similarity": 0.67443,
+          "chunk_index": 67,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 315,
+          "text_preview": "“It is a little off the beaten track, isn’t it?” said he. “And now, Mr. Wilson, off you go at scratch and tell us all about\nyourself, your household, and the effect which this advertisement had\nupon y"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 574,
+          "rrf_score": 0.045773,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.014493,
+          "grep_contrib": 0.015152,
+          "cosine_similarity": 0.70765,
+          "chunk_index": 74,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 238,
+          "text_preview": "There was a double stream upon\nthe stair, some going up in hope, and some coming back dejected; but we\nwedged in as well as we could and soon found ourselves in the office.”\n\n“Your experience has been"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 586,
+          "rrf_score": 0.045583,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.015873,
+          "grep_contrib": 0.014085,
+          "cosine_similarity": 0.68967,
+          "chunk_index": 86,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 310,
+          "text_preview": "“Your case is an exceedingly\nremarkable one, and I shall be happy to look into it. From what you\nhave told me I think that it is possible that graver issues hang from\nit than might at first sight appe"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 561,
+          "rrf_score": 0.044878,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.013333,
+          "grep_contrib": 0.016393,
+          "cosine_similarity": 0.67676,
+          "chunk_index": 61,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 377,
+          "text_preview": "“You will remember that I remarked the other day, just before we went\ninto the very simple problem presented by Miss Mary Sutherland, that\nfor strange effects and extraordinary combinations we must go"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 565,
+          "rrf_score": 0.044617,
+          "dense_contrib": 0.014286,
+          "sparse_contrib": 0.014706,
+          "grep_contrib": 0.015625,
+          "cosine_similarity": 0.65162,
+          "chunk_index": 65,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 196,
+          "text_preview": "When, in addition, I see a Chinese coin hanging from\nyour watch-chain, the matter becomes even more simple.”\n\nMr. Jabez Wilson laughed heavily. “Well, I never!” said he. “I thought\nat first that you h"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 564,
+          "rrf_score": 0.041527,
+          "dense_contrib": 0.011765,
+          "sparse_contrib": 0.013889,
+          "grep_contrib": 0.015873,
+          "cosine_similarity": 0.6146,
+          "chunk_index": 64,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 305,
+          "text_preview": "“How did you know, for example, that I did manual labour. It’s as true as gospel, for I began as a ship’s carpenter.”\n\n“Your hands, my dear sir. Your right hand is quite a size larger than\nyour left."
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 585,
+          "rrf_score": 0.041485,
+          "dense_contrib": 0.012048,
+          "sparse_contrib": 0.015152,
+          "grep_contrib": 0.014286,
+          "cosine_similarity": 0.61919,
+          "chunk_index": 85,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 259,
+          "text_preview": "Yes, 17 King\nEdward Street, near St. Paul’s.’\n\n“I started off, Mr. Holmes, but when I got to that address it was a\nmanufactory of artificial knee-caps, and no one in it had ever heard of\neither Mr. Wi"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 590,
+          "rrf_score": 0.040152,
+          "dense_contrib": 0.010638,
+          "sparse_contrib": 0.015625,
+          "grep_contrib": 0.013889,
+          "cosine_similarity": 0.60218,
+          "chunk_index": 90,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 355,
+          "text_preview": "My practice is never very absorbing.”\n\n“Then put on your hat and come. I am going through the City first, and\nwe can have some lunch on the way. I observe that there is a good deal\nof German music on"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 579,
+          "rrf_score": 0.038075,
+          "dense_contrib": 0.01087,
+          "sparse_contrib": 0.0125,
+          "grep_contrib": 0.014706,
+          "cosine_similarity": 0.6044,
+          "chunk_index": 79,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 184,
+          "text_preview": "“‘No excuse will avail,’ said Mr. Duncan Ross; ‘neither sickness nor\nbusiness nor anything else. There you must stay, or you lose your\nbillet.’\n\n“‘And the work?’\n\n“‘Is to copy out the _Encyclopædia Br"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 575,
+          "rrf_score": 0.031319,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.014925,
+          "cosine_similarity": 0.74152,
+          "chunk_index": 75,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 156,
+          "text_preview": "However, when our turn came the little man was much\nmore favourable to me than to any of the others, and he closed the door\nas we entered, so that he might have a private word with us. “‘This is Mr. J"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 587,
+          "rrf_score": 0.030769,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.015385,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.68411,
+          "chunk_index": 87,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 305,
+          "text_preview": "Wilson. This assistant of yours who first called\nyour attention to the advertisement—how long had he been with you?”\n\n“About a month then.”\n\n“How did he come?”\n\n“In answer to an advertisement.”\n\n“Was"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 566,
+          "rrf_score": 0.029418,
+          "dense_contrib": 0.014493,
+          "sparse_contrib": 0.014925,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.65602,
+          "chunk_index": 66,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 303,
+          "text_preview": "Can you not find the advertisement, Mr. Wilson?”\n\n“Yes, I have got it now,” he answered with his thick red finger planted\nhalfway down the column. “Here it is. This is what began it all. You\njust read"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 580,
+          "rrf_score": 0.029199,
+          "dense_contrib": 0.014706,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.014493,
+          "cosine_similarity": 0.67029,
+          "chunk_index": 80,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 247,
+          "text_preview": "“‘Then, good-bye, Mr. Jabez Wilson, and let me congratulate you once\nmore on the important position which you have been fortunate enough to\ngain.’ He bowed me out of the room and I went home with my a"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 600,
+          "rrf_score": 0.026944,
+          "dense_contrib": 0.012658,
+          "sparse_contrib": 0.014286,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.62891,
+          "chunk_index": 100,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 309,
+          "text_preview": "His brain is as cunning as\nhis fingers, and though we meet signs of him at every turn, we never\nknow where to find the man himself. He’ll crack a crib in Scotland one\nweek, and be raising money to bui"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 534.3,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 6,
+        "chunk_db_id": 565,
+        "rrf_score": 0.044617,
+        "dense_contrib": 0.014286,
+        "sparse_contrib": 0.014706,
+        "grep_contrib": 0.015625,
+        "cosine_similarity": 0.65162,
+        "chunk_index": 65,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 196,
+        "text_preview": "When, in addition, I see a Chinese coin hanging from\nyour watch-chain, the matter becomes even more simple.”\n\nMr. Jabez Wilson laughed heavily. “Well, I never!” said he. “I thought\nat first that you h",
+        "rerank_score": 0.76629,
+        "pre_rerank_position": 6,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 4,
+        "chunk_db_id": 586,
+        "rrf_score": 0.045583,
+        "dense_contrib": 0.015625,
+        "sparse_contrib": 0.015873,
+        "grep_contrib": 0.014085,
+        "cosine_similarity": 0.68967,
+        "chunk_index": 86,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 310,
+        "text_preview": "“Your case is an exceedingly\nremarkable one, and I shall be happy to look into it. From what you\nhave told me I think that it is possible that graver issues hang from\nit than might at first sight appe",
+        "rerank_score": 0.76207,
+        "pre_rerank_position": 4,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 1,
+        "chunk_db_id": 563,
+        "rrf_score": 0.048131,
+        "dense_contrib": 0.015873,
+        "sparse_contrib": 0.016129,
+        "grep_contrib": 0.016129,
+        "cosine_similarity": 0.69676,
+        "chunk_index": 63,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 281,
+        "text_preview": "A frayed top-hat and a faded brown\novercoat with a wrinkled velvet collar lay upon a chair beside him. Altogether, look as I would, there was nothing remarkable about the man\nsave his blazing red head",
+        "rerank_score": 0.64869,
+        "pre_rerank_position": 1,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 3,
+        "chunk_db_id": 574,
+        "rrf_score": 0.045773,
+        "dense_contrib": 0.016129,
+        "sparse_contrib": 0.014493,
+        "grep_contrib": 0.015152,
+        "cosine_similarity": 0.70765,
+        "chunk_index": 74,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 238,
+        "text_preview": "There was a double stream upon\nthe stair, some going up in hope, and some coming back dejected; but we\nwedged in as well as we could and soon found ourselves in the office.”\n\n“Your experience has been",
+        "rerank_score": 0.61878,
+        "pre_rerank_position": 3,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 12,
+        "chunk_db_id": 587,
+        "rrf_score": 0.030769,
+        "dense_contrib": 0.015385,
+        "sparse_contrib": 0.015385,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.68411,
+        "chunk_index": 87,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 305,
+        "text_preview": "Wilson. This assistant of yours who first called\nyour attention to the advertisement—how long had he been with you?”\n\n“About a month then.”\n\n“How did he come?”\n\n“In answer to an advertisement.”\n\n“Was",
+        "rerank_score": 0.60533,
+        "pre_rerank_position": 12,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}

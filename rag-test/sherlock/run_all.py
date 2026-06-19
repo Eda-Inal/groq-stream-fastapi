@@ -1,8 +1,13 @@
 """
-Full RAG retrieval test — runs all 16 questions from questions.json.
+Full RAG retrieval test — runs questions from questions.json.
+
+Usage:
+    python rag-test/sherlock/run_all.py                    # all questions
+    python rag-test/sherlock/run_all.py --range Q01-Q04    # Q01 through Q04
+    python rag-test/sherlock/run_all.py --range Q05        # single question
 
 Output:
-  rag-test/results/run_XXX/
+  rag-test/sherlock/results/run_XXX/
     ├── results.json
     └── logs/
         ├── exploration_log_Q01.json
@@ -10,6 +15,7 @@ Output:
         └── ...
 """
 
+import argparse
 import httpx
 import json
 import time
@@ -35,8 +41,19 @@ def next_run_id() -> str:
     return f"run_{last_num + 1:03d}"
 
 
-def load_questions() -> list[dict]:
-    return json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
+def load_questions(q_range: str | None = None) -> list[dict]:
+    all_qs = json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
+    if not q_range:
+        return all_qs
+
+    if "-" in q_range:
+        start, end = q_range.split("-", 1)
+        start_num = int(start.lstrip("Qq"))
+        end_num = int(end.lstrip("Qq"))
+        return [q for q in all_qs if start_num <= int(q["q_id"].lstrip("Q")) <= end_num]
+
+    num = int(q_range.lstrip("Qq"))
+    return [q for q in all_qs if int(q["q_id"].lstrip("Q")) == num]
 
 
 def call_debug(query: str) -> dict:
@@ -219,7 +236,11 @@ def compute_summary(results: list[dict]) -> dict:
 
 
 def main():
-    questions = load_questions()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--range", default=None, help="Question range (e.g. Q01-Q04, Q05)")
+    args = parser.parse_args()
+
+    questions = load_questions(args.range)
     run_id = next_run_id()
     run_dir = RESULTS_DIR / run_id
     logs_dir = run_dir / "logs"

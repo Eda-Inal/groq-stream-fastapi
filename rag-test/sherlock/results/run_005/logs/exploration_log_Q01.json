@@ -1,0 +1,747 @@
+{
+  "question": {
+    "q_id": "Q01",
+    "category": "easy",
+    "question": "Who is referred to as 'the woman' by Sherlock Holmes?",
+    "expected_keywords": [
+      "Irene",
+      "Adler"
+    ],
+    "expected_answer": "Irene Adler is always referred to as 'the woman' by Sherlock Holmes.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": 2,
+    "chunk_text": "To Sherlock Holmes she is always _the_ woman... yet there was but one woman to him, and that woman was the late Irene Adler, of dubious and questionable memory."
+  },
+  "debug_response": {
+    "query": "Who is referred to as 'the woman' by Sherlock Holmes?",
+    "user_id": "sherlock-rag-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 4859.5,
+      "search_ms": 624.6,
+      "rerank_ms": 1673.5,
+      "total_ms": 7157.9
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 45,
+      "sparse_candidates": 45,
+      "grep_candidates": 19,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 559,
+          "chunk_index": 59,
+          "document_id": 103,
+          "cosine_similarity": 0.75756
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 502,
+          "chunk_index": 2,
+          "document_id": 103,
+          "cosine_similarity": 0.7546
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 528,
+          "chunk_index": 28,
+          "document_id": 103,
+          "cosine_similarity": 0.72562
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 556,
+          "chunk_index": 56,
+          "document_id": 103,
+          "cosine_similarity": 0.72134
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 553,
+          "chunk_index": 53,
+          "document_id": 103,
+          "cosine_similarity": 0.71745
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 503,
+          "chunk_index": 3,
+          "document_id": 103,
+          "cosine_similarity": 0.70962
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 521,
+          "chunk_index": 21,
+          "document_id": 103,
+          "cosine_similarity": 0.70284
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 529,
+          "chunk_index": 29,
+          "document_id": 103,
+          "cosine_similarity": 0.70261
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 519,
+          "chunk_index": 19,
+          "document_id": 103,
+          "cosine_similarity": 0.70207
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 555,
+          "chunk_index": 55,
+          "document_id": 103,
+          "cosine_similarity": 0.6966
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 558,
+          "chunk_index": 58,
+          "document_id": 103,
+          "cosine_similarity": 0.69627
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 544,
+          "chunk_index": 44,
+          "document_id": 103,
+          "cosine_similarity": 0.6954
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 561,
+          "chunk_index": 61,
+          "document_id": 103,
+          "cosine_similarity": 0.69522
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 532,
+          "chunk_index": 32,
+          "document_id": 103,
+          "cosine_similarity": 0.69295
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 552,
+          "chunk_index": 52,
+          "document_id": 103,
+          "cosine_similarity": 0.69273
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 557,
+          "chunk_index": 57,
+          "document_id": 103,
+          "cosine_similarity": 0.68979
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 522,
+          "chunk_index": 22,
+          "document_id": 103,
+          "cosine_similarity": 0.6888
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 560,
+          "chunk_index": 60,
+          "document_id": 103,
+          "cosine_similarity": 0.68723
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 550,
+          "chunk_index": 50,
+          "document_id": 103,
+          "cosine_similarity": 0.68702
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 527,
+          "chunk_index": 27,
+          "document_id": 103,
+          "cosine_similarity": 0.68672
+        }
+      ],
+      "sparse_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 559,
+          "chunk_index": 59,
+          "document_id": 103,
+          "fts_score": 0.07388
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 558,
+          "chunk_index": 58,
+          "document_id": 103,
+          "fts_score": 0.06839
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 553,
+          "chunk_index": 53,
+          "document_id": 103,
+          "fts_score": 0.05488
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 557,
+          "chunk_index": 57,
+          "document_id": 103,
+          "fts_score": 0.05319
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 502,
+          "chunk_index": 2,
+          "document_id": 103,
+          "fts_score": 0.05108
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 500,
+          "chunk_index": 0,
+          "document_id": 103,
+          "fts_score": 0.04327
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 567,
+          "chunk_index": 67,
+          "document_id": 103,
+          "fts_score": 0.03968
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 554,
+          "chunk_index": 54,
+          "document_id": 103,
+          "fts_score": 0.03968
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 503,
+          "chunk_index": 3,
+          "document_id": 103,
+          "fts_score": 0.038
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 555,
+          "chunk_index": 55,
+          "document_id": 103,
+          "fts_score": 0.038
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 556,
+          "chunk_index": 56,
+          "document_id": 103,
+          "fts_score": 0.038
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 552,
+          "chunk_index": 52,
+          "document_id": 103,
+          "fts_score": 0.03588
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 551,
+          "chunk_index": 51,
+          "document_id": 103,
+          "fts_score": 0.0342
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 596,
+          "chunk_index": 96,
+          "document_id": 103,
+          "fts_score": 0.0342
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 583,
+          "chunk_index": 83,
+          "document_id": 103,
+          "fts_score": 0.0342
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 539,
+          "chunk_index": 39,
+          "document_id": 103,
+          "fts_score": 0.0342
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 563,
+          "chunk_index": 63,
+          "document_id": 103,
+          "fts_score": 0.0342
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 521,
+          "chunk_index": 21,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 522,
+          "chunk_index": 22,
+          "document_id": 103,
+          "fts_score": 0.0304
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 600,
+          "chunk_index": 100,
+          "document_id": 103,
+          "fts_score": 0.0304
+        }
+      ],
+      "grep_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 499
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 500
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 502
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 539
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 551
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 552
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 553
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 554
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 555
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 556
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 557
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 558
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 559
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 563
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 567
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 582
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 583
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 599
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 600
+        }
+      ],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 502,
+          "rrf_score": 0.047387,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.015385,
+          "grep_contrib": 0.015873,
+          "cosine_similarity": 0.7546,
+          "chunk_index": 2,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 341,
+          "text_preview": "The Adventure of the Blue Carbuncle\n   VIII. The Adventure of the Speckled Band\n   IX. The Adventure of the Engineer’s Thumb\n   X. The Adventure of the Noble Bachelor\n   XI. The Adventure of the Beryl"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 559,
+          "rrf_score": 0.046486,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.016393,
+          "grep_contrib": 0.013699,
+          "cosine_similarity": 0.75756,
+          "chunk_index": 59,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 280,
+          "text_preview": "Sherlock Holmes were beaten by a\nwoman’s wit. He used to make merry over the cleverness of women, but I\nhave not heard him do it of late. And when he speaks of Irene Adler, or\nwhen he refers to her ph"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 553,
+          "rrf_score": 0.046183,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.015873,
+          "grep_contrib": 0.014925,
+          "cosine_similarity": 0.71745,
+          "chunk_index": 53,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 251,
+          "text_preview": "If\nthe lady loves her husband, she does not love your Majesty. If she does\nnot love your Majesty, there is no reason why she should interfere with\nyour Majesty’s plan.”\n\n“It is true. And yet—! Well! I"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 558,
+          "rrf_score": 0.044102,
+          "dense_contrib": 0.014085,
+          "sparse_contrib": 0.016129,
+          "grep_contrib": 0.013889,
+          "cosine_similarity": 0.69627,
+          "chunk_index": 58,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 288,
+          "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 556,
+          "rrf_score": 0.043995,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.014085,
+          "grep_contrib": 0.014286,
+          "cosine_similarity": 0.72134,
+          "chunk_index": 56,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 289,
+          "text_preview": "But, you know, I have been trained as an actress myself. Male costume is nothing new to me. I often take advantage of the\n    freedom which it gives. I sent John, the coachman, to watch you,\n    ran u"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 555,
+          "rrf_score": 0.043064,
+          "dense_contrib": 0.014286,
+          "sparse_contrib": 0.014286,
+          "grep_contrib": 0.014493,
+          "cosine_similarity": 0.6966,
+          "chunk_index": 55,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 287,
+          "text_preview": "The\nphotograph was of Irene Adler herself in evening dress, the letter was\nsuperscribed to “Sherlock Holmes, Esq. To be left till called for.” My\nfriend tore it open, and we all three read it together"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 557,
+          "rrf_score": 0.042867,
+          "dense_contrib": 0.013158,
+          "sparse_contrib": 0.015625,
+          "grep_contrib": 0.014085,
+          "cosine_similarity": 0.68979,
+          "chunk_index": 57,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 299,
+          "text_preview": "I keep it only to safeguard myself, and to preserve a\n    weapon which will always secure me from any steps which he might\n    take in the future. I leave a photograph which he might care to\n    posse"
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 552,
+          "rrf_score": 0.042374,
+          "dense_contrib": 0.013333,
+          "sparse_contrib": 0.013889,
+          "grep_contrib": 0.015152,
+          "cosine_similarity": 0.69273,
+          "chunk_index": 52,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 258,
+          "text_preview": "“I’ve heard that voice before,” said Holmes, staring down the dimly lit\nstreet. “Now, I wonder who the deuce that could have been.”\n\nIII.\n\nI slept at Baker Street that night, and we were engaged upon"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 554,
+          "rrf_score": 0.04146,
+          "dense_contrib": 0.012048,
+          "sparse_contrib": 0.014706,
+          "grep_contrib": 0.014706,
+          "cosine_similarity": 0.68395,
+          "chunk_index": 54,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 234,
+          "text_preview": "She left\nthis morning with her husband by the 5:15 train from Charing Cross for\nthe Continent.”\n\n“What!” Sherlock Holmes staggered back, white with chagrin and\nsurprise. “Do you mean that she has left"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 599,
+          "rrf_score": 0.035507,
+          "dense_contrib": 0.010638,
+          "sparse_contrib": 0.012048,
+          "grep_contrib": 0.012821,
+          "cosine_similarity": 0.66794,
+          "chunk_index": 99,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 288,
+          "text_preview": "Jones, it is all right,” said the stranger with\ndeference. “Still, I confess that I miss my rubber. It is the first\nSaturday night for seven-and-twenty years that I have not had my\nrubber.”\n\n“I think"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 600,
+          "rrf_score": 0.035362,
+          "dense_contrib": 0.010204,
+          "sparse_contrib": 0.0125,
+          "grep_contrib": 0.012658,
+          "cosine_similarity": 0.66019,
+          "chunk_index": 100,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 309,
+          "text_preview": "His brain is as cunning as\nhis fingers, and though we meet signs of him at every turn, we never\nknow where to find the man himself. He’ll crack a crib in Scotland one\nweek, and be raising money to bui"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 500,
+          "rrf_score": 0.031281,
+          "dense_contrib": 0.0,
+          "sparse_contrib": 0.015152,
+          "grep_contrib": 0.016129,
+          "chunk_index": 0,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 219,
+          "text_preview": "The Project Gutenberg eBook of The Adventures of Sherlock Holmes\n\nThis eBook is for the use of anyone anywhere in the United States and\nmost other parts of the world at no cost and with almost no rest"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 503,
+          "rrf_score": 0.029644,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.014493,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.70962,
+          "chunk_index": 3,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 349,
+          "text_preview": "Grit in a sensitive\ninstrument, or a crack in one of his own high-power lenses, would not\nbe more disturbing than a strong emotion in a nature such as his. And\nyet there was but one woman to him, and"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 551,
+          "rrf_score": 0.029083,
+          "dense_contrib": 0.0,
+          "sparse_contrib": 0.013699,
+          "grep_contrib": 0.015385,
+          "chunk_index": 51,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 310,
+          "text_preview": "I rose, and, making my excuses, escaped from the\nhouse. I hesitated whether to attempt to secure the photograph at once;\nbut the coachman had come in, and as he was watching me narrowly, it\nseemed saf"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 539,
+          "rrf_score": 0.028783,
+          "dense_contrib": 0.0,
+          "sparse_contrib": 0.013158,
+          "grep_contrib": 0.015625,
+          "chunk_index": 39,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 255,
+          "text_preview": "John Hare alone could have equalled. It was not merely that\nHolmes changed his costume. His expression, his manner, his very soul\nseemed to vary with every fresh part that he assumed. The stage lost a"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 1673.5,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 1,
+        "chunk_db_id": 502,
+        "rrf_score": 0.047387,
+        "dense_contrib": 0.016129,
+        "sparse_contrib": 0.015385,
+        "grep_contrib": 0.015873,
+        "cosine_similarity": 0.7546,
+        "chunk_index": 2,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 341,
+        "text_preview": "The Adventure of the Blue Carbuncle\n   VIII. The Adventure of the Speckled Band\n   IX. The Adventure of the Engineer’s Thumb\n   X. The Adventure of the Noble Bachelor\n   XI. The Adventure of the Beryl",
+        "rerank_score": 0.64512,
+        "pre_rerank_position": 1,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 2,
+        "chunk_db_id": 559,
+        "rrf_score": 0.046486,
+        "dense_contrib": 0.016393,
+        "sparse_contrib": 0.016393,
+        "grep_contrib": 0.013699,
+        "cosine_similarity": 0.75756,
+        "chunk_index": 59,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 280,
+        "text_preview": "Sherlock Holmes were beaten by a\nwoman’s wit. He used to make merry over the cleverness of women, but I\nhave not heard him do it of late. And when he speaks of Irene Adler, or\nwhen he refers to her ph",
+        "rerank_score": 0.61324,
+        "pre_rerank_position": 2,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 4,
+        "chunk_db_id": 558,
+        "rrf_score": 0.044102,
+        "dense_contrib": 0.014085,
+        "sparse_contrib": 0.016129,
+        "grep_contrib": 0.013889,
+        "cosine_similarity": 0.69627,
+        "chunk_index": 58,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 288,
+        "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped",
+        "rerank_score": 0.57892,
+        "pre_rerank_position": 4,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 7,
+        "chunk_db_id": 557,
+        "rrf_score": 0.042867,
+        "dense_contrib": 0.013158,
+        "sparse_contrib": 0.015625,
+        "grep_contrib": 0.014085,
+        "cosine_similarity": 0.68979,
+        "chunk_index": 57,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 299,
+        "text_preview": "I keep it only to safeguard myself, and to preserve a\n    weapon which will always secure me from any steps which he might\n    take in the future. I leave a photograph which he might care to\n    posse",
+        "rerank_score": 0.47768,
+        "pre_rerank_position": 7,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 13,
+        "chunk_db_id": 503,
+        "rrf_score": 0.029644,
+        "dense_contrib": 0.015152,
+        "sparse_contrib": 0.014493,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.70962,
+        "chunk_index": 3,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 349,
+        "text_preview": "Grit in a sensitive\ninstrument, or a crack in one of his own high-power lenses, would not\nbe more disturbing than a strong emotion in a nature such as his. And\nyet there was but one woman to him, and",
+        "rerank_score": 0.45883,
+        "pre_rerank_position": 13,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}
