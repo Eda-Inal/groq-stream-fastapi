@@ -1,0 +1,673 @@
+{
+  "question": {
+    "q_id": "Q08",
+    "category": "direct_fact",
+    "question": "What is the annual professional development budget per employee?",
+    "expected_keywords": [
+      "$2,000",
+      "professional development",
+      "per year"
+    ],
+    "expected_answer": "TechCorp offers a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or any other learning activity relevant to the role.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp also offers a professional development budget of $2,000 USD per employee per year."
+  },
+  "debug_response": {
+    "query": "What is the annual professional development budget per employee?",
+    "user_id": "techcorp-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 508.8,
+      "search_ms": 67.0,
+      "rerank_ms": 499.4,
+      "total_ms": 1075.3
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 24,
+      "sparse_candidates": 19,
+      "grep_candidates": 1,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 619,
+          "chunk_index": 15,
+          "document_id": 104,
+          "cosine_similarity": 0.59486
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 620,
+          "chunk_index": 16,
+          "document_id": 104,
+          "cosine_similarity": 0.52595
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 625,
+          "chunk_index": 21,
+          "document_id": 104,
+          "cosine_similarity": 0.51244
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 616,
+          "chunk_index": 12,
+          "document_id": 104,
+          "cosine_similarity": 0.5003
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 605,
+          "chunk_index": 1,
+          "document_id": 104,
+          "cosine_similarity": 0.48339
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 604,
+          "chunk_index": 0,
+          "document_id": 104,
+          "cosine_similarity": 0.4657
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 612,
+          "chunk_index": 8,
+          "document_id": 104,
+          "cosine_similarity": 0.45668
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 611,
+          "chunk_index": 7,
+          "document_id": 104,
+          "cosine_similarity": 0.45487
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 627,
+          "chunk_index": 23,
+          "document_id": 104,
+          "cosine_similarity": 0.45357
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 614,
+          "chunk_index": 10,
+          "document_id": 104,
+          "cosine_similarity": 0.44693
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 618,
+          "chunk_index": 14,
+          "document_id": 104,
+          "cosine_similarity": 0.44156
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 615,
+          "chunk_index": 11,
+          "document_id": 104,
+          "cosine_similarity": 0.44037
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 621,
+          "chunk_index": 17,
+          "document_id": 104,
+          "cosine_similarity": 0.4368
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 617,
+          "chunk_index": 13,
+          "document_id": 104,
+          "cosine_similarity": 0.4333
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 609,
+          "chunk_index": 5,
+          "document_id": 104,
+          "cosine_similarity": 0.43021
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 606,
+          "chunk_index": 2,
+          "document_id": 104,
+          "cosine_similarity": 0.42498
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 623,
+          "chunk_index": 19,
+          "document_id": 104,
+          "cosine_similarity": 0.40864
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 613,
+          "chunk_index": 9,
+          "document_id": 104,
+          "cosine_similarity": 0.40588
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 608,
+          "chunk_index": 4,
+          "document_id": 104,
+          "cosine_similarity": 0.40259
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 626,
+          "chunk_index": 22,
+          "document_id": 104,
+          "cosine_similarity": 0.39738
+        }
+      ],
+      "sparse_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 619,
+          "chunk_index": 15,
+          "document_id": 104,
+          "fts_score": 0.05939
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 605,
+          "chunk_index": 1,
+          "document_id": 104,
+          "fts_score": 0.03659
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 620,
+          "chunk_index": 16,
+          "document_id": 104,
+          "fts_score": 0.03546
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 609,
+          "chunk_index": 5,
+          "document_id": 104,
+          "fts_score": 0.02392
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 611,
+          "chunk_index": 7,
+          "document_id": 104,
+          "fts_score": 0.0228
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 612,
+          "chunk_index": 8,
+          "document_id": 104,
+          "fts_score": 0.0228
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 616,
+          "chunk_index": 12,
+          "document_id": 104,
+          "fts_score": 0.0228
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 606,
+          "chunk_index": 2,
+          "document_id": 104,
+          "fts_score": 0.0228
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 610,
+          "chunk_index": 6,
+          "document_id": 104,
+          "fts_score": 0.01379
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 615,
+          "chunk_index": 11,
+          "document_id": 104,
+          "fts_score": 0.01267
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 618,
+          "chunk_index": 14,
+          "document_id": 104,
+          "fts_score": 0.01267
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 623,
+          "chunk_index": 19,
+          "document_id": 104,
+          "fts_score": 0.01267
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 627,
+          "chunk_index": 23,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 613,
+          "chunk_index": 9,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 617,
+          "chunk_index": 13,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 622,
+          "chunk_index": 18,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 624,
+          "chunk_index": 20,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 626,
+          "chunk_index": 22,
+          "document_id": 104,
+          "fts_score": 0.01013
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 604,
+          "chunk_index": 0,
+          "document_id": 104,
+          "fts_score": 0.01013
+        }
+      ],
+      "grep_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 619
+        }
+      ],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 619,
+          "rrf_score": 0.04918,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.016393,
+          "grep_contrib": 0.016393,
+          "cosine_similarity": 0.59486,
+          "chunk_index": 15,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "5.4 Additional Benefits",
+          "page_number": null,
+          "chunk_token_count": 158,
+          "text_preview": "### 5.4 Additional Benefits\n\nTechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment. This is intended to help you set up a produc"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 620,
+          "rrf_score": 0.032002,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.015873,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.52595,
+          "chunk_index": 16,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "6.1 Performance Reviews",
+          "page_number": null,
+          "chunk_token_count": 157,
+          "text_preview": "## 6. Performance and Growth\n\n### 6.1 Performance Reviews\n\nTechCorp conducts formal performance reviews twice per year — in June and in December. Reviews are conducted through a combination of self-as"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 605,
+          "rrf_score": 0.031514,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.016129,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.48339,
+          "chunk_index": 1,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "1. Introduction",
+          "page_number": null,
+          "chunk_token_count": 186,
+          "text_preview": "## 1. Introduction\n\nTechCorp is a software company founded in 2015, headquartered in San Francisco, California, with additional offices in London, Berlin, and Singapore. We build cloud-based developer"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 616,
+          "rrf_score": 0.03055,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.014925,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.5003,
+          "chunk_index": 12,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "5.1 Salary",
+          "page_number": null,
+          "chunk_token_count": 113,
+          "text_preview": "## 5. Compensation and Benefits\n\n### 5.1 Salary\n\nTechCorp conducts salary reviews annually, in January. Reviews take into account individual performance, market data, and company financial performance"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 611,
+          "rrf_score": 0.03009,
+          "dense_contrib": 0.014706,
+          "sparse_contrib": 0.015385,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.45487,
+          "chunk_index": 7,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "3.3 In-Office Expectations",
+          "page_number": null,
+          "chunk_token_count": 120,
+          "text_preview": "### 3.3 In-Office Expectations\n\nTechCorp maintains offices in San Francisco, London, Berlin, and Singapore. Employees are welcome to use any office at any time. There is no requirement to come into th"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 612,
+          "rrf_score": 0.030077,
+          "dense_contrib": 0.014925,
+          "sparse_contrib": 0.015152,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.45668,
+          "chunk_index": 8,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "4.1 Paid Time Off",
+          "page_number": null,
+          "chunk_token_count": 195,
+          "text_preview": "## 4. Time Off and Leave\n\n### 4.1 Paid Time Off\n\nTechCorp offers unlimited paid time off (PTO) for all full-time employees. There is no fixed number of vacation days. Employees are encouraged to take"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 609,
+          "rrf_score": 0.028958,
+          "dense_contrib": 0.013333,
+          "sparse_contrib": 0.015625,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.43021,
+          "chunk_index": 5,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "3.1 Standard Work Hours",
+          "page_number": null,
+          "chunk_token_count": 137,
+          "text_preview": "## 3. Work Hours and Remote Work\n\n### 3.1 Standard Work Hours\n\nTechCorp operates on a flexible schedule. There are no fixed start or end times for most roles. Employees are expected to be available fo"
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 627,
+          "rrf_score": 0.028191,
+          "dense_contrib": 0.014493,
+          "sparse_contrib": 0.013699,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.45357,
+          "chunk_index": 23,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "9.2 Offboarding",
+          "page_number": null,
+          "chunk_token_count": 154,
+          "text_preview": "### 9.2 Offboarding\n\nOn your last day, you will participate in an offboarding session with People Operations. During this session, you will return all company equipment, your system access will be rev"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 615,
+          "rrf_score": 0.028175,
+          "dense_contrib": 0.013889,
+          "sparse_contrib": 0.014286,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.44037,
+          "chunk_index": 11,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "4.4 Other Types of Leave",
+          "page_number": null,
+          "chunk_token_count": 102,
+          "text_preview": "### 4.4 Other Types of Leave\n\nTechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling. Additio"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 618,
+          "rrf_score": 0.028169,
+          "dense_contrib": 0.014085,
+          "sparse_contrib": 0.014085,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.44156,
+          "chunk_index": 14,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "5.3 Health Benefits",
+          "page_number": null,
+          "chunk_token_count": 108,
+          "text_preview": "### 5.3 Health Benefits\n\nTechCorp covers 100% of the premium for health, dental, and vision insurance for all full-time employees in the United States. Dependents can be added to your plan at a cost o"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 606,
+          "rrf_score": 0.027864,
+          "dense_contrib": 0.013158,
+          "sparse_contrib": 0.014706,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.42498,
+          "chunk_index": 2,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "2.1 Core Principles",
+          "page_number": null,
+          "chunk_token_count": 209,
+          "text_preview": "## 2. Code of Conduct\n\n### 2.1 Core Principles\n\nTechCorp expects all employees to act with integrity, respect, and professionalism in every interaction — whether with colleagues, customers, or partner"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 604,
+          "rrf_score": 0.02781,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.012658,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.4657,
+          "chunk_index": 0,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "TechCorp Company Policies and Employee Handbook",
+          "page_number": null,
+          "chunk_token_count": 24,
+          "text_preview": "# TechCorp Company Policies and Employee Handbook\n\n**Version 3.2 | Last Updated: January 2025**"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 623,
+          "rrf_score": 0.026876,
+          "dense_contrib": 0.012987,
+          "sparse_contrib": 0.013889,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.40864,
+          "chunk_index": 19,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "7.2 Data Classification",
+          "page_number": null,
+          "chunk_token_count": 123,
+          "text_preview": "### 7.2 Data Classification\n\nTechCorp classifies data into four categories. Public data is information approved for external use, such as marketing materials and public documentation. Internal data is"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 617,
+          "rrf_score": 0.026847,
+          "dense_contrib": 0.013514,
+          "sparse_contrib": 0.013333,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.4333,
+          "chunk_index": 13,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "5.2 Equity",
+          "page_number": null,
+          "chunk_token_count": 131,
+          "text_preview": "### 5.2 Equity\n\nAll full-time employees receive equity in TechCorp in the form of stock options. The number of options granted depends on your role and level at the time of hire. Options vest over a f"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 610,
+          "rrf_score": 0.026838,
+          "dense_contrib": 0.012346,
+          "sparse_contrib": 0.014493,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.38664,
+          "chunk_index": 6,
+          "document_id": 104,
+          "filename": "techcorp_company_policies.md",
+          "section_heading": "3.2 Remote Work Policy",
+          "page_number": null,
+          "chunk_token_count": 174,
+          "text_preview": "### 3.2 Remote Work Policy\n\nTechCorp is a remote-first company. All employees are allowed to work from home or any location of their choosing, provided they meet the following conditions.\n\nYou must ha"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 499.4,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 1,
+        "chunk_db_id": 619,
+        "rrf_score": 0.04918,
+        "dense_contrib": 0.016393,
+        "sparse_contrib": 0.016393,
+        "grep_contrib": 0.016393,
+        "cosine_similarity": 0.59486,
+        "chunk_index": 15,
+        "document_id": 104,
+        "filename": "techcorp_company_policies.md",
+        "section_heading": "5.4 Additional Benefits",
+        "page_number": null,
+        "chunk_token_count": 158,
+        "text_preview": "### 5.4 Additional Benefits\n\nTechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment. This is intended to help you set up a produc",
+        "rerank_score": 0.63974,
+        "pre_rerank_position": 1,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 2,
+        "chunk_db_id": 620,
+        "rrf_score": 0.032002,
+        "dense_contrib": 0.016129,
+        "sparse_contrib": 0.015873,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.52595,
+        "chunk_index": 16,
+        "document_id": 104,
+        "filename": "techcorp_company_policies.md",
+        "section_heading": "6.1 Performance Reviews",
+        "page_number": null,
+        "chunk_token_count": 157,
+        "text_preview": "## 6. Performance and Growth\n\n### 6.1 Performance Reviews\n\nTechCorp conducts formal performance reviews twice per year — in June and in December. Reviews are conducted through a combination of self-as",
+        "rerank_score": 0.06657,
+        "pre_rerank_position": 2,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 10,
+        "chunk_db_id": 618,
+        "rrf_score": 0.028169,
+        "dense_contrib": 0.014085,
+        "sparse_contrib": 0.014085,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.44156,
+        "chunk_index": 14,
+        "document_id": 104,
+        "filename": "techcorp_company_policies.md",
+        "section_heading": "5.3 Health Benefits",
+        "page_number": null,
+        "chunk_token_count": 108,
+        "text_preview": "### 5.3 Health Benefits\n\nTechCorp covers 100% of the premium for health, dental, and vision insurance for all full-time employees in the United States. Dependents can be added to your plan at a cost o",
+        "rerank_score": 0.05835,
+        "pre_rerank_position": 10,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 3,
+        "chunk_db_id": 605,
+        "rrf_score": 0.031514,
+        "dense_contrib": 0.015385,
+        "sparse_contrib": 0.016129,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.48339,
+        "chunk_index": 1,
+        "document_id": 104,
+        "filename": "techcorp_company_policies.md",
+        "section_heading": "1. Introduction",
+        "page_number": null,
+        "chunk_token_count": 186,
+        "text_preview": "## 1. Introduction\n\nTechCorp is a software company founded in 2015, headquartered in San Francisco, California, with additional offices in London, Berlin, and Singapore. We build cloud-based developer",
+        "rerank_score": 0.05749,
+        "pre_rerank_position": 3,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 4,
+        "chunk_db_id": 616,
+        "rrf_score": 0.03055,
+        "dense_contrib": 0.015625,
+        "sparse_contrib": 0.014925,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.5003,
+        "chunk_index": 12,
+        "document_id": 104,
+        "filename": "techcorp_company_policies.md",
+        "section_heading": "5.1 Salary",
+        "page_number": null,
+        "chunk_token_count": 113,
+        "text_preview": "## 5. Compensation and Benefits\n\n### 5.1 Salary\n\nTechCorp conducts salary reviews annually, in January. Reviews take into account individual performance, market data, and company financial performance",
+        "rerank_score": 0.05582,
+        "pre_rerank_position": 4,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}

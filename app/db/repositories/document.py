@@ -26,6 +26,16 @@ _STOP_WORDS = frozenset({
     "all", "each", "every", "both", "give", "given", "used", "still",
 })
 
+_WORD_RE = re.compile(r'[a-zA-Z0-9]+')
+
+
+def _build_or_tsquery(query_text: str) -> str | None:
+    words = _WORD_RE.findall(query_text)
+    terms = [w for w in words if len(w) >= 3 and w.lower() not in _STOP_WORDS]
+    if not terms:
+        return None
+    return " | ".join(terms)
+
 
 async def create_document(
     session: AsyncSession,
@@ -371,25 +381,27 @@ async def _hybrid_search(
     }
 
     # --- Sparse leg: ranked chunk IDs by ts_rank ---
-    meta_clauses = _metadata_where_clauses(metadata_filter)
-    all_where = meta_clauses + ["dc.text_search @@ plainto_tsquery('english', :q)"]
-    sparse_params: dict = {"q": query_text, "fetch_k": fetch_k}
-    sparse_params.update(_metadata_sql_params(metadata_filter))
-    if embedding_model:
-        all_where.append("dc.embedding_model_name = :embedding_model")
-        sparse_params["embedding_model"] = embedding_model
-    sparse_sql = text(
-        "SELECT dc.id, ts_rank(dc.text_search, plainto_tsquery('english', :q)) AS fts_score "
-        "FROM document_chunks dc "
-        "JOIN documents d ON d.id = dc.document_id "
-        "WHERE " + " AND ".join(all_where) + " "
-        "ORDER BY fts_score DESC "
-        "LIMIT :fetch_k"
-    )
-    sparse_result = await session.execute(sparse_sql, sparse_params)
-    sparse_rows = sparse_result.all()
-    # {chunk_id: sparse_rank_1based}
-    sparse_rank: dict[int, int] = {row.id: i + 1 for i, row in enumerate(sparse_rows)}
+    sparse_rank: dict[int, int] = {}
+    or_tsquery = _build_or_tsquery(query_text)
+    if or_tsquery:
+        meta_clauses = _metadata_where_clauses(metadata_filter)
+        all_where = meta_clauses + ["dc.text_search @@ to_tsquery('english', :q)"]
+        sparse_params: dict = {"q": or_tsquery, "fetch_k": fetch_k}
+        sparse_params.update(_metadata_sql_params(metadata_filter))
+        if embedding_model:
+            all_where.append("dc.embedding_model_name = :embedding_model")
+            sparse_params["embedding_model"] = embedding_model
+        sparse_sql = text(
+            "SELECT dc.id, ts_rank(dc.text_search, to_tsquery('english', :q)) AS fts_score "
+            "FROM document_chunks dc "
+            "JOIN documents d ON d.id = dc.document_id "
+            "WHERE " + " AND ".join(all_where) + " "
+            "ORDER BY fts_score DESC "
+            "LIMIT :fetch_k"
+        )
+        sparse_result = await session.execute(sparse_sql, sparse_params)
+        sparse_rows = sparse_result.all()
+        sparse_rank = {row.id: i + 1 for i, row in enumerate(sparse_rows)}
 
     # --- Grep leg (third RRF leg) ---
     grep_rank: dict[int, int] = {}
@@ -493,32 +505,34 @@ async def debug_search(
     sparse_leg = []
     sparse_rank: dict[int, int] = {}
     if settings.hybrid_search_enabled and query_text and query_text.strip():
-        meta_clauses = _metadata_where_clauses(metadata_filter)
-        all_where = meta_clauses + ["dc.text_search @@ plainto_tsquery('english', :q)"]
-        sparse_params: dict = {"q": query_text, "fetch_k": fetch_k}
-        sparse_params.update(_metadata_sql_params(metadata_filter))
-        if embedding_model:
-            all_where.append("dc.embedding_model_name = :embedding_model")
-            sparse_params["embedding_model"] = embedding_model
-        sparse_sql = text(
-            "SELECT dc.id, dc.chunk_index, dc.document_id, "
-            "ts_rank(dc.text_search, plainto_tsquery('english', :q)) AS fts_score "
-            "FROM document_chunks dc "
-            "JOIN documents d ON d.id = dc.document_id "
-            "WHERE " + " AND ".join(all_where) + " "
-            "ORDER BY fts_score DESC "
-            "LIMIT :fetch_k"
-        )
-        sparse_result = await session.execute(sparse_sql, sparse_params)
-        for i, row in enumerate(sparse_result.all()):
-            sparse_rank[row.id] = i + 1
-            sparse_leg.append({
-                "rank": i + 1,
-                "chunk_db_id": row.id,
-                "chunk_index": row.chunk_index,
-                "document_id": row.document_id,
-                "fts_score": round(float(row.fts_score), 5),
-            })
+        or_tsquery = _build_or_tsquery(query_text)
+        if or_tsquery:
+            meta_clauses = _metadata_where_clauses(metadata_filter)
+            all_where = meta_clauses + ["dc.text_search @@ to_tsquery('english', :q)"]
+            sparse_params: dict = {"q": or_tsquery, "fetch_k": fetch_k}
+            sparse_params.update(_metadata_sql_params(metadata_filter))
+            if embedding_model:
+                all_where.append("dc.embedding_model_name = :embedding_model")
+                sparse_params["embedding_model"] = embedding_model
+            sparse_sql = text(
+                "SELECT dc.id, dc.chunk_index, dc.document_id, "
+                "ts_rank(dc.text_search, to_tsquery('english', :q)) AS fts_score "
+                "FROM document_chunks dc "
+                "JOIN documents d ON d.id = dc.document_id "
+                "WHERE " + " AND ".join(all_where) + " "
+                "ORDER BY fts_score DESC "
+                "LIMIT :fetch_k"
+            )
+            sparse_result = await session.execute(sparse_sql, sparse_params)
+            for i, row in enumerate(sparse_result.all()):
+                sparse_rank[row.id] = i + 1
+                sparse_leg.append({
+                    "rank": i + 1,
+                    "chunk_db_id": row.id,
+                    "chunk_index": row.chunk_index,
+                    "document_id": row.document_id,
+                    "fts_score": round(float(row.fts_score), 5),
+                })
 
     # --- Grep leg ---
     grep_leg = []

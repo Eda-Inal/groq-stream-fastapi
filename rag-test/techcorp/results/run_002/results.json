@@ -1,0 +1,57 @@
+{
+  "run_id": "run_002",
+  "timestamp": "2026-06-19T14:22:59.408629",
+  "config": {
+    "embedding_model": "mxbai-embed-large",
+    "hybrid_search": true,
+    "grep_search": true,
+    "reranker_enabled": true,
+    "rrf_k": 60,
+    "requested_top_k": 5,
+    "fetch_k": 15
+  },
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "exact_match",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        6
+      ],
+      "found_chunks": [
+        6
+      ],
+      "dense_found": [
+        6
+      ],
+      "sparse_found": [
+        6
+      ],
+      "grep_found": [
+        6
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 1,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.70637,
+      "correct_chunk_score_rerank": 0.63793,
+      "top1_score_dense": 0.70637,
+      "top1_score_rerank": 0.63793,
+      "pre_rerank_top5": [
+        6,
+        5,
+        18,
+        21,
+        19
+      ],
+      "post_rerank_top5": [
+        6,
+        18,
+        5,
+        23,
+        21
+      ]
+    }
+  ]
+}

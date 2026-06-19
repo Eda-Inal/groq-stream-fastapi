@@ -1,0 +1,111 @@
+[
+  {
+    "q_id": "Q01",
+    "category": "exact_match",
+    "question": "What must all remote work be conducted over when accessing internal systems?",
+    "expected_keywords": ["VPN", "internal systems", "remote work"],
+    "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+    "section": "Work Hours and Remote Work",
+    "subsection": "3.2 Remote Work Policy",
+    "chunk_index": 6,
+    "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+  },
+  {
+    "q_id": "Q02",
+    "category": "exact_match",
+    "question": "Within how many days must business expenses be submitted through the expense management system?",
+    "expected_keywords": ["30 days", "expense", "submitted"],
+    "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+    "section": "Expenses and Reimbursement",
+    "chunk_index": 21,
+    "chunk_text": "All business expenses must be submitted through the expense management system within 30 days of the expense being incurred."
+  },
+  {
+    "q_id": "Q03",
+    "category": "exact_match",
+    "question": "How much notice must an employee provide in writing before resigning?",
+    "expected_keywords": ["two weeks", "written notice", "manager"],
+    "expected_answer": "Employees must provide at least two weeks written notice to their manager before resigning.",
+    "section": "Leaving TechCorp",
+    "subsection": "9.1 Resignation",
+    "chunk_index": 22,
+    "chunk_text": "If you decide to leave TechCorp, please provide at least two weeks written notice to your manager."
+  },
+  {
+    "q_id": "Q04",
+    "category": "named_entity",
+    "question": "What is the email address employees should contact if their device is lost or stolen?",
+    "expected_keywords": ["security@techcorp.com", "IT Security", "lost", "stolen"],
+    "expected_answer": "If a device is lost or stolen, employees must report it immediately to the IT Security team at security@techcorp.com.",
+    "section": "Security and Data Privacy",
+    "subsection": "7.1 Device and Account Security",
+    "chunk_index": 18,
+    "chunk_text": "If your device is lost or stolen, report it to the IT Security team immediately at security@techcorp.com."
+  },
+  {
+    "q_id": "Q05",
+    "category": "named_entity",
+    "question": "What is the home office stipend amount provided to new employees?",
+    "expected_keywords": ["$1,500", "home office stipend", "90 days"],
+    "expected_answer": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment."
+  },
+  {
+    "q_id": "Q06",
+    "category": "direct_fact",
+    "question": "How long is the vesting period for stock options at TechCorp?",
+    "expected_keywords": ["four-year", "vesting", "one-year cliff", "25%"],
+    "expected_answer": "Stock options vest over a four-year period, with a one-year cliff. This means 25% of options vest after the first year, and the remainder vest monthly over the following three years.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.2 Equity",
+    "chunk_index": 13,
+    "chunk_text": "Options vest over a four-year period, with a one-year cliff. This means that 25% of your options vest after your first year, and the remainder vest monthly over the following three years."
+  },
+  {
+    "q_id": "Q07",
+    "category": "direct_fact",
+    "question": "How many days of paid bereavement leave does TechCorp provide?",
+    "expected_keywords": ["three days", "bereavement leave", "immediate family member"],
+    "expected_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member.",
+    "section": "Time Off and Leave",
+    "subsection": "4.4 Other Types of Leave",
+    "chunk_index": 11,
+    "chunk_text": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling."
+  },
+  {
+    "q_id": "Q08",
+    "category": "direct_fact",
+    "question": "What is the annual professional development budget per employee?",
+    "expected_keywords": ["$2,000", "professional development", "per year"],
+    "expected_answer": "TechCorp offers a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or any other learning activity relevant to the role.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp also offers a professional development budget of $2,000 USD per employee per year."
+  },
+  {
+    "q_id": "Q09",
+    "category": "dense_primary",
+    "question": "When can an employee begin taking parental leave after a child is born?",
+    "expected_keywords": ["12 months", "parental leave", "birth"],
+    "expected_answer": "Parental leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.",
+    "section": "Time Off and Leave",
+    "subsection": "4.3 Parental Leave",
+    "chunk_index": 10,
+    "chunk_text": "Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child."
+  },
+  {
+    "q_id": "Q10",
+    "category": "dense_primary",
+    "question": "What happens to unexercised stock options after an employee leaves TechCorp?",
+    "expected_keywords": ["90 days", "expire", "vested options"],
+    "expected_answer": "After leaving TechCorp, employees have 90 days to exercise their vested options. After 90 days, unexercised options expire.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.2 Equity",
+    "chunk_index": 13,
+    "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+  }
+]
