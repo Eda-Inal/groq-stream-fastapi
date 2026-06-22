@@ -114,10 +114,19 @@ async def stream_chat(
             }
             yield f"data: {json.dumps(role_chunk)}\n\n".encode("utf-8")
 
+            sent_done = False
             async for event in generator:
                 if await request.is_disconnected():
                     log.info("chat_stream_cancelled_by_client")
                     break
+
+                # After "done" is sent to the client, keep consuming (but not
+                # yielding) so the generator can run its persistence code
+                # (create_chat_log / session.commit) while the session is still
+                # open.  Breaking here would cause the session to close before
+                # the generator's finally-block runs.
+                if sent_done:
+                    continue
 
                 if event.get("type") == "chunk":
                     content_chunk = {
@@ -150,7 +159,7 @@ async def stream_chat(
                         ],
                     }
                     yield f"data: {json.dumps(final_chunk)}\n\n".encode("utf-8")
-                    break
+                    sent_done = True
 
             yield b"data: [DONE]\n\n"
             log.info("chat_stream_completed_successfully")

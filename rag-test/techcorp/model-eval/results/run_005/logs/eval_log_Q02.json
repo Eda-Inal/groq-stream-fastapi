@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q02",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "question": "Within how many days must business expenses be submitted through the expense management system?",
+    "expected_keywords": [
+      "30 days",
+      "expense",
+      "submitted"
+    ],
+    "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+    "section": "Expenses and Reimbursement",
+    "chunk_index": 21,
+    "chunk_text": "All business expenses must be submitted through the expense management system within 30 days of the expense being incurred."
+  },
+  "model_answer": "rag_search(query=\"expense submission deadline\")",
+  "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+  "rag_query_used": null,
+  "db_messages_count": 3,
+  "result": {
+    "q_id": "Q02",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "rag_called": false,
+    "rag_query_used": null,
+    "keywords_found": [
+      "expense"
+    ],
+    "keywords_missing": [
+      "30 days",
+      "submitted"
+    ],
+    "keywords_score": 0.33,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 11.1,
+    "conversation_id": "run_005-Q02",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

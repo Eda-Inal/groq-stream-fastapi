@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q01",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "question": "What must all remote work be conducted over when accessing internal systems?",
+    "expected_keywords": [
+      "VPN",
+      "internal systems",
+      "remote work"
+    ],
+    "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+    "section": "Work Hours and Remote Work",
+    "subsection": "3.2 Remote Work Policy",
+    "chunk_index": 6,
+    "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+  },
+  "model_answer": "All remote work must be conducted over TechCorp’s VPN when accessing internal systems.  \nSource: techcorp_company_policies.md",
+  "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+  "rag_query_used": "What must all remote work be conducted over when accessing internal systems",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q01",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "rag_called": true,
+    "rag_query_used": "What must all remote work be conducted over when accessing internal systems",
+    "keywords_found": [
+      "VPN",
+      "internal systems",
+      "remote work"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 7.9,
+    "conversation_id": "run_006-Q01",
+    "actual_model": "openai/gpt-oss-120b"
+  }
+}

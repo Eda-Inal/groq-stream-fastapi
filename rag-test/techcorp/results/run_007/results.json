@@ -1,0 +1,174 @@
+{
+  "run_id": "run_007",
+  "timestamp": "2026-06-22T13:48:25.845734",
+  "config": {
+    "embedding_model": "mxbai-embed-large",
+    "hybrid_search": true,
+    "grep_search": true,
+    "reranker_enabled": true,
+    "rrf_k": 60,
+    "requested_top_k": 5,
+    "fetch_k": 15
+  },
+  "results": [
+    {
+      "q_id": "Q31",
+      "category": "adversarial_paraphrase",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        4
+      ],
+      "found_chunks": [
+        4
+      ],
+      "dense_found": [
+        4
+      ],
+      "sparse_found": [
+        4
+      ],
+      "grep_found": [],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 2,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.6108,
+      "correct_chunk_score_rerank": 0.1192,
+      "top1_score_dense": 0.6108,
+      "top1_score_rerank": 0.12507,
+      "pre_rerank_top5": [
+        4,
+        3,
+        11,
+        22,
+        18
+      ],
+      "post_rerank_top5": [
+        2,
+        4,
+        9,
+        18,
+        3
+      ]
+    },
+    {
+      "q_id": "Q32",
+      "category": "adversarial_paraphrase",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        21
+      ],
+      "found_chunks": [
+        21
+      ],
+      "dense_found": [
+        21
+      ],
+      "sparse_found": [
+        21
+      ],
+      "grep_found": [],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 8,
+      "rank_after_rerank": 1,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.63299,
+      "correct_chunk_score_rerank": 0.20818,
+      "top1_score_dense": 0.57539,
+      "top1_score_rerank": 0.20818,
+      "pre_rerank_top5": [
+        15,
+        6,
+        17,
+        19,
+        18
+      ],
+      "post_rerank_top5": [
+        21,
+        15,
+        17,
+        8,
+        13
+      ]
+    },
+    {
+      "q_id": "Q33",
+      "category": "absent_plausible",
+      "correct_chunk_found": false,
+      "expected_chunks": [],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": null,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.83646,
+      "top1_score_rerank": 0.88243,
+      "pre_rerank_top5": [
+        22,
+        11,
+        15,
+        14,
+        10
+      ],
+      "post_rerank_top5": [
+        22,
+        11,
+        13,
+        10,
+        8
+      ]
+    },
+    {
+      "q_id": "Q34",
+      "category": "absent_plausible",
+      "correct_chunk_found": false,
+      "expected_chunks": [],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": null,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.70586,
+      "top1_score_rerank": 0.55881,
+      "pre_rerank_top5": [
+        8,
+        12,
+        15,
+        16,
+        17
+      ],
+      "post_rerank_top5": [
+        12,
+        1,
+        15,
+        16,
+        14
+      ]
+    }
+  ],
+  "summary": {
+    "total_questions": 4,
+    "total_with_expected": 2,
+    "total_found": 2,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 0.562,
+    "mrr_post_rerank": 0.75,
+    "avg_correct_cosine": 0.6219,
+    "avg_chunk_recall": 1.0,
+    "dense_recall": "2/2",
+    "sparse_recall": "2/2",
+    "grep_recall": "0/2",
+    "rerank_improved_count": 1,
+    "rerank_same_or_worse_count": 1
+  }
+}

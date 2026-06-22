@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q01",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "question": "What must all remote work be conducted over when accessing internal systems?",
+    "expected_keywords": [
+      "VPN",
+      "internal systems",
+      "remote work"
+    ],
+    "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+    "section": "Work Hours and Remote Work",
+    "subsection": "3.2 Remote Work Policy",
+    "chunk_index": 6,
+    "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+  },
+  "model_answer": "",
+  "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+  "rag_query_used": "remote work internal systems access requirements",
+  "db_messages_count": 5,
+  "result": {
+    "q_id": "Q01",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "rag_called": true,
+    "rag_query_used": "remote work internal systems access requirements",
+    "keywords_found": [],
+    "keywords_missing": [
+      "VPN",
+      "internal systems",
+      "remote work"
+    ],
+    "keywords_score": 0.0,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 72.4,
+    "conversation_id": "run_004-Q01",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

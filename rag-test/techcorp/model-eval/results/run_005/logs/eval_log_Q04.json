@@ -1,0 +1,44 @@
+{
+  "question": {
+    "q_id": "Q04",
+    "difficulty": "easy",
+    "category": "named_entity",
+    "question": "What is the email address employees should contact if their device is lost or stolen?",
+    "expected_keywords": [
+      "security@techcorp.com",
+      "IT Security",
+      "lost",
+      "stolen"
+    ],
+    "expected_answer": "If a device is lost or stolen, employees must report it immediately to the IT Security team at security@techcorp.com.",
+    "section": "Security and Data Privacy",
+    "subsection": "7.1 Device and Account Security",
+    "chunk_index": 18,
+    "chunk_text": "If your device is lost or stolen, report it to the IT Security team immediately at security@techcorp.com."
+  },
+  "model_answer": "The email address employees should contact if their device is lost or stolen is security@techcorp.com.\n\nSource: techcorp_company_policies.md (section 7.1 Device and Account Security)",
+  "expected_answer": "If a device is lost or stolen, employees must report it immediately to the IT Security team at security@techcorp.com.",
+  "rag_query_used": "email address for lost or stolen device",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q04",
+    "difficulty": "easy",
+    "category": "named_entity",
+    "rag_called": true,
+    "rag_query_used": "email address for lost or stolen device",
+    "keywords_found": [
+      "security@techcorp.com",
+      "lost",
+      "stolen"
+    ],
+    "keywords_missing": [
+      "IT Security"
+    ],
+    "keywords_score": 0.75,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 9.8,
+    "conversation_id": "run_005-Q04",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

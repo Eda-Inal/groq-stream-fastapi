@@ -1,0 +1,230 @@
+{
+  "run_id": "run_005",
+  "timestamp": "2026-06-22T15:05:01.493129",
+  "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "remote work internal systems access requirements",
+      "keywords_found": [
+        "VPN",
+        "internal systems",
+        "remote work"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 23.7,
+      "conversation_id": "run_005-Q01",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q02",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": false,
+      "rag_query_used": null,
+      "keywords_found": [
+        "expense"
+      ],
+      "keywords_missing": [
+        "30 days",
+        "submitted"
+      ],
+      "keywords_score": 0.33,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 11.1,
+      "conversation_id": "run_005-Q02",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q03",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "notice period for resignation",
+      "keywords_found": [
+        "two weeks",
+        "written notice",
+        "manager"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 14.7,
+      "conversation_id": "run_005-Q03",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q04",
+      "difficulty": "easy",
+      "category": "named_entity",
+      "rag_called": true,
+      "rag_query_used": "email address for lost or stolen device",
+      "keywords_found": [
+        "security@techcorp.com",
+        "lost",
+        "stolen"
+      ],
+      "keywords_missing": [
+        "IT Security"
+      ],
+      "keywords_score": 0.75,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 9.8,
+      "conversation_id": "run_005-Q04",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q05",
+      "difficulty": "easy",
+      "category": "named_entity",
+      "rag_called": true,
+      "rag_query_used": "home office stipend amount for new employees",
+      "keywords_found": [
+        "$1,500",
+        "home office stipend",
+        "90 days"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 6.2,
+      "conversation_id": "run_005-Q05",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q06",
+      "difficulty": "easy",
+      "category": "direct_fact",
+      "rag_called": true,
+      "rag_query_used": "TechCorp stock options vesting period",
+      "keywords_found": [
+        "vesting",
+        "one-year cliff",
+        "25%"
+      ],
+      "keywords_missing": [
+        "four-year"
+      ],
+      "keywords_score": 0.75,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 9.3,
+      "conversation_id": "run_005-Q06",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q07",
+      "difficulty": "easy",
+      "category": "direct_fact",
+      "rag_called": true,
+      "rag_query_used": "TechCorp paid bereavement leave days",
+      "keywords_found": [
+        "three days",
+        "bereavement leave",
+        "immediate family member"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 6.4,
+      "conversation_id": "run_005-Q07",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q08",
+      "difficulty": "easy",
+      "category": "direct_fact",
+      "rag_called": true,
+      "rag_query_used": "annual professional development budget per employee",
+      "keywords_found": [
+        "$2,000",
+        "professional development"
+      ],
+      "keywords_missing": [
+        "per year"
+      ],
+      "keywords_score": 0.67,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 7.4,
+      "conversation_id": "run_005-Q08",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q09",
+      "difficulty": "easy",
+      "category": "dense_primary",
+      "rag_called": true,
+      "rag_query_used": "When can an employee begin taking parental leave after a child is born",
+      "keywords_found": [
+        "12 months",
+        "parental leave",
+        "birth"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 9.8,
+      "conversation_id": "run_005-Q09",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    },
+    {
+      "q_id": "Q10",
+      "difficulty": "easy",
+      "category": "dense_primary",
+      "rag_called": true,
+      "rag_query_used": "unexercised stock options after leaving TechCorp",
+      "keywords_found": [
+        "90 days",
+        "expire"
+      ],
+      "keywords_missing": [
+        "vested options"
+      ],
+      "keywords_score": 0.67,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 7.2,
+      "conversation_id": "run_005-Q10",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 5,
+    "failed": 5,
+    "pass_rate": 0.5,
+    "rag_called_count": 9,
+    "avg_keywords_score": 0.817,
+    "by_category": {
+      "exact_match": {
+        "total": 3,
+        "passed": 2
+      },
+      "named_entity": {
+        "total": 2,
+        "passed": 1
+      },
+      "direct_fact": {
+        "total": 3,
+        "passed": 1
+      },
+      "dense_primary": {
+        "total": 2,
+        "passed": 1
+      }
+    }
+  }
+}

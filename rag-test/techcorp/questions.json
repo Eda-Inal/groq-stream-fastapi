@@ -39,7 +39,7 @@
     "difficulty": "easy",
     "category": "named_entity",
     "question": "What is the email address employees should contact if their device is lost or stolen?",
-    "expected_keywords": ["security@techcorp.com", "IT Security", "lost", "stolen"],
+    "expected_keywords": ["security@techcorp.com", "lost", "stolen"],
     "expected_answer": "If a device is lost or stolen, employees must report it immediately to the IT Security team at security@techcorp.com.",
     "section": "Security and Data Privacy",
     "subsection": "7.1 Device and Account Security",
@@ -356,5 +356,57 @@
     "subsection": "5.1 Salary",
     "chunk_index": 12,
     "chunk_text": "TechCorp conducts salary reviews annually, in January. Salary adjustments resulting from reviews take effect on February 1st of each year."
+  },
+  {
+    "q_id": "Q31",
+    "difficulty": "hard",
+    "category": "adversarial_paraphrase",
+    "question": "Is there any official guarantee against punishment for staff members who raise concerns about workplace wrongdoing?",
+    "expected_keywords": ["retaliation", "prohibited", "reports harassment", "good faith"],
+    "expected_answer": "Yes. Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of TechCorp's policy.",
+    "section": "Code of Conduct",
+    "subsection": "2.3 Anti-Harassment Policy",
+    "chunk_index": 4,
+    "chunk_text": "Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of this policy.",
+    "vocab_gap_note": "Question uses: guarantee/punishment/staff members/raise concerns/workplace wrongdoing. Chunk uses: strictly prohibited/anyone/reports harassment/good faith. Zero direct lexical overlap."
+  },
+  {
+    "q_id": "Q32",
+    "difficulty": "hard",
+    "category": "adversarial_paraphrase",
+    "question": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+    "expected_keywords": ["$500", "pre-approval", "manager", "before they are incurred"],
+    "expected_answer": "Expenses above $500 require pre-approval from the employee's manager before they are incurred.",
+    "section": "Expenses and Reimbursement",
+    "subsection": null,
+    "chunk_index": 21,
+    "chunk_text": "Expenses above $500 require pre-approval from your manager before they are incurred.",
+    "vocab_gap_note": "Question uses: spending level/obtain clearance/direct superior/committing/outlay. Chunk uses: expenses/$500/pre-approval/manager/incurred. Zero direct lexical overlap."
+  },
+  {
+    "q_id": "Q33",
+    "difficulty": "hard",
+    "category": "absent_plausible",
+    "question": "What notice period or severance pay does TechCorp provide when it decides to let an employee go?",
+    "expected_keywords": [],
+    "expected_answer": "The TechCorp handbook does not address company-initiated termination, severance pay, or any employer-side notice period. Section 9 covers only voluntary resignation and the offboarding process for employee-initiated departures.",
+    "section": null,
+    "subsection": null,
+    "chunk_index": null,
+    "chunk_text": "Section 9 covers voluntary resignation (9.1) and offboarding (9.2) only. Company-initiated termination, severance pay, and employer-side notice periods are not addressed anywhere in this document. A correct RAG response must state that this information is not available.",
+    "precision_note": "Dense retrieval will likely surface chunks 22 (Resignation) and 23 (Offboarding) with moderate cosine scores (~0.5-0.6). The test measures whether the pipeline avoids a false positive — these adjacent chunks do not answer the question."
+  },
+  {
+    "q_id": "Q34",
+    "difficulty": "hard",
+    "category": "absent_plausible",
+    "question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+    "expected_keywords": [],
+    "expected_answer": "The TechCorp handbook does not describe any performance bonus or variable compensation. Section 5 covers salary, equity options, health benefits, and additional stipends, but no bonus structure is mentioned anywhere in the document.",
+    "section": null,
+    "subsection": null,
+    "chunk_index": null,
+    "chunk_text": "Section 5 covers: 5.1 Salary (annual review, market data, performance — no bonus), 5.2 Equity (stock options), 5.3 Health Benefits, 5.4 Additional Benefits (stipends). No performance bonus or variable pay policy exists in this document. A correct RAG response must state that this information is not available.",
+    "precision_note": "Dense retrieval will likely surface chunk 12 (Salary, mentions 'individual performance') and chunk 13 (Equity) as false positives. The word 'performance' also appears in chunk 16 (Performance Reviews). Test measures whether these adjacent chunks trigger a confident but incorrect answer."
   }
 ]

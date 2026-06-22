@@ -1,0 +1,26 @@
+{
+  "run_id": "run_004",
+  "timestamp": "2026-06-22T14:59:46.954835",
+  "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "remote work internal systems access requirements",
+      "keywords_found": [],
+      "keywords_missing": [
+        "VPN",
+        "internal systems",
+        "remote work"
+      ],
+      "keywords_score": 0.0,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 72.4,
+      "conversation_id": "run_004-Q01",
+      "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+    }
+  ]
+}

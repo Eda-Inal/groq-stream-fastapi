@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q07",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "question": "How many days of paid bereavement leave does TechCorp provide?",
+    "expected_keywords": [
+      "three days",
+      "bereavement leave",
+      "immediate family member"
+    ],
+    "expected_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member.",
+    "section": "Time Off and Leave",
+    "subsection": "4.4 Other Types of Leave",
+    "chunk_index": 11,
+    "chunk_text": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling."
+  },
+  "model_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling.\n\nSource: techcorp_company_policies.md",
+  "expected_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member.",
+  "rag_query_used": "TechCorp paid bereavement leave days",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q07",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "rag_called": true,
+    "rag_query_used": "TechCorp paid bereavement leave days",
+    "keywords_found": [
+      "three days",
+      "bereavement leave",
+      "immediate family member"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 6.4,
+    "conversation_id": "run_005-Q07",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

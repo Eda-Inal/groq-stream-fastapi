@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q09",
+    "difficulty": "easy",
+    "category": "dense_primary",
+    "question": "When can an employee begin taking parental leave after a child is born?",
+    "expected_keywords": [
+      "12 months",
+      "parental leave",
+      "birth"
+    ],
+    "expected_answer": "Parental leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.",
+    "section": "Time Off and Leave",
+    "subsection": "4.3 Parental Leave",
+    "chunk_index": 10,
+    "chunk_text": "Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child."
+  },
+  "model_answer": "Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.\n\nSource: techcorp_company_policies.md (section 4.3 Parental Leave)",
+  "expected_answer": "Parental leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.",
+  "rag_query_used": "When can an employee begin taking parental leave after a child is born",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q09",
+    "difficulty": "easy",
+    "category": "dense_primary",
+    "rag_called": true,
+    "rag_query_used": "When can an employee begin taking parental leave after a child is born",
+    "keywords_found": [
+      "12 months",
+      "parental leave",
+      "birth"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 9.8,
+    "conversation_id": "run_005-Q09",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "question": {
+    "q_id": "Q08",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "question": "What is the annual professional development budget per employee?",
+    "expected_keywords": [
+      "$2,000",
+      "professional development",
+      "per year"
+    ],
+    "expected_answer": "TechCorp offers a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or any other learning activity relevant to the role.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp also offers a professional development budget of $2,000 USD per employee per year."
+  },
+  "model_answer": "The annual professional development budget per employee is $2,000 USD. This budget can be used for conferences, courses, books, certifications, or any other learning activity relevant to the employee's role, with approval from their manager required before spending.\n\nSource: techcorp_company_policies.md (section 5.4 Additional Benefits)",
+  "expected_answer": "TechCorp offers a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or any other learning activity relevant to the role.",
+  "rag_query_used": "annual professional development budget per employee",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q08",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "rag_called": true,
+    "rag_query_used": "annual professional development budget per employee",
+    "keywords_found": [
+      "$2,000",
+      "professional development"
+    ],
+    "keywords_missing": [
+      "per year"
+    ],
+    "keywords_score": 0.67,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 7.4,
+    "conversation_id": "run_005-Q08",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

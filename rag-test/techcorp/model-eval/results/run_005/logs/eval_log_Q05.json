@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q05",
+    "difficulty": "easy",
+    "category": "named_entity",
+    "question": "What is the home office stipend amount provided to new employees?",
+    "expected_keywords": [
+      "$1,500",
+      "home office stipend",
+      "90 days"
+    ],
+    "expected_answer": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment."
+  },
+  "model_answer": "The home office stipend amount provided to new employees is $1,500 USD. This stipend is to be used within the first 90 days of employment and receipts must be submitted through the expense system for reimbursement.\n\nSource: techcorp_company_policies.md",
+  "expected_answer": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment.",
+  "rag_query_used": "home office stipend amount for new employees",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q05",
+    "difficulty": "easy",
+    "category": "named_entity",
+    "rag_called": true,
+    "rag_query_used": "home office stipend amount for new employees",
+    "keywords_found": [
+      "$1,500",
+      "home office stipend",
+      "90 days"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 6.2,
+    "conversation_id": "run_005-Q05",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

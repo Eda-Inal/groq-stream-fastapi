@@ -1,0 +1,106 @@
+{
+  "run_id": "run_007",
+  "timestamp": "2026-06-22T15:13:37.777114",
+  "model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q02",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "Within how many days must business expenses be submitted through the expense management system",
+      "keywords_found": [
+        "30 days",
+        "expense",
+        "submitted"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 7.8,
+      "conversation_id": "run_007-Q02",
+      "actual_model": "openai/gpt-oss-120b"
+    },
+    {
+      "q_id": "Q03",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "How much notice must an employee provide in writing before resigning",
+      "keywords_found": [
+        "two weeks",
+        "written notice",
+        "manager"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 7.6,
+      "conversation_id": "run_007-Q03",
+      "actual_model": "openai/gpt-oss-120b"
+    },
+    {
+      "q_id": "Q04",
+      "difficulty": "easy",
+      "category": "named_entity",
+      "rag_called": true,
+      "rag_query_used": "email address employees should contact if their device is lost or stolen",
+      "keywords_found": [
+        "security@techcorp.com",
+        "lost",
+        "stolen"
+      ],
+      "keywords_missing": [
+        "IT Security"
+      ],
+      "keywords_score": 0.75,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 9.7,
+      "conversation_id": "run_007-Q04",
+      "actual_model": "openai/gpt-oss-120b"
+    },
+    {
+      "q_id": "Q05",
+      "difficulty": "easy",
+      "category": "named_entity",
+      "rag_called": true,
+      "rag_query_used": "home office stipend amount new employees",
+      "keywords_found": [
+        "$1,500",
+        "home office stipend"
+      ],
+      "keywords_missing": [
+        "90 days"
+      ],
+      "keywords_score": 0.67,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 6.8,
+      "conversation_id": "run_007-Q05",
+      "actual_model": "openai/gpt-oss-120b"
+    },
+    {
+      "q_id": "Q06",
+      "difficulty": "easy",
+      "category": "direct_fact",
+      "rag_called": true,
+      "rag_query_used": "How long is the vesting period for stock options at TechCorp",
+      "keywords_found": [],
+      "keywords_missing": [
+        "four-year",
+        "vesting",
+        "one-year cliff",
+        "25%"
+      ],
+      "keywords_score": 0.0,
+      "not_in_document_said": null,
+      "pass": false,
+      "latency_s": 6.5,
+      "conversation_id": "run_007-Q06",
+      "actual_model": "openai/gpt-oss-120b"
+    }
+  ]
+}

@@ -1066,35 +1066,40 @@ class ChatService:
                         yield {"type": "done", "finish_reason": "stop"}
                     break
 
-            # ── Persist chat log ────────────────────────────────────────────────
-            if conversation_id:
-                max_turn = 0
-                for log_item in history_logs:
-                    if log_item.turn_index and log_item.turn_index > max_turn:
-                        max_turn = log_item.turn_index
-                turn_index = max_turn + 1 if max_turn else 1
-            else:
-                turn_index = None
-
-            await create_chat_log(
-                session=session,
-                prompt=messages[0]["content"] if messages else "",
-                messages=effective_messages,
-                response="".join(full_response),
-                model_name=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                top_p=top_p,
-                frequency_penalty=frequency_penalty,
-                presence_penalty=presence_penalty,
-                seed=seed,
-                conversation_id=conversation_id,
-                turn_index=turn_index,
-                user_id=user_id,
-            )
-            await session.commit()
-
         finally:
+            # ── Persist chat log ─────────────────────────────────────────────
+            # Runs whether the generator is exhausted normally OR abandoned via
+            # break (e.g. when the SSE consumer stops after the "done" event).
+            try:
+                if conversation_id:
+                    max_turn = 0
+                    for log_item in history_logs:
+                        if log_item.turn_index and log_item.turn_index > max_turn:
+                            max_turn = log_item.turn_index
+                    turn_index = max_turn + 1 if max_turn else 1
+                else:
+                    turn_index = None
+
+                await create_chat_log(
+                    session=session,
+                    prompt=messages[0]["content"] if messages else "",
+                    messages=effective_messages,
+                    response="".join(full_response),
+                    model_name=model,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    top_p=top_p,
+                    frequency_penalty=frequency_penalty,
+                    presence_penalty=presence_penalty,
+                    seed=seed,
+                    conversation_id=conversation_id,
+                    turn_index=turn_index,
+                    user_id=user_id,
+                )
+                await session.commit()
+            except Exception:
+                log.exception("chat_log_persist_failed")
+
             # End the root LangSmith trace regardless of how the generator exits
             # (normal completion, client disconnect, or exception).
             elapsed = round(time.monotonic() - start_time, 3)

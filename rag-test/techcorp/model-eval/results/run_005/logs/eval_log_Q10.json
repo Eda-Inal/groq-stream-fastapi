@@ -1,0 +1,42 @@
+{
+  "question": {
+    "q_id": "Q10",
+    "difficulty": "easy",
+    "category": "dense_primary",
+    "question": "What happens to unexercised stock options after an employee leaves TechCorp?",
+    "expected_keywords": [
+      "90 days",
+      "expire",
+      "vested options"
+    ],
+    "expected_answer": "After leaving TechCorp, employees have 90 days to exercise their vested options. After 90 days, unexercised options expire.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.2 Equity",
+    "chunk_index": 13,
+    "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+  },
+  "model_answer": "After an employee leaves TechCorp, unexercised stock options expire 90 days after their last day of employment. \n\nSource: techcorp_company_policies.md",
+  "expected_answer": "After leaving TechCorp, employees have 90 days to exercise their vested options. After 90 days, unexercised options expire.",
+  "rag_query_used": "unexercised stock options after leaving TechCorp",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q10",
+    "difficulty": "easy",
+    "category": "dense_primary",
+    "rag_called": true,
+    "rag_query_used": "unexercised stock options after leaving TechCorp",
+    "keywords_found": [
+      "90 days",
+      "expire"
+    ],
+    "keywords_missing": [
+      "vested options"
+    ],
+    "keywords_score": 0.67,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 7.2,
+    "conversation_id": "run_005-Q10",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "question": {
+    "q_id": "Q06",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "question": "How long is the vesting period for stock options at TechCorp?",
+    "expected_keywords": [
+      "four-year",
+      "vesting",
+      "one-year cliff",
+      "25%"
+    ],
+    "expected_answer": "Stock options vest over a four-year period, with a one-year cliff. This means 25% of options vest after the first year, and the remainder vest monthly over the following three years.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.2 Equity",
+    "chunk_index": 13,
+    "chunk_text": "Options vest over a four-year period, with a one-year cliff. This means that 25% of your options vest after your first year, and the remainder vest monthly over the following three years."
+  },
+  "model_answer": "The vesting period for stock options at TechCorp is four years, with a one-year cliff. This means that 25% of the options vest after the first year, and the remainder vest monthly over the following three years.\n\nSource: techcorp_company_policies.md (section 5.2 Equity)",
+  "expected_answer": "Stock options vest over a four-year period, with a one-year cliff. This means 25% of options vest after the first year, and the remainder vest monthly over the following three years.",
+  "rag_query_used": "TechCorp stock options vesting period",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q06",
+    "difficulty": "easy",
+    "category": "direct_fact",
+    "rag_called": true,
+    "rag_query_used": "TechCorp stock options vesting period",
+    "keywords_found": [
+      "vesting",
+      "one-year cliff",
+      "25%"
+    ],
+    "keywords_missing": [
+      "four-year"
+    ],
+    "keywords_score": 0.75,
+    "not_in_document_said": null,
+    "pass": false,
+    "latency_s": 9.3,
+    "conversation_id": "run_005-Q06",
+    "actual_model": "meta-llama/llama-4-scout-17b-16e-instruct"
+  }
+}

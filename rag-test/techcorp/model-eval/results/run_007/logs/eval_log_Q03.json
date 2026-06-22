@@ -1,0 +1,41 @@
+{
+  "question": {
+    "q_id": "Q03",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "question": "How much notice must an employee provide in writing before resigning?",
+    "expected_keywords": [
+      "two weeks",
+      "written notice",
+      "manager"
+    ],
+    "expected_answer": "Employees must provide at least two weeks written notice to their manager before resigning.",
+    "section": "Leaving TechCorp",
+    "subsection": "9.1 Resignation",
+    "chunk_index": 22,
+    "chunk_text": "If you decide to leave TechCorp, please provide at least two weeks written notice to your manager."
+  },
+  "model_answer": "Employees must give at least two weeks written notice to their manager before resigning.  \nSource: techcorp_company_policies.md",
+  "expected_answer": "Employees must provide at least two weeks written notice to their manager before resigning.",
+  "rag_query_used": "How much notice must an employee provide in writing before resigning",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q03",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "rag_called": true,
+    "rag_query_used": "How much notice must an employee provide in writing before resigning",
+    "keywords_found": [
+      "two weeks",
+      "written notice",
+      "manager"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 7.6,
+    "conversation_id": "run_007-Q03",
+    "actual_model": "openai/gpt-oss-120b"
+  }
+}

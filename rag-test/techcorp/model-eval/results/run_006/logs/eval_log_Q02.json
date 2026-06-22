@@ -1,0 +1,40 @@
+{
+  "question": {
+    "q_id": "Q02",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "question": "Within how many days must business expenses be submitted through the expense management system?",
+    "expected_keywords": [
+      "30 days",
+      "expense",
+      "submitted"
+    ],
+    "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+    "section": "Expenses and Reimbursement",
+    "chunk_index": 21,
+    "chunk_text": "All business expenses must be submitted through the expense management system within 30 days of the expense being incurred."
+  },
+  "model_answer": "All business expenses must be submitted through the expense management system within **30 days** of the expense being incurred. Source: techcorp_company_policies.md",
+  "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+  "rag_query_used": "Within how many days must business expenses be submitted through the expense management system",
+  "db_messages_count": 6,
+  "result": {
+    "q_id": "Q02",
+    "difficulty": "easy",
+    "category": "exact_match",
+    "rag_called": true,
+    "rag_query_used": "Within how many days must business expenses be submitted through the expense management system",
+    "keywords_found": [
+      "30 days",
+      "expense",
+      "submitted"
+    ],
+    "keywords_missing": [],
+    "keywords_score": 1.0,
+    "not_in_document_said": null,
+    "pass": true,
+    "latency_s": 7.1,
+    "conversation_id": "run_006-Q02",
+    "actual_model": "openai/gpt-oss-120b"
+  }
+}

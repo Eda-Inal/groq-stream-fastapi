@@ -1,0 +1,45 @@
+{
+  "run_id": "run_006",
+  "timestamp": "2026-06-22T15:10:48.364363",
+  "model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q01",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "What must all remote work be conducted over when accessing internal systems",
+      "keywords_found": [
+        "VPN",
+        "internal systems",
+        "remote work"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 7.9,
+      "conversation_id": "run_006-Q01",
+      "actual_model": "openai/gpt-oss-120b"
+    },
+    {
+      "q_id": "Q02",
+      "difficulty": "easy",
+      "category": "exact_match",
+      "rag_called": true,
+      "rag_query_used": "Within how many days must business expenses be submitted through the expense management system",
+      "keywords_found": [
+        "30 days",
+        "expense",
+        "submitted"
+      ],
+      "keywords_missing": [],
+      "keywords_score": 1.0,
+      "not_in_document_said": null,
+      "pass": true,
+      "latency_s": 7.1,
+      "conversation_id": "run_006-Q02",
+      "actual_model": "openai/gpt-oss-120b"
+    }
+  ]
+}
