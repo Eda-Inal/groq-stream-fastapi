@@ -1,0 +1,101 @@
+{
+  "run_id": "run_011",
+  "timestamp": "2026-06-23T13:41:33.153641",
+  "chat_model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "judge_model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9849,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q02",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9713,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q03",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9797,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q04",
+      "category": "named_entity",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.8186,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q05",
+      "category": "named_entity",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.7327,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "ragas_evaluated": 5,
+    "ragas_skipped": 0,
+    "avg_faithfulness": 1.0,
+    "avg_answer_correctness": 0.8974,
+    "avg_context_recall": 1.0,
+    "avg_context_precision": 1.0,
+    "absent_plausible_total": 0,
+    "absent_plausible_passed": 0,
+    "by_category": {
+      "exact_match": {
+        "count": 3,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.9786
+      },
+      "named_entity": {
+        "count": 2,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.7756
+      }
+    }
+  }
+}

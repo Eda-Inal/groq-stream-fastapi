@@ -1,0 +1,68 @@
+{
+  "run_id": "run_010",
+  "timestamp": "2026-06-23T13:28:25.829189",
+  "chat_model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "judge_model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9844,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q02",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.5994,
+        "context_recall": 1.0,
+        "context_precision": null
+      }
+    },
+    {
+      "q_id": "Q03",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": null,
+        "answer_correctness": 0.9802,
+        "context_recall": 1.0,
+        "context_precision": null
+      }
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "ragas_evaluated": 3,
+    "ragas_skipped": 0,
+    "avg_faithfulness": 1.0,
+    "avg_answer_correctness": 0.8547,
+    "avg_context_recall": 1.0,
+    "avg_context_precision": 1.0,
+    "absent_plausible_total": 0,
+    "absent_plausible_passed": 0,
+    "by_category": {
+      "exact_match": {
+        "count": 3,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.8547
+      }
+    }
+  }
+}

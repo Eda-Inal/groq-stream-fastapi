@@ -1,0 +1,22 @@
+{
+  "q_id": "Q03",
+  "question": "How much notice must an employee provide in writing before resigning?",
+  "model_answer": "The employee must provide at least two weeks' written notice to their manager before resigning.\n\nSource: techcorp_company_policies.md (section 9.1 Resignation)",
+  "ground_truth": "Employees must provide at least two weeks written notice to their manager before resigning.",
+  "contexts": [
+    "[Belge: techcorp_company_policies.md] ## 9. Leaving TechCorp\n\n### 9.1 Resignation\n\nIf you decide to leave TechCorp, please provide at least two weeks written notice to your manager. We ask for this notice period so that we can plan for a smooth handover of your work and responsibilities. Depending on your role, we may ask you to work through the notice period or we may choose to end your employment on the date you give notice — in either case, you will be paid through the end of your notice period.\n\nDuring your notice period, you are expected to continue performing your duties professionally, complete documentation, and assist in the transition of your work to other team members.",
+    "[Belge: techcorp_company_policies.md] ### 4.2 Sick Leave\n\nEmployees do not need to use PTO when they are ill. Sick days are separate and unlimited. You are not required to provide a doctor's note for absences of fewer than five consecutive days. For extended illnesses lasting more than five consecutive days, please notify People Operations so that appropriate support and documentation can be arranged.\n\nMental health days are treated the same as physical sick days. You do not need to explain or justify taking a mental health day to your manager. Simply notify them that you are unwell and will not be working that day.",
+    "[Belge: techcorp_company_policies.md] ### 9.2 Offboarding\n\nOn your last day, you will participate in an offboarding session with People Operations. During this session, you will return all company equipment, your system access will be revoked, and you will receive information about your final paycheck and any vested equity.\n\nYou are required to return all company property in good condition. The cost of repairing or replacing damaged or unreturned equipment may be deducted from your final paycheck where permitted by law.\n\nAfter leaving TechCorp, you remain bound by your confidentiality obligations. You may not use or disclose any confidential information you accessed during your employment.\n\n*For questions about any policy in this document, contact People Operations at people@techcorp.com.*\n\n*TechCorp Employee Handbook v3.2 — All rights reserved.*",
+    "[Belge: techcorp_company_policies.md] ### 4.3 Parental Leave\n\nTechCorp provides 16 weeks of fully paid parental leave for all new parents, regardless of gender. This applies to biological parents, adoptive parents, and foster parents. Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.\n\nTo initiate parental leave, notify the People Operations team and your manager at least 8 weeks before your expected leave start date. We will work with you to create a coverage plan that minimizes disruption to your team and ensures a smooth transition when you return.",
+    "[Belge: techcorp_company_policies.md] ## 4. Time Off and Leave\n\n### 4.1 Paid Time Off\n\nTechCorp offers unlimited paid time off (PTO) for all full-time employees. There is no fixed number of vacation days. Employees are encouraged to take at least 20 days off per year. Taking time off is not optional — rest is considered essential to sustainable performance.\n\nTo request time off, submit a request through the HR portal at least five business days in advance for absences of three days or fewer. For absences longer than three days, submit your request at least two weeks in advance. Your manager must approve all time off requests. Approval will generally not be denied unless the timing creates a significant business impact, such as a major product launch or a critical customer deadline.\n\nDuring busy periods, your manager may ask you to adjust your time off dates. This will be communicated as early as possible and with consideration for any non-refundable travel bookings you may have made."
+  ],
+  "rag_query": "notice period for resignation",
+  "scores": {
+    "faithfulness": null,
+    "answer_correctness": 0.9802,
+    "context_recall": 1.0,
+    "context_precision": null
+  },
+  "ragas_skipped": false,
+  "skip_reason": null
+}

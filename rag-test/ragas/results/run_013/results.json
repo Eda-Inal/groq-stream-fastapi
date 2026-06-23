@@ -1,0 +1,183 @@
+{
+  "run_id": "run_013",
+  "timestamp": "2026-06-23T14:05:46.388276",
+  "chat_model": "llama-3.3-70b-versatile",
+  "judge_model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q02",
+      "category": "exact_match",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9719,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q06",
+      "category": "direct_fact",
+      "difficulty": "easy",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.9744,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q11",
+      "category": "paraphrase",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.1807,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q16",
+      "category": "distractor",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_correctness": 0.5685,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q21",
+      "category": "multi_chunk",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.6718,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q25",
+      "category": "inference",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 0.75,
+        "answer_correctness": 0.8816,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q28",
+      "category": "negation",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.5991,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q31",
+      "category": "adversarial_paraphrase",
+      "difficulty": "hard",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_correctness": 0.7215,
+        "context_recall": 0.5,
+        "context_precision": 1.0
+      }
+    },
+    {
+      "q_id": "Q33",
+      "category": "absent_plausible",
+      "difficulty": "hard",
+      "ragas_skipped": true,
+      "skip_reason": "absent_plausible/trap",
+      "rag_called": false,
+      "scores": null,
+      "not_in_document_said": null
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "ragas_evaluated": 8,
+    "ragas_skipped": 1,
+    "avg_faithfulness": 0.8438,
+    "avg_answer_correctness": 0.6962,
+    "avg_context_recall": 0.9375,
+    "avg_context_precision": 1.0,
+    "absent_plausible_total": 1,
+    "absent_plausible_passed": 0,
+    "by_category": {
+      "exact_match": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.9719
+      },
+      "direct_fact": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.9744
+      },
+      "paraphrase": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.1807
+      },
+      "distractor": {
+        "count": 1,
+        "avg_faithfulness": 0.5,
+        "avg_answer_correctness": 0.5685
+      },
+      "multi_chunk": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.6718
+      },
+      "inference": {
+        "count": 1,
+        "avg_faithfulness": 0.75,
+        "avg_answer_correctness": 0.8816
+      },
+      "negation": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.5991
+      },
+      "adversarial_paraphrase": {
+        "count": 1,
+        "avg_faithfulness": 0.5,
+        "avg_answer_correctness": 0.7215
+      }
+    }
+  }
+}

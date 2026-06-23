@@ -12,3 +12,6 @@ pymupdf>=1.24.0           # PDF parser; extracts text and images page by page fr
 python-multipart>=0.0.9   # Enables file upload support (multipart/form-data) in FastAPI endpoints
 pytest>=8.0               # Standard Python test framework; unit and integration tests
 langsmith>=0.2.0          # LLM observability; traces prompts, responses, latency, and token usage
+ragas>=0.4                # RAG evaluation framework; LLM-as-judge metrics for retrieval + generation
+langchain-openai>=0.3     # LangChain OpenAI wrapper; used by RAGAS for judge LLM and embeddings
+langchain-community>=0.3  # LangChain community integrations; required by RAGAS internally

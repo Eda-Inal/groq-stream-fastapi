@@ -1,0 +1,11 @@
+{
+  "q_id": "Q33",
+  "question": "What notice period or severance pay does TechCorp provide when it decides to let an employee go?",
+  "model_answer": "",
+  "ground_truth": "The TechCorp handbook does not address company-initiated termination, severance pay, or any employer-side notice period. Section 9 covers only voluntary resignation and the offboarding process for employee-initiated departures.",
+  "contexts": [],
+  "rag_query": null,
+  "scores": null,
+  "ragas_skipped": true,
+  "skip_reason": "absent_plausible/trap"
+}
