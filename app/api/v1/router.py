@@ -4,6 +4,7 @@ from app.api.v1.endpoints.documents import router as documents_router
 from app.api.v1.endpoints.eval import router as eval_router
 from app.api.v1.endpoints.rag_metrics import router as rag_metrics_router
 from app.api.v1.endpoints.agent import router as agent_router
+from app.api.v1.endpoints.research import router as research_router
 
 router = APIRouter(prefix="/api/v1")
 
@@ -12,4 +13,5 @@ router.include_router(documents_router)
 router.include_router(rag_metrics_router)
 router.include_router(eval_router)
 router.include_router(agent_router)
+router.include_router(research_router)
 

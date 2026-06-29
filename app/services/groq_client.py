@@ -68,6 +68,7 @@ class LLMClient:
         messages: list[dict],
         model: str,
         tools: list[dict] | None = None,
+        stream: bool | None = None,
         temperature: float | None = None,
         max_tokens: int | None = None,
         top_p: float | None = None,
@@ -102,7 +103,7 @@ class LLMClient:
 
         model_info = AVAILABLE_MODELS.get(model, {})
         provider = model_info.get("provider", "groq")
-        use_stream = model_info.get("stream", True)
+        use_stream = stream if stream is not None else model_info.get("stream", True)
 
         payload: dict[str, Any] = {
             "model": model,
