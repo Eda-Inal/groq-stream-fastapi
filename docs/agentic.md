@@ -16,7 +16,7 @@
 | Chat model | `openai/gpt-oss-120b` (Groq) |
 | Agent model (baseline Q1–Q5) | `llama-3.3-70b-versatile` (Groq) — switched from gpt-oss-120b; see Analysis §4 |
 | Agent model (multi-retrieval Q8–Q15) | `Meta-Llama-3.3-70B-Instruct` (SambaNova) — faster token throughput |
-| Test scripts | `scripts/test_sherlock_chat.py` · `scripts/test_sherlock_agent.py` |
+| Test scripts | manual eval scripts (not included in repo) |
 
 ---
 

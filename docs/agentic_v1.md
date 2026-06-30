@@ -17,7 +17,7 @@ agentic RAG loop is implemented.
 
 | Field | Value |
 |---|---|
-| Script | `scripts/test_whitmore_agentic_rag.py` |
+| Script | manual eval script (not included in repo) |
 | Model | `openai/gpt-oss-120b` |
 | User ID | `test_user` |
 | Document | already in DB — no upload needed |
@@ -193,7 +193,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q04 — llama-3.3-70b-versatile
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 > Iterations: 3 thoughts, 2 actions, 2 observations
 
@@ -214,7 +214,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q01 — llama-3.3-70b-versatile
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 > Iterations: 2 thoughts, 1 action, 1 observation
 
@@ -234,7 +234,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q — llama-3.3-70b-versatile (cross-test)
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 > Iterations: 3 thoughts, 2 actions, 2 observations
 
@@ -255,7 +255,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q (cross-test, AFTER checkbox prompt) — llama-3.3-70b-versatile
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 > Iterations: 3 thoughts, 2 actions, 2 observations
 > Prompt version: checkbox mechanism added to `_ROLE_WITH_TOOLS`
@@ -290,7 +290,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q (plan tracking test 1, AFTER checkbox prompt) — llama-3.3-70b-versatile
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 > Iterations: 3 thoughts, 2 actions, 2 observations
 
@@ -313,7 +313,7 @@ Failed: Q09 (logical error: model said "must prove both" — document states "if
 ### Q (3-part plan tracking test) — llama-3.3-70b-versatile vs meta-llama/llama-4-scout-17b-16e-instruct
 
 > Run date: 2026-06-16
-> Script: `scripts/test_whitmore_agent.py`
+> Script: manual eval script (not included in repo)
 > Endpoint: `/api/v1/agent/stream`
 
 **Question:** What was Harold's MoCA score progression from 2021 to 2022, what specific control did Kowalski establish over Harold's external communications after July 2022, and what was the exact deficiency in attorney Finch's capacity evaluation?

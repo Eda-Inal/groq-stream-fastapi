@@ -17,8 +17,11 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
-docs/
 
 .claude/
 
 *.txt
+
+# Test run artifacts
+scripts/responses/
+*.stackdump
