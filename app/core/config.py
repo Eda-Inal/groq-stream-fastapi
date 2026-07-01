@@ -132,16 +132,6 @@ AVAILABLE_MODELS: Dict[str, Any] = {
 }
 
 
-FALLBACK_CHAIN: list[str] = [
-    "llama-3.3-70b-versatile",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "openai/gpt-oss-120b:free",
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
-    "qwen/qwen3-32b",
-    "llama-3.1-8b-instant",
-]
-
 
 class Settings(BaseSettings):
     """

@@ -14,7 +14,7 @@ from app.services.groq_client import LLMClient
 from app.services.guardrails import PromptInjectionGuard
 from app.services.tool_client.remote_client import RemoteToolClient
 from app.services import tracing as ls
-from app.core.config import settings, AVAILABLE_MODELS, FALLBACK_CHAIN
+from app.core.config import settings, AVAILABLE_MODELS
 from app.utils.token_counter import (
     estimate_messages_tokens,
     truncate_rag_chunks,
@@ -123,13 +123,6 @@ class ChatService:
             url=settings.tool_server_url,
         )
 
-    @staticmethod
-    def _next_fallback(current: str) -> str | None:
-        try:
-            idx = FALLBACK_CHAIN.index(current)
-            return FALLBACK_CHAIN[idx + 1] if idx + 1 < len(FALLBACK_CHAIN) else None
-        except ValueError:
-            return None
 
     @staticmethod
     def _is_protected(m: dict, tail_start: int, idx: int) -> bool:
@@ -323,7 +316,6 @@ class ChatService:
         stop: str | list[str] | None = None,
         seed: int | None = None,
         conversation_id: str | None = None,
-        allow_fallback: bool = True,
         tags: list[str] | None = None,
     ) -> AsyncIterator[dict]:
 
@@ -662,15 +654,9 @@ class ChatService:
                         await asyncio.sleep(rate_limit_retry_after + 1)
                         round_no -= 1
                         continue
-                    # RPD (daily limit) or unknown: switch to fallback model if available, else return error.
-                    if allow_fallback:
-                        next_m = self._next_fallback(active_model)
-                        if next_m:
-                            log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
-                            active_model = next_m
-                            round_no -= 1
-                            continue
-                    yield {"type": "error", "status": 429, "message": f"Rate limit reached on model '{active_model}'."}
+                    # RPD (daily limit): surface error to user.
+                    log.warning("rate_limit_rpd", model=active_model)
+                    yield {"type": "error", "status": 429, "message": f"Rate limit reached on model '{active_model}'. Please select a different model."}
                     yield {"type": "done", "finish_reason": "error"}
                     break
 
@@ -892,12 +878,9 @@ class ChatService:
                                 log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=_da_ra)
                                 await asyncio.sleep(_da_ra + 1)
                                 continue
-                            if allow_fallback:
-                                next_m = self._next_fallback(active_model)
-                                if next_m:
-                                    log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
-                                    active_model = next_m
-                                    continue
+                            log.warning("rate_limit_rpd", model=active_model)
+                            if _da_event:
+                                yield _da_event
                         _da_done = True
                     break
 
@@ -1081,12 +1064,9 @@ class ChatService:
                                 log.warning("rate_limit_rpm_waiting", model=active_model, retry_after=_fin_ra)
                                 await asyncio.sleep(_fin_ra + 1)
                                 continue
-                            if allow_fallback:
-                                next_m = self._next_fallback(active_model)
-                                if next_m:
-                                    log.warning("rate_limit_fallback", from_model=active_model, to_model=next_m)
-                                    active_model = next_m
-                                    continue
+                            log.warning("rate_limit_rpd", model=active_model)
+                            if _fin_event:
+                                yield _fin_event
                         _fin_done = True
 
                     if not saw_final:

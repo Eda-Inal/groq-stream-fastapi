@@ -62,7 +62,7 @@ EMBEDDING_BASE_URL=http://your-embedding-server/v1
 EMBEDDING_API_KEY=your_embedding_api_key
 ```
 
-**Optional providers (used in fallback chain):**
+**Optional providers:**
 
 ```env
 OPENROUTER_API_KEY=your_openrouter_api_key
@@ -353,7 +353,7 @@ The `LLMClient` (`app/services/groq_client.py`) resolves the provider from the `
 | OpenRouter | `:free` suffix (e.g. `openai/gpt-oss-120b:free`) | Free-tier models |
 | SambaNova | `Meta-Llama-` prefix (e.g. `Meta-Llama-3.3-70B-Instruct`) | Alternative inference provider |
 
-On rate limits, the client automatically switches to the next model in a configurable fallback chain (defined in `FALLBACK_CHAIN` in `app/core/config.py`). Automatic fallback is disabled when the client explicitly sets the `model` field.
+On rate limits (RPM), the service waits for the retry window and retries the same model. On daily limits (RPD), an error is returned and the user should select a different model.
 
 ---
 
@@ -376,7 +376,7 @@ When a request includes a `conversation_id`, the last 5 turns are loaded and pre
 
 When `LANGSMITH_TRACING_ENABLED=true`, every `stream_chat` call creates a root trace with child spans for:
 
-- Each LLM call (routing, direct answer, finalization, fallback)
+- Each LLM call (routing, direct answer, finalization)
 - Each tool call
 - Token usage per call
 
@@ -439,7 +439,7 @@ All fields except `messages` are optional.
 
 - `conversation_id` — if provided, the last 5 turns of history are loaded and prepended. If omitted, a new UUID is generated server-side.
 - `user_id` — used to scope RAG search to the user's uploaded documents.
-- `model` — must be a key in `AVAILABLE_MODELS`. Defaults to `GROQ_DEFAULT_MODEL`. If explicitly set, automatic fallback is disabled.
+- `model` — must be a key in `AVAILABLE_MODELS`. Defaults to `GROQ_DEFAULT_MODEL`.
 - `tags` — forwarded to LangSmith as trace tags.
 
 Use `curl` to test (Swagger does not render SSE correctly):
@@ -592,7 +592,7 @@ groq-stream-fastapi/
 │   │   └── document.py                  # DocumentIngestRequest/Response/Read
 │   │
 │   ├── core/
-│   │   ├── config.py                    # Settings (BaseSettings), AVAILABLE_MODELS, FALLBACK_CHAIN
+│   │   ├── config.py                    # Settings (BaseSettings), AVAILABLE_MODELS
 │   │   ├── logging.py                   # structlog setup
 │   │   └── chunking_config.py           # TIKTOKEN_ENCODING constant
 │   │
